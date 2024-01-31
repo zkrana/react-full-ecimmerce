@@ -147,6 +147,9 @@ Global Styling
   background-color: #e8effd;
   border-radius: 4px;
 }
+.sidebard-nav ul li a {
+  text-decoration: none !important;
+}
 .sidebard-nav ul li a:hover {
   text-decoration: none;
 }
@@ -665,4 +668,28 @@ Appearance Page
 .banner-photo img {
   height: 100%;
   width: 100%;
+}
+.all-api {
+  margin-top: 20px;
+}
+.api-input {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+input {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+.api-title {
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+  margin-right: 5px;
+}
+.api-input > div {
+  display: flex;
+  width: calc(100% - 48px);
 }

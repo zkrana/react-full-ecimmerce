@@ -69,9 +69,9 @@ if ($stmt = $connection->prepare($sql)) {
                         </li>
                         
                         <li class="">
-                            <a href="categories.php">
-                                <i class="fa-solid fa-list"></i>
-                                <span class="block">Categories</span>
+                            <a href="api.php">
+                                <i class="fa-solid fa-link"></i>
+                                <span class="block">API</span>
                             </a>
                         </li>
 
@@ -121,14 +121,14 @@ if ($stmt = $connection->prepare($sql)) {
                             </a>
                         </li>
 
-                         <li class="devided-nav active">
+                         <li class="devided-nav">
                             <a href="appearance.php">
                                 <i class="fa-solid fa-tag"></i>
                                 <span class="block">Appearances</span>
                             </a>
                         </li>
 
-                         <li>
+                         <li class="active">
                             <a href="settings.php">
                                 <i class="fa-solid fa-gear"></i>
                                 <span class="block">Settings</span>
@@ -197,107 +197,33 @@ if ($stmt = $connection->prepare($sql)) {
                 </div>
                 <div class="h-container">
                     <div class="main">
-                        <h1 class="page-heading"> Appearance </h1>
-                        <p>
-                            All fornt-end and back-end appearance setting are in here.
-                        </p>
+                        <h1 class="page-heading"> Api </h1>
+                        <p>Here all api link is available.</p>
 
-                        <div class="message max-width-400px">
-                            <?php
-                            // Check for success query parameter
-                            if (isset($_GET['success'])) {
-                                $successMsg = $_GET['success'];
-                                echo '<div id="error" class="max-w-400px alert alert-success mt-2" role="alert">' . $successMsg . '</div>';
-                            }
-
-                            // Display error message if available
-                            if (isset($_GET['error'])) {
-                                $errorMsg = $_GET['error']; // You should set an appropriate error message here
-                                echo '<div class="alert alert-danger" role="alert">' . $errorMsg . '</div>';
-                            }
-                        ?>
-                        </div>
-
-                            <!-- Appwarance Actions Bar -->
-                        <div class="appwarance-actions-bar">
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadBannerModal">
-                            Add Banner Photo
-                            </button>
-                        </div>
-
-                        <!-- Upload Banner Modal -->
-                        <div class="modal fade" id="uploadBannerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Upload Banner Photo</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Your file upload form can go here -->
-                                        <form id="bannerUploadForm" action="../auth/backend-assets/banner/banner-upload.php" method="post" enctype="multipart/form-data">
-                                            <div class="form-group">
-                                                <label for="bannerPhoto">Choose Banner Photo:</label>
-                                                <input type="file" class="form-control-file" id="bannerPhoto" name="banner_photo">
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="submitForm()">Upload</button>
-                                    </div>
+                        <div class="all-api  mt-4" id="allApiContainer">
+                            <!-- <div class="api-input">
+                                <label for="test" class="api-title">Test :</label>
+                                <div>
+                                    <input type="text" id="apiInput1" class="form-control" value="https://api.example.com/endpoint1" readonly>
+                                    <button class="btn btn-primary" onclick="copyToClipboard('apiInput1')">Copy</button>
                                 </div>
                             </div>
+                            <div class="api-input">
+                                <label for="test" class="api-title">Test :</label>
+                                <div>
+                                    <input type="text" id="apiInput1" class="form-control" value="https://api.example.com/endpoint1" readonly>
+                                    <button class="btn btn-primary" onclick="copyToClipboard('apiInput1')">Copy</button>
+                                </div>
+                            </div> -->
                         </div>
-
-                        <!-- Banner Photos Table (Replace with actual data) -->
-                        <?php
-                        // Fetch banner photos from the database
-                        $sql = "SELECT id, photo_name FROM banner_photos";
-                        $result = $connection->query($sql);
-
-                        if ($result->rowCount() > 0) {
-                            echo '<table class="table mt-3">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Photo</th>
-                                            <th scope="col">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>';
-
-                            // Output data of each row
-                         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                           echo '<tr>
-                                <th scope="row">' . $row["id"] . '</th>
-                                <td class="banner-photo">
-                                    <img src="../auth/assets/banner/' . $row["photo_name"] . '" alt="' . $row["photo_name"] . '" />
-                                </td>
-                                <td>
-                                    <a type="button" href="../auth/backend-assets/banner/delete_banner.php?id=' . $row["id"] . '" class="btn btn-danger">Delete</a>
-                                </td>
-                            </tr>';
-                        }
-                            echo '</tbody></table>';
-                        } else {
-                            echo "No banner photos found.";
-                        }
-
-                        ?>
-
                     </div>
                 </div>
             </div>
         </div>
 
     </main>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script>
         function toggleUserOptions() {
             var options = document.getElementById("userOptions");
@@ -317,10 +243,40 @@ if ($stmt = $connection->prepare($sql)) {
             });
         });
 
-         function submitForm() {
-        // Trigger form submission
-        document.getElementById("bannerUploadForm").submit();
-    }
+async function fetchEndpoints() {
+    const response = await fetch('../auth/api/getEndpoints.php');
+    const data = await response.json();
+    return data;
+}
+
+async function loadEndpoints() {
+    const endpoints = await fetchEndpoints();
+    const allApiContainer = document.getElementById('allApiContainer');
+
+    endpoints.forEach((endpoint, index) => {
+        const inputId = `apiInput${index + 1}`;
+        const apiInput = document.createElement('div');
+        apiInput.className = 'api-input';
+
+        apiInput.innerHTML = `
+            <input type="text" id="${inputId}" class="form-control" value="${endpoint}" readonly>
+            <button class="btn btn-primary" onclick="copyToClipboard('${inputId}')">Copy</button>
+        `;
+
+        allApiContainer.appendChild(apiInput);
+    });
+}
+
+function copyToClipboard(inputId) {
+    const inputElement = document.getElementById(inputId);
+    inputElement.select();
+    document.execCommand('copy');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadEndpoints();
+});
+
     </script>
     <script src="js/main.js"></script>
 </body>

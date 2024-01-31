@@ -1,44 +1,53 @@
 <?php
 // Call API header
 require_once '../../db-connection/cors.php';
-// Include database connection config
+
+// Connect to the database
 require_once '../../db-connection/config.php';
 
-// Fetch categories from the database
-function fetchCategories($pdo) {
-    $categories = array();
+function fetchCategories($parentCategoryId = null) {
+    global $connection;
 
-    $sql = "SELECT id, name, parent_category_id, level FROM categories";
-    $stmt = $pdo->query($sql);
+    $query = "SELECT id, name, parent_category_id, category_description, created_at, updated_at, level, SUBSTRING_INDEX(category_photo, '/', -1) AS photo_name
+              FROM categories
+              WHERE parent_category_id " . ($parentCategoryId ? "= :parentCategoryId" : "IS NULL");
 
-    if ($stmt !== false) {
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $categories[] = array(
-                'id' => $row['id'],
-                'name' => $row['name'],
-                'parent_category_id' => $row['parent_category_id'],
-                'level' => $row['level']
-            );
-        }
+    $stmt = $connection->prepare($query);
+
+    if ($parentCategoryId) {
+        $stmt->bindParam(':parentCategoryId', $parentCategoryId, PDO::PARAM_INT);
+    }
+
+    $stmt->execute();
+
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($categories as &$category) {
+        $category['product_count'] = fetchProductCount($category['id']);
+        $category['subcategories'] = fetchCategories($category['id']);
     }
 
     return $categories;
 }
 
-// Output the result as JSON
-header('Content-Type: application/json');
+function fetchProductCount($categoryId) {
+    global $connection;
+
+    $query = "SELECT COUNT(*) FROM products WHERE category_id = :categoryId";
+    $stmt = $connection->prepare($query);
+    $stmt->bindParam(':categoryId', $categoryId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return (int)$stmt->fetchColumn();
+}
 
 try {
-    // Use the previously established PDO connection
-    $pdo = new PDO("mysql:host=" . $config['db_hostname'] . ";dbname=" . $config['db_name'], $config['db_username'], $config['db_password']);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $categories = fetchCategories();
 
-    // Fetch and output categories
-    echo json_encode(['categories' => fetchCategories($pdo)]);
+    header('Content-Type: application/json');
+    echo json_encode($categories);
 } catch (PDOException $e) {
-    echo json_encode(['error' => 'Database connection error: ' . $e->getMessage()]);
-} finally {
-    // Close the database connection
-    $pdo = null;
+    http_response_code(500);
+    echo json_encode(array("message" => "Unable to fetch categories. " . $e->getMessage()));
 }
 ?>

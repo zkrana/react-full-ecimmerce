@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 30, 2024 at 11:30 AM
+-- Generation Time: Jan 31, 2024 at 11:14 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -47,7 +47,9 @@ INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`) VALUES
 (10, '127.0.0.1', '2024-01-29 09:17:21'),
 (11, '127.0.0.1', '2024-01-29 09:58:06'),
 (12, '127.0.0.1', '2024-01-30 01:50:15'),
-(13, '127.0.0.1', '2024-01-30 05:44:45');
+(13, '127.0.0.1', '2024-01-30 05:44:45'),
+(14, '127.0.0.1', '2024-01-31 02:02:36'),
+(15, '127.0.0.1', '2024-01-31 06:07:31');
 
 -- --------------------------------------------------------
 
@@ -116,24 +118,27 @@ CREATE TABLE `categories` (
   `category_description` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `level` int(11) DEFAULT 0
+  `level` int(11) DEFAULT 0,
+  `category_photo` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `categories`
 --
 
-INSERT INTO `categories` (`id`, `name`, `parent_category_id`, `category_description`, `created_at`, `updated_at`, `level`) VALUES
-(1, 'Men\'s & Boy\'s Fashion', NULL, 'All mens samples', '2024-01-26 10:51:49', '2024-01-29 06:24:23', 0),
-(3, 'Women\'s & Girl\'s Fashion', NULL, 'All womens samples are avaolable', '2024-01-26 10:59:06', '2024-01-29 06:23:50', 0),
-(7, 'Winter', NULL, 'Winter collections', '2024-01-26 11:25:48', '2024-01-26 11:25:48', 0),
-(8, 'Kids', NULL, 'All kids samples', '2024-01-26 11:27:08', '2024-01-27 04:21:16', 0),
-(11, 'Electronics', NULL, 'All electronics device are available.', '2024-01-27 10:20:15', '2024-01-27 10:20:15', 0),
-(14, 'Muslim Wear', 3, 'All religious muslim wear are available.', '2024-01-29 05:45:27', '2024-01-29 05:45:27', 1),
-(21, 'Outside Wear', 14, 'It\'s a sub category of muslim wear', '2024-01-29 06:33:01', '2024-01-29 06:33:01', 2),
-(30, 'Health & Beauty', NULL, 'All health and beauty items are will be added here', '2024-01-29 06:51:53', '2024-01-29 06:52:16', 0),
-(31, 'Skin care', 30, 'It\'s a sub category of health & beauty category', '2024-01-29 06:52:53', '2024-01-29 06:52:53', 1),
-(32, 'Shoes', 3, 'All ladies shoes are will be with category', '2024-01-30 02:04:26', '2024-01-30 02:04:26', 1);
+INSERT INTO `categories` (`id`, `name`, `parent_category_id`, `category_description`, `created_at`, `updated_at`, `level`, `category_photo`) VALUES
+(1, 'Men\'s & Boy\'s Fashion', NULL, 'All mens samples', '2024-01-26 10:51:49', '2024-01-31 05:33:12', 0, '../../assets/categories/1/65b9db98d2de8_pexels-chloe-1043474.jpg'),
+(3, 'Women\'s & Girl\'s Fashion', NULL, 'All womens samples are avaolable', '2024-01-26 10:59:06', '2024-01-31 05:35:09', 0, '../../assets/categories/3/65b9dc0da0540_pexels-arsham-haghani-3387577.jpg'),
+(7, 'Winter', NULL, 'Winter collections', '2024-01-26 11:25:48', '2024-01-31 05:36:24', 0, '../../assets/categories/7/65b9dc58d5b36_pexels-meruyert-gonullu-6888782.jpg'),
+(8, 'Kids', NULL, 'All kids samples', '2024-01-26 11:27:08', '2024-01-31 05:36:54', 0, '../../assets/categories/8/65b9dc76da9cd_pexels-vika-glitter-1620760.jpg'),
+(14, 'Muslim Wear', 3, 'All religious muslim wear are available.', '2024-01-29 05:45:27', '2024-01-31 05:35:43', 1, '../../assets/categories/14/65b9dc2fb05ba_pexels-rdne-stock-project-7249743.jpg'),
+(21, 'Outside Wear', 14, 'It\'s a sub category of muslim wear', '2024-01-29 06:33:01', '2024-01-31 05:35:30', 2, '../../assets/categories/21/65b9dc226ae01_Fauziya02-400x533.jpg'),
+(30, 'Health & Beauty', NULL, 'All health and beauty items are will be added here', '2024-01-29 06:51:53', '2024-01-31 05:38:31', 0, '../../assets/categories/30/65b9dcd773b27_pexels-nathan-cowley-634030.jpg'),
+(31, 'Skin care', 30, 'It\'s a sub category of health & beauty category', '2024-01-29 06:52:53', '2024-01-31 05:38:38', 1, '../../assets/categories/31/65b9dcdedae11_pexels-shiny-diamond-3762875.jpg'),
+(33, 'Electronics', NULL, 'All Electronics prodcuts', '2024-01-31 04:20:30', '2024-01-31 04:20:30', 0, '../../assets/categories/33/pexels-pixabay-163100.jpg'),
+(34, 'Mobile Phone', 33, 'Here we will keep all mobile devices.', '2024-01-31 04:22:04', '2024-01-31 04:22:04', 1, '../../assets/categories/34/pexels-lisa-fotios-1092644.jpg'),
+(35, 'T-shirt', 1, 'SMUG Premium T-shirt Fabric soft and comfortable', '2024-01-31 09:00:10', '2024-01-31 09:00:10', 1, '../../assets/categories/35/pexels-j-sarkar-991509.jpg'),
+(36, 'iPhone', 34, 'All iPhone are in here', '2024-01-31 09:05:00', '2024-01-31 09:05:00', 2, '../../assets/categories/36/pexels-jess-bailey-designs-788946.jpg');
 
 -- --------------------------------------------------------
 
@@ -178,7 +183,9 @@ INSERT INTO `products` (`id`, `name`, `product_photo`, `description`, `price`, `
 (5, 'Laikou California Vitamin C Serum ', 0x62303638626332346230633063633134376338636165623465356533363864612e6a70675f33303078307137352e77656270, 'badgeLaikou California Vitamin C Serum Antioxidant Remove Spots -17 ml', 2500.00, 31, 25, 'BDT', '2024-01-27 09:34:01', '2024-01-29 06:53:29'),
 (6, 'রুম স্লিপার শীতকালীন রুম স্লিপার', 0x66633734333462633734616464646664626537316563393666353565653330622e6a70675f373530783735302e6a70675f2e77656270, 'রুম স্লিপার শীতকালীন রুম স্লিপার শীতকালীন উষ্ণ রুম স্লিপার শীতকালীন জুতা পুরুষ/মহিলাদের জন্য ঘরের জুতা', 125.00, 3, 35, 'BDT', '2024-01-29 04:47:03', '2024-01-29 04:47:03'),
 (56, 'Dexe Hair Building Fiber-22g', 0x31312d382e6a7067, 'খাঁটি dexe চুলের বিল্ডিং ফাইবার 22g-কালো', 125.00, 30, 20, 'BDT', '2024-01-30 06:06:31', '2024-01-30 06:06:31'),
-(57, 'Irani Party Abaya Burkha Set', 0x61626179612e77656270, 'New Attractive Premium-Quality Step Contrast Irani Party Abaya Burkha Set, Dubai Charry Fabric, Muslim Outerwear Collection 2023', 1172.00, 21, 35, 'BDT', '2024-01-30 06:22:58', '2024-01-30 06:22:58');
+(57, 'Irani Party Abaya Burkha Set', 0x61626179612e77656270, 'New Attractive Premium-Quality Step Contrast Irani Party Abaya Burkha Set, Dubai Charry Fabric, Muslim Outerwear Collection 2023', 1172.00, 21, 35, 'BDT', '2024-01-30 06:22:58', '2024-01-30 06:22:58'),
+(58, 'Premium T-shirt', 0x66343165656233316139666530323133623837323630626164626465636633352e6a70675f373530783735302e6a70675f2e77656270, 'SMUG Premium T-shirt Fabric soft and comfortable', 850.00, 35, 50, 'BDT', '2024-01-31 09:01:18', '2024-01-31 09:01:18'),
+(59, 'Apple iPhone 15 128GB', 0x61666530373465613334373639646362653862613362663164353130393030612e6a70675f373530783735302e6a70675f2e77656270, 'Apple iPhone 15 128GB', 85000.00, 36, 10, 'BDT', '2024-01-31 09:08:32', '2024-01-31 09:08:32');
 
 -- --------------------------------------------------------
 
@@ -226,7 +233,10 @@ CREATE TABLE `variations` (
 
 INSERT INTO `variations` (`id`, `product_id`, `color`, `sim`, `storage`, `type`, `image_path`) VALUES
 (32, 57, '#800000', NULL, NULL, NULL, '../../assets/products/57/variation_1/maroon-abaya.webp'),
-(33, 57, '#006a4e', NULL, NULL, NULL, '../../assets/products/57/variation_2/79bbc951655b6ff3761ea4500e0ce5a5.jpg_750x750.jpg_.webp');
+(33, 57, '#006a4e', NULL, NULL, NULL, '../../assets/products/57/variation_2/79bbc951655b6ff3761ea4500e0ce5a5.jpg_750x750.jpg_.webp'),
+(34, 58, 'gray', NULL, NULL, NULL, '../../assets/products/58/variation_1/d365b63792f616e4d7761cfd8909aada.jpg_750x750.jpg_.webp'),
+(35, 59, '#008000', 'eSim', '128mb', NULL, '../../assets/products/59/variation_1/4fec6769e276cb5f30824afdb101f1b7.jpg_750x750.jpg_.webp'),
+(36, 59, '#0000FF', NULL, NULL, NULL, '../../assets/products/59/variation_2/9247e54ae55b919003174276787a1f85.jpg_750x750.jpg_.webp');
 
 --
 -- Indexes for dumped tables
@@ -299,7 +309,7 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `access_logs`
 --
 ALTER TABLE `access_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `admin_users`
@@ -323,7 +333,7 @@ ALTER TABLE `blocked_ips`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -335,7 +345,7 @@ ALTER TABLE `orders`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `requests`
@@ -347,7 +357,7 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT for table `variations`
 --
 ALTER TABLE `variations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- Constraints for dumped tables

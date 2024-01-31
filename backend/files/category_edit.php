@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['up_id'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="../styling/style.css">
 </head>
@@ -155,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['up_id'])) {
                         </li>
 
                          <li>
-                            <a href="">
+                            <a href="settings.php">
                                 <i class="fa-solid fa-gear"></i>
                                 <span class="block">Settings</span>
                             </a>
@@ -231,8 +231,22 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['up_id'])) {
 
                         <!-- Existing Categories -->
                         <div class="mt-5">
-                            <form method="post" action="../auth/backend-assets/category/update_category.php">
+                            <form method="post" action="../auth/backend-assets/category/update_category.php" enctype="multipart/form-data">
                                 <input type="hidden" name="category_id" value="<?php echo $category['id']; ?>">
+
+                                <!-- Display Current Category Photo -->
+                                <div class="mb-3">
+                                    <label for="currentCategoryPhoto">Current Category Photo:</label>
+                                    <div style="width: 250px; height: 250px; overflow: hidden; position: relative;">
+                                        <?php
+                                        if (isset($category['category_photo'])) {
+                                            echo '<img src="../auth/assets/categories/' . $category['category_photo'] . '" alt="Category Photo" style="width: 100%; height: 100%; object-fit: cover;">';
+                                        } else {
+                                            echo '<p>No photo available</p>';
+                                        }
+                                        ?>
+                                    </div>
+                                </div>
 
                                 <div class="form-group">
                                     <label for="categoryName">Category Name:</label>
@@ -244,11 +258,19 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['up_id'])) {
                                     <input type="text" class="form-control" id="categoryDescription" name="categoryDescription" value="<?php echo $category['category_description']; ?>">
                                 </div>
 
+                                <!-- Upload New Category Photo -->
+                                <div class="mb-3">
+                                    <label for="categoryPhoto" class="form-label">Category Photo</label>
+                                    <input type="file" class="form-control" id="categoryPhoto" name="categoryPhoto" accept="image/*">
+                                    <small class="text-muted">Upload a new photo or leave it blank to keep the current photo.</small>
+                                </div>
+
+
                                 <button type="submit" class="btn btn-primary">Update Category</button>
                             </form>
                         </div>
 
-                        <!-- Categories -->
+
                         <!-- Modal -->
                         <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -258,17 +280,39 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['up_id'])) {
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <!-- Your form goes here -->
-                                        <form id="categoryForm" action="../auth/backend-assets/category/add_category.php" method="post">
+                                        <form id="categoryForm" action="../auth/backend-assets/category/add_category.php" method="post" enctype="multipart/form-data">
                                             <div class="mb-3">
                                                 <label for="categoryName" class="form-label">Category Name</label>
-                                                <input type="text" class="form-control" id="categoryName" name="categoryName" aria-describedby="emailHelp">
+                                                <input type="text" class="form-control" id="categoryName" name="categoryName" aria-describedby="emailHelp" required>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="categoryDescription" class="form-label">Category Description</label>
-                                                <input type="text" class="form-control" id="categoryDescription" name="categoryDescription">
+                                                <textarea class="form-control" id="categoryDescription" name="categoryDescription" rows="3"></textarea>
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Add Category</button>
+                                            <div class="mb-3">
+                                                <label for="categoryPhoto" class="form-label">Category Photo</label>
+                                                <input type="file" class="form-control" id="categoryPhoto" name="categoryPhoto" accept="image/*">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="parentCategory" class="form-label">Parent Category</label>
+                                                <select class="form-select" id="parentCategory" name="parentCategory">
+                                                    <option value="" selected>No Parent Category</option>
+                                                    <?php
+                                                    // Fetch all categories to populate the dropdown
+                                                    $sql = "SELECT id, name FROM categories";
+                                                    $stmt = $connection->prepare($sql);
+                                                    $stmt->execute();
+                                                    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                                    foreach ($categories as $category) {
+                                                        echo "<option value=\"{$category['id']}\">{$category['name']}</option>";
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-primary">Add Category</button>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
