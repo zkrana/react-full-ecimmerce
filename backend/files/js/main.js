@@ -37,21 +37,28 @@ function showAccessLogs() {
 function updateCurrencySymbol() {
   var currencySelect = document.getElementById("currency");
   var currencySymbol = document.getElementById("currencySymbol");
-  var selectedCurrency = currencySelect.value;
 
-  // Set the currency symbol based on the selected currency
-  if (selectedCurrency === "BDT") {
-    currencySymbol.textContent = "৳"; // BDT symbol
-  } else if (selectedCurrency === "USD") {
-    currencySymbol.textContent = "$"; // USD symbol
+  // Check if currencySelect and currencySymbol are not null before proceeding
+  if (currencySelect && currencySymbol) {
+    var selectedCurrency = currencySelect.value;
+
+    // Set the currency symbol based on the selected currency
+    if (selectedCurrency === "BDT") {
+      currencySymbol.textContent = "৳"; // BDT symbol
+    } else if (selectedCurrency === "USD") {
+      currencySymbol.textContent = "$"; // USD symbol
+    }
+    // Add more conditions for other currencies as needed
   }
-  // Add more conditions for other currencies as needed
 }
 
-// Attach the updateCurrencySymbol function to the change event of the currency select
-document
-  .getElementById("currency")
-  .addEventListener("change", updateCurrencySymbol);
+// Attach the updateCurrencySymbol function to the change event of the currency select, if the element exists
+document.addEventListener("DOMContentLoaded", function () {
+  var currencyElement = document.getElementById("currency");
+  if (currencyElement) {
+    currencyElement.addEventListener("change", updateCurrencySymbol);
+  }
+});
 
 // Call the function initially to set the default currency symbol
 updateCurrencySymbol();

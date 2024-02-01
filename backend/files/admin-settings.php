@@ -246,7 +246,10 @@ if ($stmt = $connection->prepare($sql)) {
                                         echo "<td>{$row['id']}</td>";
                                         echo "<td>{$row['ip_address']}</td>";
                                         echo "<td>{$row['blocked_until']}</td>";
-                                        echo "<td><a href='../auth/backend-assets/admin-settings/del_block_ip?id={$row['id']}'>Delete</a></td>";
+                                        echo "<td>
+                                        <a href='../auth/backend-assets/admin-settings/del_block_ip?id={$row['id']}'>Delete</a> |
+                                         <button class='block-unblock-btn' data-id='{$row['id']}'>Block</button>
+                                        </td>";
                                         echo "</tr>";
                                     }
                                     ?>
@@ -274,9 +277,9 @@ if ($stmt = $connection->prepare($sql)) {
                             <?php
                                 // Check for success parameter in the URL
                                 if (isset($_GET["success"]) && $_GET["success"] == 1) {
-                                    echo "<div class='alert alert-success'>Access log deleted successfully.</div>";
+                                    echo "<div id='error' class='alert alert-success'>Access log deleted successfully.</div>";
                                 } elseif (isset($_GET["error"]) && $_GET["error"] == 1) {
-                                    echo "<div class='alert alert-danger'>Error deleting Access log. Please try again.</div>";
+                                    echo "<div id='error' class='alert alert-danger'>Error deleting Access log. Please try again.</div>";
                                 }
                             ?>
 
@@ -310,7 +313,9 @@ if ($stmt = $connection->prepare($sql)) {
                                         echo "<td>{$row['id']}</td>";
                                         echo "<td>{$row['ip_address']}</td>";
                                         echo "<td>{$row['access_time']}</td>";
-                                        echo "<td><a href='../auth/backend-assets/admin-settings/del_aces_logs.php?id={$row['id']}'>Delete</a></td>";
+                                        echo "<td><a href='../auth/backend-assets/admin-settings/del_aces_logs.php?id={$row['id']}'>Delete</a>
+                                        |  <button class='block-unblock-btn btn btn-danger' data-id='{$row['id']}'>Block</button>
+                                        </td>";
                                         echo "</tr>";
                                     }
                                     ?>
@@ -339,7 +344,8 @@ if ($stmt = $connection->prepare($sql)) {
         </div>
 
     </main>
-
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="js/main.js"></script>
     <script>
         function toggleUserOptions() {
             var options = document.getElementById("userOptions");
@@ -357,7 +363,49 @@ if ($stmt = $connection->prepare($sql)) {
                 appWrapperS.classList.remove('show-sidebar');
             });
         });
+
+        $(document).ready(function () {
+            // Function to handle block/unblock action
+            function handleBlockUnblock(action, id) {
+                $.ajax({
+                type: "POST",
+                url: "../auth/backend-assets/admin-settings/block_unblock_script.php",
+                data: { action: action, id: id },
+                success: function (response) {
+                    // Assuming the response is 'success' or 'error'
+                    if (response === "success") {
+                    // Update the button text and perform any other necessary updates
+                    if (action === "block") {
+                        $("#btn-" + id).text("Unblock");
+                    } else {
+                        $("#btn-" + id).text("Block");
+                    }
+                    } else {
+                    // Handle error case
+                    alert("Error occurred. Please try again.");
+                    }
+                },
+                error: function () {
+                    // Handle AJAX error
+                    alert("Error occurred. Please try again.");
+                },
+                });
+            }
+
+            // Event handler for block/unblock button click
+           $("#blockedIPTable").on("click", ".block-unblock-btn", function (e) {
+                e.preventDefault();
+                console.log("Button clicked!"); // Add this line
+                var id = $(this).data("id");
+                var action = $(this).text().toLowerCase();
+
+                // Call the function to handle block/unblock action
+                handleBlockUnblock(action, id);
+            });
+
+        });
+
     </script>
-    <script src="js/main.js"></script>
+
 </body>
 </html>

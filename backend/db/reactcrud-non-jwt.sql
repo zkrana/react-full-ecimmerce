@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 31, 2024 at 11:14 AM
+-- Generation Time: Feb 01, 2024 at 11:21 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -38,18 +38,13 @@ CREATE TABLE `access_logs` (
 --
 
 INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`) VALUES
-(4, '127.0.0.1', '2024-01-27 09:15:02'),
-(5, '::1', '2024-01-27 09:49:24'),
 (6, '127.0.0.1', '2024-01-27 09:51:18'),
-(7, '127.0.0.1', '2024-01-27 10:23:02'),
-(8, '127.0.0.1', '2024-01-29 02:00:16'),
-(9, '127.0.0.1', '2024-01-29 03:38:57'),
-(10, '127.0.0.1', '2024-01-29 09:17:21'),
 (11, '127.0.0.1', '2024-01-29 09:58:06'),
 (12, '127.0.0.1', '2024-01-30 01:50:15'),
 (13, '127.0.0.1', '2024-01-30 05:44:45'),
 (14, '127.0.0.1', '2024-01-31 02:02:36'),
-(15, '127.0.0.1', '2024-01-31 06:07:31');
+(15, '127.0.0.1', '2024-01-31 06:07:31'),
+(16, '127.0.0.1', '2024-02-01 02:17:50');
 
 -- --------------------------------------------------------
 
@@ -179,13 +174,13 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `product_photo`, `description`, `price`, `category_id`, `stock_quantity`, `currency_code`, `created_at`, `updated_at`) VALUES
-(3, ' Apple iPhone 14 Pro Max', 0x6950686f6e652d31342d50726f2d446565702d507572706c652d373330302e6a7067, 'iPhone 14 Pro Max', 1500.00, 1, 15, 'BDT', '2024-01-27 09:24:18', '2024-01-29 04:54:14'),
-(5, 'Laikou California Vitamin C Serum ', 0x62303638626332346230633063633134376338636165623465356533363864612e6a70675f33303078307137352e77656270, 'badgeLaikou California Vitamin C Serum Antioxidant Remove Spots -17 ml', 2500.00, 31, 25, 'BDT', '2024-01-27 09:34:01', '2024-01-29 06:53:29'),
+(3, ' Apple iPhone 14 Pro Max', 0x6950686f6e652d31342d50726f2d446565702d507572706c652d373330302e6a7067, 'iPhone 14 Pro Max', 1500.00, 1, 4, 'BDT', '2024-01-27 09:24:18', '2024-02-01 02:57:49'),
+(5, 'Laikou California Vitamin C Serum ', 0x62303638626332346230633063633134376338636165623465356533363864612e6a70675f33303078307137352e77656270, 'badgeLaikou California Vitamin C Serum Antioxidant Remove Spots -17 ml', 2200.00, 31, 25, 'BDT', '2024-01-27 09:34:01', '2024-02-01 05:46:35'),
 (6, 'রুম স্লিপার শীতকালীন রুম স্লিপার', 0x66633734333462633734616464646664626537316563393666353565653330622e6a70675f373530783735302e6a70675f2e77656270, 'রুম স্লিপার শীতকালীন রুম স্লিপার শীতকালীন উষ্ণ রুম স্লিপার শীতকালীন জুতা পুরুষ/মহিলাদের জন্য ঘরের জুতা', 125.00, 3, 35, 'BDT', '2024-01-29 04:47:03', '2024-01-29 04:47:03'),
 (56, 'Dexe Hair Building Fiber-22g', 0x31312d382e6a7067, 'খাঁটি dexe চুলের বিল্ডিং ফাইবার 22g-কালো', 125.00, 30, 20, 'BDT', '2024-01-30 06:06:31', '2024-01-30 06:06:31'),
-(57, 'Irani Party Abaya Burkha Set', 0x61626179612e77656270, 'New Attractive Premium-Quality Step Contrast Irani Party Abaya Burkha Set, Dubai Charry Fabric, Muslim Outerwear Collection 2023', 1172.00, 21, 35, 'BDT', '2024-01-30 06:22:58', '2024-01-30 06:22:58'),
-(58, 'Premium T-shirt', 0x66343165656233316139666530323133623837323630626164626465636633352e6a70675f373530783735302e6a70675f2e77656270, 'SMUG Premium T-shirt Fabric soft and comfortable', 850.00, 35, 50, 'BDT', '2024-01-31 09:01:18', '2024-01-31 09:01:18'),
-(59, 'Apple iPhone 15 128GB', 0x61666530373465613334373639646362653862613362663164353130393030612e6a70675f373530783735302e6a70675f2e77656270, 'Apple iPhone 15 128GB', 85000.00, 36, 10, 'BDT', '2024-01-31 09:08:32', '2024-01-31 09:08:32');
+(57, 'Irani Party Abaya Burkha Set', 0x33313263353839646339636234386331633831343630656533623430353437622e6a70675f373530783735302e6a70675f2e77656270, 'New Attractive Premium-Quality Step Contrast Irani Party Abaya Burkha Set, Dubai Charry Fabric, Muslim Outerwear Collection 2023', 1172.00, 21, 35, 'BDT', '2024-01-30 06:22:58', '2024-02-01 05:53:06'),
+(58, 'Premium T-shirt', 0x66343165656233316139666530323133623837323630626164626465636633352e6a70675f373530783735302e6a70675f2e77656270, 'SMUG Premium T-shirt Fabric soft and comfortable', 850.00, 35, 3, 'BDT', '2024-01-31 09:01:18', '2024-02-01 03:00:19'),
+(73, 'Apple iPhone 15 128GB', 0x61666530373465613334373639646362653862613362663164353130393030612e6a70675f373530783735302e6a70675f2e77656270, 'Apple iPhone 15 128GB', 85000.00, 36, 20, 'BDT', '2024-02-01 05:04:52', '2024-02-01 05:46:06');
 
 -- --------------------------------------------------------
 
@@ -235,8 +230,9 @@ INSERT INTO `variations` (`id`, `product_id`, `color`, `sim`, `storage`, `type`,
 (32, 57, '#800000', NULL, NULL, NULL, '../../assets/products/57/variation_1/maroon-abaya.webp'),
 (33, 57, '#006a4e', NULL, NULL, NULL, '../../assets/products/57/variation_2/79bbc951655b6ff3761ea4500e0ce5a5.jpg_750x750.jpg_.webp'),
 (34, 58, 'gray', NULL, NULL, NULL, '../../assets/products/58/variation_1/d365b63792f616e4d7761cfd8909aada.jpg_750x750.jpg_.webp'),
-(35, 59, '#008000', 'eSim', '128mb', NULL, '../../assets/products/59/variation_1/4fec6769e276cb5f30824afdb101f1b7.jpg_750x750.jpg_.webp'),
-(36, 59, '#0000FF', NULL, NULL, NULL, '../../assets/products/59/variation_2/9247e54ae55b919003174276787a1f85.jpg_750x750.jpg_.webp');
+(50, 73, '#000000', 'eSim', '', NULL, '../../assets/products/73/variation_1/afe074ea34769dcbe8ba3bf1d510900a.jpg_750x750.jpg_.webp'),
+(51, 73, '#fddcd7', 'eSim', '', NULL, '../../assets/products/73/variation_2/843fde75724772e6c9f1e0031a6fe0ba.jpg_750x750.jpg_.webp'),
+(52, 73, '#800000', 'eSim', '', NULL, '../../assets/products/73/variation_3/4fec6769e276cb5f30824afdb101f1b7.jpg_750x750.jpg_.webp');
 
 --
 -- Indexes for dumped tables
@@ -309,7 +305,7 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `access_logs`
 --
 ALTER TABLE `access_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `admin_users`
@@ -345,7 +341,7 @@ ALTER TABLE `orders`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT for table `requests`
@@ -357,7 +353,7 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT for table `variations`
 --
 ALTER TABLE `variations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- Constraints for dumped tables

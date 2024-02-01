@@ -645,6 +645,10 @@ Products Page
   #accessLogsSection {
     overflow-x: auto;
   }
+  .exis-va,
+  .list-group {
+    overflow-x: auto;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -692,4 +696,22 @@ input {
 .api-input > div {
   display: flex;
   width: calc(100% - 48px);
+}
+/* Define a keyframe animation called 'blink' */
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Apply the 'blink' animation to elements with the 'blink' class */
+.blink {
+  animation: blink 1s infinite;
+  color: red;
 }

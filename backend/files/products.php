@@ -303,58 +303,66 @@ function formatPriceWithIcon($price, $currencyCode) {
                                     echo "<div id='error' class='alert alert-danger'>Error adding product. Please try again.</div>";
                                 }
                             ?>
-                            <div class="main-prodict-d-wrapper mt-4">
-                                <!-- Display the product cards using a loop -->
-                                <?php foreach ($products as $product): ?>
-                                    <div class="card">
-                                        <div class="pro-d-photo">
-                                             <img src="../auth/assets/products/<?php echo $product['product_photo']; ?>" alt="<?php echo isset($product['name']) ? $product['name'] : 'Unknown Product'; ?>" >
-                                        </div>
-                                        <h4 class="mb-0 product-dash-heading"><?php echo isset($product['name']) ? $product['name'] : 'Unknown Product'; ?></h4>
-                                        <div class="card-body">
-                                            <?php if (isset($product['price']) && isset($product['currency_code'])) : ?>
-                                                <p><strong>Price:</strong> <?php echo formatPriceWithIcon($product['price'], $product['currency_code']); ?></p>
-                                            <?php else : ?>
-                                                <p><strong>Price:</strong> Not available</p>
-                                            <?php endif; ?>
+<div class="main-prodict-d-wrapper mt-4">
+    <!-- Display the product cards using a loop -->
+    <?php foreach ($products as $product): ?>
+        <?php
+            // Add a class for low quantity to trigger blink animation
+            $quantityClass = ($product['stock_quantity'] < 5) ? 'low-quantity' : '';
+        ?>
+        <div class="card <?php echo $quantityClass; ?>">
+            <div class="pro-d-photo">
+                 <img src="../auth/assets/products/<?php echo $product['product_photo']; ?>" alt="<?php echo isset($product['name']) ? $product['name'] : 'Unknown Product'; ?>" >
+            </div>
+            <h4 class="mb-0 product-dash-heading"><?php echo isset($product['name']) ? $product['name'] : 'Unknown Product'; ?></h4>
+            <div class="card-body">
+                <?php if (isset($product['price']) && isset($product['currency_code'])) : ?>
+                    <p><strong>Price:</strong> <?php echo formatPriceWithIcon($product['price'], $product['currency_code']); ?></p>
+                <?php else : ?>
+                    <p><strong>Price:</strong> Not available</p>
+                <?php endif; ?>
 
-                                            <?php if (isset($product['category_id'])) : ?>
-                                                <p><strong>Category:</strong> <?php echo getCategoryName($product['category_id']); ?></p>
-                                            <?php else : ?>
-                                                <p><strong>Category:</strong> Unknown Category</p>
-                                            <?php endif; ?>
+                <?php if (isset($product['category_id'])) : ?>
+                    <p><strong>Category:</strong> <?php echo getCategoryName($product['category_id']); ?></p>
+                <?php else : ?>
+                    <p><strong>Category:</strong> Unknown Category</p>
+                <?php endif; ?>
 
-                                            <?php if (isset($product['stock_quantity'])) : ?>
-                                                <p><strong>Stock Quantity:</strong> <?php echo $product['stock_quantity']; ?></p>
-                                            <?php else : ?>
-                                                <p><strong>Stock Quantity:</strong> Not available</p>
-                                            <?php endif; ?>
+                <?php if (isset($product['stock_quantity'])) : ?>
+                    <?php
+                        // Show blink animation if stock quantity is less than 5
+                        $blinkAnimation = ($product['stock_quantity'] < 5) ? 'blink' : '';
+                    ?>
+                    <p class="<?php echo $blinkAnimation; ?>"><strong>Stock Quantity:</strong> <?php echo $product['stock_quantity']; ?></p>
+                <?php else : ?>
+                    <p><strong>Stock Quantity:</strong> Not available</p>
+                <?php endif; ?>
 
-                                            <?php if (isset($product['created_at'])) : ?>
-                                                <p><strong>Created At:</strong> <?php echo $product['created_at']; ?></p>
-                                            <?php else : ?>
-                                                <p><strong>Created At:</strong> Not available</p>
-                                            <?php endif; ?>
+                <?php if (isset($product['created_at'])) : ?>
+                    <p><strong>Created At:</strong> <?php echo $product['created_at']; ?></p>
+                <?php else : ?>
+                    <p><strong>Created At:</strong> Not available</p>
+                <?php endif; ?>
 
-                                            <?php if (isset($product['updated_at'])) : ?>
-                                                <p><strong>Updated At:</strong> <?php echo $product['updated_at']; ?></p>
-                                            <?php else : ?>
-                                                <p><strong>Updated At:</strong> Not available</p>
-                                            <?php endif; ?>
+                <?php if (isset($product['updated_at'])) : ?>
+                    <p><strong>Updated At:</strong> <?php echo $product['updated_at']; ?></p>
+                <?php else : ?>
+                    <p><strong>Updated At:</strong> Not available</p>
+                <?php endif; ?>
 
-                                            <div class="btn-group" role="group" aria-label="Product Actions">
-                                                <a class="btn" href="edit_product.php?up_id=<?php echo isset($product['id']) ? $product['id'] : ''; ?>">
-                                                <i class="fa-solid fa-pencil"></i> Edit</a> 
-                                                <a class="btn" href="../auth/backend-assets/product/delete_product.php?del_id=<?php echo isset($product['id']) ? $product['id'] : ''; ?>" onclick="return confirm('Are you sure you want to delete this product?')">
-                                                    <i class="fa-solid fa-trash"></i> Delete
-                                                </a>
+                <div class="btn-group" role="group" aria-label="Product Actions">
+                    <a class="btn" href="edit_product.php?up_id=<?php echo isset($product['id']) ? $product['id'] : ''; ?>">
+                        <i class="fa-solid fa-pencil"></i> Edit
+                    </a> 
+                    <a class="btn" href="../auth/backend-assets/product/delete_product.php?del_id=<?php echo isset($product['id']) ? $product['id'] : ''; ?>" onclick="return confirm('Are you sure you want to delete this product?')">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
 
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
 
                             <!-- Pagination -->
                             <nav aria-label="Page navigation example text-center">

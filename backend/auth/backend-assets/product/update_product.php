@@ -123,13 +123,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $simArray = $_POST['sim'] ?? [];
             $storageArray = $_POST['storage'] ?? [];
             $colorsArray = $_POST['colors'] ?? [];
-            $imagesArray = $_POST['images'] ?? [];
+            $imagesArray = $_FILES['images'] ?? [];
 
             // Iterate over the variation arrays to construct the $variations array
             foreach ($simArray as $key => $sim) {
                 $storage = $storageArray[$key] ?? '';
                 $colors = $colorsArray[$key] ?? [];
-                $images = $imagesArray[$key] ?? [];
+                $images = $imagesArray['name'][$key] ?? [];
 
                 // Create an associative array for each variation
                 $variation = [
@@ -153,44 +153,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         image_path = :image_path
                                         WHERE product_id = :productId AND id = :variationId";
 
-            $stmtUpdateVariations = $connection->prepare($sqlUpdateVariations);
+                $stmtUpdateVariations = $connection->prepare($sqlUpdateVariations);
 
-            // Iterate over variations and update each one
-            foreach ($variations as $key => $variation) {
-                $sim = $variation['sim'];
-                $storage = $variation['storage'];
-                $colors = implode(',', $variation['colors']);
-                $images = implode(',', $variation['images']);
-                $variationId = $key + 1; // Adjust this based on how your variation IDs are structured
+                // Iterate over variations and update each one
+                foreach ($variations as $key => $variation) {
+                    $sim = $variation['sim'];
+                    $storage = $variation['storage'];
+                    $colors = implode(',', $variation['colors']);
+                    $images = implode(',', $variation['images']);
+                    $variationId = $key + 1; // Adjust this based on how your variation IDs are structured
 
-                $stmtUpdateVariations->bindParam(":sim", $sim, PDO::PARAM_STR);
-                $stmtUpdateVariations->bindParam(":storage", $storage, PDO::PARAM_STR);
-                $stmtUpdateVariations->bindParam(":color", $colors, PDO::PARAM_STR);
-                $stmtUpdateVariations->bindParam(":image_path", $images, PDO::PARAM_STR);
-                $stmtUpdateVariations->bindParam(":productId", $productId, PDO::PARAM_INT);
-                $stmtUpdateVariations->bindParam(":variationId", $variationId, PDO::PARAM_INT);
+                    // Create a folder for each new variation
+                    $folderPath = __DIR__ . "/../../variations/{$productId}/variation{$variationId}/";
+                    mkdir($folderPath, 0777, true); // Creates the folder recursively
 
-                // Execute the update query for each variation
-                $stmtUpdateVariations->execute();
+                    $stmtUpdateVariations->bindParam(":sim", $sim, PDO::PARAM_STR);
+                    $stmtUpdateVariations->bindParam(":storage", $storage, PDO::PARAM_STR);
+                    $stmtUpdateVariations->bindParam(":color", $colors, PDO::PARAM_STR);
+                    $stmtUpdateVariations->bindParam(":image_path", $images, PDO::PARAM_STR);
+                    $stmtUpdateVariations->bindParam(":productId", $productId, PDO::PARAM_INT);
+                    $stmtUpdateVariations->bindParam(":variationId", $variationId, PDO::PARAM_INT);
+
+                    // Execute the update query for each variation
+                    $stmtUpdateVariations->execute();
+
+                    // Close the statement to release resources
+                    $stmtUpdateVariations->closeCursor();
+                }
+                // Commit the transaction
+                $connection->commit();
+
+                // Redirect or output success message as needed
+                header("Location: ../../../files/products.php?success=Product and variations updated successfully.");
+                exit;
+            } else {
+                // Product update failed
+                $connection->rollBack();
+                header("Location: ../../../files/products.php?error=Failed to update product. Please try again later.");
+                exit;
             }
-
-            // Commit the transaction
-            $connection->commit();
-
-            // Redirect or output success message as needed
-            header("Location: ../../../files/products.php?success=Product and variations updated successfully.");
-            exit;
-        } else {
-            // Product update failed
+        } catch (Exception $e) {
+            // Handle exceptions
             $connection->rollBack();
-            header("Location: ../../../files/products.php?error=Failed to update product. Please try again later.");
+            header("Location: ../../../files/products.php?error=Error: " . $e->getMessage());
             exit;
         }
-    } catch (Exception $e) {
-        // Handle exceptions
-        $connection->rollBack();
-        header("Location: ../../../files/products.php?error=Error: " . $e->getMessage());
-        exit;
     }
-}
 ?>

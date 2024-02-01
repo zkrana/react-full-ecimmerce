@@ -242,63 +242,75 @@ if ($stmt->execute()) {
 
                     <!-- Display the product form for editing -->
                     <form id="editProductForm" action="../auth/backend-assets/product/update_product.php" method="post" enctype="multipart/form-data">
-
                         <!-- Hidden field for product ID -->
                         <input type="hidden" name="productId" value="<?php echo htmlspecialchars($product['id'] ?? ''); ?>">
 
-                        <!-- Product Name -->
-                        <div class="form-group">
-                            <label for="editProductName">Product Name:</label>
-                            <input type="text" class="form-control" id="editProductName" name="editProductName" value="<?php echo htmlspecialchars($product['name'] ?? ''); ?>" required>
-                        </div>
-
-                        <!-- Product Description -->
-                        <div class="form-group">
-                            <label for="editProductDescription">Product Description:</label>
-                            <input type="text" class="form-control" id="editProductDescription" name="editProductDescription" value="<?php echo htmlspecialchars($product['description'] ?? ''); ?>" required>
-                        </div>
-
-                        <!-- Product Price -->
-                        <div class="form-group">
-                            <label for="editProductPrice">Product Price:</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">$</span>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editProductName" class="form-label">Product Name:</label>
+                                    <input type="text" class="form-control" id="editProductName" name="editProductName" value="<?php echo htmlspecialchars($product['name'] ?? ''); ?>" required>
                                 </div>
-                                <input type="text" class="form-control" id="editProductPrice" name="editProductPrice" value="<?php echo htmlspecialchars($product['price'] ?? ''); ?>" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editProductDescription" class="form-label">Product Description:</label>
+                                    <input type="text" class="form-control" id="editProductDescription" name="editProductDescription" value="<?php echo htmlspecialchars($product['description'] ?? ''); ?>" required>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Currency -->
-                        <div class="form-group">
-                            <label for="editCurrency">Currency:</label>
-                            <select class="form-control" id="editCurrency" name="editProductCurrency" required>
-                                <option value="BDT" <?php echo ($product['currency_code'] == 'BDT') ? 'selected' : ''; ?>>BDT (Bangladeshi Taka)</option>
-                                <option value="USD" <?php echo ($product['currency_code'] == 'USD') ? 'selected' : ''; ?>>USD (United States Dollar)</option>
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editProductPrice" class="form-label">Product Price:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </span>
+                                        <input type="text" class="form-control" id="editProductPrice" name="editProductPrice" value="<?php echo htmlspecialchars($product['price'] ?? ''); ?>" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editCurrency" class="form-label">Currency:</label>
+                                    <select class="form-select" id="editCurrency" name="editProductCurrency" required>
+                                        <option value="BDT" <?php echo ($product['currency_code'] == 'BDT') ? 'selected' : ''; ?>>BDT (Bangladeshi Taka)</option>
+                                        <option value="USD" <?php echo ($product['currency_code'] == 'USD') ? 'selected' : ''; ?>>USD (United States Dollar)</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Product Category -->
-                        <div class="form-group">
-                            <label for="editProductCategory">Product Category:</label>
-                            <select class="form-control" id="editProductCategory" name="editProductCategory" required>
-                                <?php foreach ($categories as $category): ?>
-                                    <option value="<?php echo $category['id']; ?>" <?php echo ($product['category_id'] == $category['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($category['name']); ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editProductCategory" class="form-label">Product Category:</label>
+                                    <select class="form-select" id="editProductCategory" name="editProductCategory" required>
+                                        <?php foreach ($categories as $category): ?>
+                                            <option value="<?php echo $category['id']; ?>" <?php echo ($product['category_id'] == $category['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($category['name']); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editProductStock" class="form-label">Stock Quantity:</label>
+                                    <input type="text" class="form-control" id="editProductStock" name="editProductStock" value="<?php echo htmlspecialchars($product['stock_quantity'] ?? ''); ?>" required>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Stock Quantity -->
-                        <div class="form-group">
-                            <label for="editProductStock">Stock Quantity:</label>
-                            <input type="text" class="form-control" id="editProductStock" name="editProductStock" value="<?php echo htmlspecialchars($product['stock_quantity'] ?? ''); ?>" required>
-                        </div>
-
-                        <!-- Product Photo -->
-                        <div class="form-group">
-                            <label for="editProductPhoto">Product Photo:</label>
-                            <input type="file" class="form-control-file" id="editProductPhoto" name="editProductPhoto" accept="image/*">
-                             <small class="text-muted">Upload a new photo or leave it blank to keep the current photo.</small>
+                        <div class="mb-3">
+                            <div class="form-group">
+                                <label for="editProductPhoto" class="form-label">Product Photo:</label>
+                                <input type="file" class="form-control-file form-control" id="editProductPhoto" name="editProductPhoto" accept="image/*">
+                                <small class="form-text text-muted">Upload a new photo or leave it blank to keep the current photo.</small>
+                            </div>
                         </div>
 
                         <!-- Variations Section -->
@@ -307,14 +319,27 @@ if ($stmt->execute()) {
 
                         <!-- Fetch existing variations for the product -->
                         <?php if (!empty($existingVariations)): ?>
-                            <div class="mb-4">
+                            <div class="exis-var mb-4">
                                 <h4>Existing Variations</h4>
                                 <ul class="list-group">
                                     <?php foreach ($existingVariations as $variation): ?>
                                         <li class="list-group-item">
                                             Variation ID: <?php echo $variation['id']; ?>
-                                            - Sim: <?php echo htmlspecialchars($variation['sim']); ?>
-                                            - Storage: <?php echo htmlspecialchars($variation['storage']); ?>
+                                            - Sim:
+                                            <select name="edit_sim[<?php echo $variation['id']; ?>]">
+                                                <option value="">Select</option>
+                                                <option value="dual">Dual </option>
+                                                <option value="eSim" <?php if ($variation['sim'] === 'eSim') echo 'selected'; ?>>eSim</option>
+                                                <!-- Add other SIM options as needed -->
+                                            </select>
+                                            - Storage:
+                                            <select name="edit_storage[<?php echo $variation['id']; ?>]">
+                                                <option value="">Select</option>
+                                                <option value="128mb" <?php if ($variation['storage'] === '128mb') echo 'selected'; ?>>128mb</option>
+                                                <option value="512mb"> 512MB </option>
+                                                <option value="1gb"> 1 GB </option>
+                                                <option value="128gb"> 128 GB </option>
+                                            </select>
                                             - Color(s): <?php echo htmlspecialchars($variation['color']); ?>
                                             - Image Path(s): <?php echo htmlspecialchars($variation['image_path']); ?>
                                         </li>
@@ -329,28 +354,45 @@ if ($stmt->execute()) {
 
                             <div class="form-group">
                                 <label for="sim">Sim:</label>
-                                <input type="text" class="form-control" name="sim[]">
+                                <select class="form-control" name="sim[]">
+                                    <option value="">Select</option>
+                                    <option value="dual">Dual</option>
+                                    <option value="eSim">eSim</option>
+                                    <!-- Add other SIM options as needed -->
+                                </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label for="storage">Storage:</label>
-                                <input type="text" class="form-control" name="storage[]">
+                                <select class="form-control" name="storage[]">
+                                    <option value="">Select</option>
+                                    <option value="128mb">128mb</option>
+                                    <option value="512mb"> 512MB </option>
+                                    <option value="1gb"> 1 GB </option>
+                                    <option value="128gb"> 128 GB </option>
+                                </select>
                             </div>
 
                             <!-- Color Fields -->
-                            <div class="color-fields">
+                            <div class="color-fields mt-2">
                                 <label for="colors">Color(s):</label>
                                 <input type="text" class="form-control" name="colors[0][]">
                             </div>
 
                             <!-- Image Fields -->
-                            <div class="image-fields">
-                                <label for="images">Image Path(s):</label>
-                                <input type="text" class="form-control" name="images[0][]">
+                            <div class="image-fields mb-3">
+                                <div class="form-group">
+                                    <label for="images" class="form-label">Product Photo:</label>
+                                    <input type="file" name="images[0][]" class="form-control-file form-control" accept="image/*">
+                                </div>
                             </div>
 
+                            <!-- Additional Color and Image Fields (JavaScript will dynamically add more) -->
+                            <div id="additionalFieldsContainer"></div>
+
                             <button type="button" class="btn btn-primary mt-3" onclick="addColorAndImageFields()">
-                            Add Multiple Color and Image</button>
+                                Add Multiple Color and Image
+                            </button>
                         </div>
 
                         <!-- Submit Button -->
@@ -373,18 +415,30 @@ if ($stmt->execute()) {
 
 <!-- Your custom JavaScript -->
 <script>
-function addColorAndImageFields() {
-        var colorFields = document.querySelector('.color-fields');
-        var newColorField = document.createElement('div');
-        newColorField.innerHTML = '<label for="colors">Color(s):</label>' +
-            '<input type="text" class="form-control" name="colors[0][]">';
-        colorFields.appendChild(newColorField);
+    var fieldIndex = 1;
 
-        var imageFields = document.querySelector('.image-fields');
-        var newImageField = document.createElement('div');
-        newImageField.innerHTML = '<label for="images">Image Path(s):</label>' +
-            '<input type="text" class="form-control" name="images[0][]">';
-        imageFields.appendChild(newImageField);
+    function addColorAndImageFields() {
+        var container = document.getElementById('additionalFieldsContainer');
+
+        // Color Fields
+        var colorFields = document.createElement('div');
+        colorFields.className = 'color-fields mt-2';
+        colorFields.innerHTML = '<label for="colors">Color(s):</label>' +
+            '<input type="text" class="form-control" name="colors[' + fieldIndex + '][]">';
+
+        // Image Fields
+        var imageFields = document.createElement('div');
+        imageFields.className = 'image-fields mb-3';
+        imageFields.innerHTML = '<div class="form-group">' +
+            '<label for="images" class="form-label">Product Photo:</label>' +
+            '<input type="file" name="images[' + fieldIndex + '][]" class="form-control-file form-control" accept="image/*">' +
+            '</div>';
+
+        // Append new fields to the container
+        container.appendChild(colorFields);
+        container.appendChild(imageFields);
+
+        fieldIndex++;
     }
 
     // Add an event listener to the form to submit it when any field is edited
@@ -409,34 +463,36 @@ function addColorAndImageFields() {
     }
 
     function updateCurrencySymbol() {
-        console.log("Updating currency symbol...");
-        var currencySelect = document.getElementById("editCurrency");
-        var currencySymbol = document.getElementById("editCurrencySymbol");
-        var selectedCurrency = currencySelect.value;
+    console.log("Updating currency symbol...");
+    var currencySelect = document.getElementById("editCurrency");
+    var selectedCurrency = currencySelect.value;
 
-        console.log("Selected Currency:", selectedCurrency);
+    console.log("Selected Currency:", selectedCurrency);
 
-        // Update the currency symbol based on the selected currency
-        // You can customize this part based on your currency symbols
-        switch (selectedCurrency) {
-            case "BDT":
-                currencySymbol.textContent = "৳";
-                break;
-            case "USD":
-                currencySymbol.textContent = "$";
-                break;
-            // Add more cases for other currencies as needed
-            default:
-                currencySymbol.textContent = "";
-                break;
-        }
+    // Update the currency symbol based on the selected currency
+    // You can customize this part based on your currency symbols
+    var currencySymbolSpan = document.querySelector('.input-group-prepend span');
+
+    switch (selectedCurrency) {
+        case "BDT":
+            currencySymbolSpan.textContent = "৳";
+            break;
+        case "USD":
+            currencySymbolSpan.textContent = "$";
+            break;
+        // Add more cases for other currencies as needed
+        default:
+            currencySymbolSpan.textContent = "";
+            break;
     }
+}
 
     // Attach the updateCurrencySymbol function to the change event of the currency select
     document.getElementById("editCurrency").addEventListener("change", updateCurrencySymbol);
 
     // Call the function initially to set the default currency symbol
     updateCurrencySymbol();
+
 
     document.addEventListener('DOMContentLoaded', function () {
         const wrapperIcon = document.querySelector('.app-sidebar-mb');

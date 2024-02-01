@@ -119,6 +119,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Execute the prepared statement for variations
                     $stmtVariation->execute();
                 }
+
+                // Now, update SIM and storage for all variations of the same product
+                $sqlUpdateVariations = "UPDATE variations SET sim = :sim, storage = :storage WHERE product_id = :product_id";
+                $stmtUpdateVariations = $connection->prepare($sqlUpdateVariations);
+                $stmtUpdateVariations->bindParam(":product_id", $productId, PDO::PARAM_INT);
+                $stmtUpdateVariations->bindValue(":sim", $simValues[0], PDO::PARAM_STR); // Assuming sim is common for all variations
+                $stmtUpdateVariations->bindValue(":storage", $storageValues[0], PDO::PARAM_STR); // Assuming storage is common for all variations
+                $stmtUpdateVariations->execute();
             }
 
             // Redirect back to the page where products are displayed with success message
