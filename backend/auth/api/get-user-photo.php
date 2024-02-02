@@ -11,7 +11,7 @@ $userID = isset($_GET['userId']) ? $_GET['userId'] : null;
 
 if ($userID !== null) {
     // Get the user's photo file path from the database
-    $selectQuery = "SELECT * FROM requests WHERE id = ?";
+    $selectQuery = "SELECT * FROM customers WHERE id = ?";
     $stmt = $connection->prepare($selectQuery);
     $stmt->bindParam(1, $userID);
     $stmt->execute();

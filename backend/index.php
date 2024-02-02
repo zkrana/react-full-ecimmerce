@@ -24,6 +24,9 @@
                     case '1':
                         $errorMessage = "Invalid username or password. Please try again.";
                         break;
+                    case 'blocked':
+                    $errorMessage = "You're blocked. Please contact the administrator.";
+                    break;
                     case 'account_locked':
                         $errorMessage = "Your account is temporarily locked. Please try again later.";
                         break;
@@ -50,6 +53,7 @@
                 <div class="form-group">
                     <input type="submit" class="btn btn-primary" value="Login">
                 </div>
+                <input type="hidden" name="timezone" id="timezone" value="">
                 <p>Don't have an account? <a href="./files/register.php">Sign up now</a>.</p>
             </form>
 

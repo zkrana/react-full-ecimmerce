@@ -12,7 +12,7 @@ $userID = isset($_GET['userId']) ? $_GET['userId'] : null;
 // Get username from the database using the user ID
 $username = '';
 if ($userID !== null) {
-    $selectQuery = "SELECT username FROM requests WHERE id = ?";
+    $selectQuery = "SELECT username FROM customers WHERE id = ?";
     $stmt = $connection->prepare($selectQuery);
     $stmt->bindParam(1, $userID);
     $stmt->execute();
@@ -78,7 +78,7 @@ error_log('Target file: ' . $target_file); // Log file path
             $filePath = $target_dir . $filename;
 
             // Update user's photo in the 'requests' table
-            $updateQuery = "UPDATE requests SET photo = ? WHERE id = ?";
+            $updateQuery = "UPDATE customers SET photo = ? WHERE id = ?";
             $stmt = $connection->prepare($updateQuery);
             $stmt->bindParam(1, $filePath);
             $stmt->bindParam(2, $userID);
@@ -86,7 +86,7 @@ error_log('Target file: ' . $target_file); // Log file path
 
             $response = [
                 'status' => 'success',
-                'message' => "The file $filename has been uploaded, and the user's photo updated in the 'requests' table."
+                'message' => "The file $filename has been uploaded, and the user's photo updated in the 'customers' table."
             ];
         } else {
             $response = ['status' => 'error', 'message' => 'Sorry, there was an error uploading your file.'];

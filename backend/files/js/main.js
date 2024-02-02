@@ -62,3 +62,78 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Call the function initially to set the default currency symbol
 updateCurrencySymbol();
+
+// Function to get the client's time zone
+function getClientTimeZone() {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  var timeZoneInput = document.getElementById("timezone");
+
+  if (timeZoneInput) {
+    timeZoneInput.value = getClientTimeZone();
+  }
+});
+
+function handleBlockUnblock(action, id, button) {
+  var xhr = new XMLHttpRequest();
+  var params =
+    "action=" + encodeURIComponent(action) + "&id=" + encodeURIComponent(id);
+
+  xhr.open(
+    "POST",
+    "../../backend/auth/backend-assets/admin-settings/block_unblock_script.php",
+    true
+  );
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      var response = xhr.responseText.trim();
+      console.log("Response:", response);
+
+      if (response.trim() === "") {
+        alert("Empty response received. Please check the server.");
+      }
+
+      if (response === "success") {
+        // Update the button text and blocked state
+        button.textContent = action === "block" ? "Unblock" : "Block";
+        button.setAttribute("data-blocked", action === "block" ? 1 : 0);
+      } else {
+        // Handle error case
+        alert("Error occurred. Please try again.");
+      }
+    } else {
+      // Handle other HTTP status codes
+      alert("HTTP Error: " + xhr.status);
+    }
+  };
+
+  xhr.onerror = function () {
+    // Handle AJAX error
+    alert("Error occurred. Please try again.");
+  };
+
+  console.log("Request Payload:", params); // Add this line for debugging
+  xhr.send(params);
+}
+
+document.addEventListener("click", function (event) {
+  var target = event.target;
+
+  // Check if the clicked element has the 'block-unblock-btn' class
+  if (target.classList.contains("block-unblock-btn")) {
+    event.preventDefault();
+    console.log("Button clicked!");
+
+    var id = target.getAttribute("data-id");
+    var action = target.textContent.trim().toLowerCase(); // Trim and convert to lowercase
+
+    console.log("Action:", action); // Add this line for debugging
+
+    // Call the function to handle block/unblock action
+    handleBlockUnblock(action, id, target);
+  }
+});

@@ -20,7 +20,7 @@ function createResponse($status, $message, $data = [])
 function checkRequestLimit($ip_address)
 {
     global $connection;
-    $query = $connection->prepare("SELECT COUNT(*) FROM requests 
+    $query = $connection->prepare("SELECT COUNT(*) FROM customers 
     WHERE ip_address = :ip_address AND request_time > DATE_SUB(NOW(), INTERVAL 1 HOUR)");
     $query->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
     $query->execute();
@@ -38,7 +38,7 @@ function checkRequestLimit($ip_address)
 function checkRequestTime($ip_address)
 {
     global $connection;
-    $query = $connection->prepare("SELECT request_time FROM requests 
+    $query = $connection->prepare("SELECT request_time FROM customers 
     WHERE ip_address = :ip_address 
     ORDER BY request_time DESC LIMIT 1");
     $query->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 function saveRequest($ip_address, $username, $password, $email)
 {
     global $connection;
-    $query = $connection->prepare("INSERT INTO requests (ip_address, username, password, email)
+    $query = $connection->prepare("INSERT INTO customers (ip_address, username, password, email)
     VALUES (:ip_address, :username, :password, :email)");
     $query->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
     $query->bindParam(':username', $username, PDO::PARAM_STR);

@@ -126,7 +126,7 @@ if ($stmt->execute()) {
                             </a>
                         </li>
                         <li>
-                            <a href="">
+                            <a href="customers.php">
                                 <i class="fa-solid fa-user-group"></i>
                                 <span class="block">Customers</span>
                             </a>

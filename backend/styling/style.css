@@ -715,3 +715,20 @@ input {
   animation: blink 1s infinite;
   color: red;
 }
+
+/*
+==============
+==============
+Customers Page
+==============
+==============
+*/
+.customer-photo {
+  width: 100px;
+  height: 100px;
+}
+.customer-photo img {
+  object-fit: fill;
+  width: 100%;
+  height: 100%;
+}

@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         $email_hash = base64_encode($data['email']);
         $password = $data['password'];
        
-        $sql = "SELECT * FROM requests WHERE email = '$email_hash'";
+        $sql = "SELECT * FROM customers WHERE email = '$email_hash'";
         $query = $connection->prepare($sql);
         $query->execute();
         $row = $query->fetch(PDO::FETCH_ASSOC);

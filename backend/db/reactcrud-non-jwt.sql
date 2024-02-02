@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 01, 2024 at 11:21 AM
+-- Generation Time: Feb 02, 2024 at 11:22 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -30,21 +30,17 @@ SET time_zone = "+00:00";
 CREATE TABLE `access_logs` (
   `id` int(11) NOT NULL,
   `ip_address` varchar(45) NOT NULL,
-  `access_time` timestamp NOT NULL DEFAULT current_timestamp()
+  `access_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `blocked` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `access_logs`
 --
 
-INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`) VALUES
-(6, '127.0.0.1', '2024-01-27 09:51:18'),
-(11, '127.0.0.1', '2024-01-29 09:58:06'),
-(12, '127.0.0.1', '2024-01-30 01:50:15'),
-(13, '127.0.0.1', '2024-01-30 05:44:45'),
-(14, '127.0.0.1', '2024-01-31 02:02:36'),
-(15, '127.0.0.1', '2024-01-31 06:07:31'),
-(16, '127.0.0.1', '2024-02-01 02:17:50');
+INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`, `blocked`) VALUES
+(52, '127.0.0.1', '2024-02-02 06:38:11', 0),
+(53, '127.0.0.1', '2024-02-02 07:59:07', 0);
 
 -- --------------------------------------------------------
 
@@ -100,6 +96,13 @@ CREATE TABLE `blocked_ips` (
   `blocked_until` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `blocked_ips`
+--
+
+INSERT INTO `blocked_ips` (`id`, `ip_address`, `blocked_until`) VALUES
+(21, '127.0.0.1', '2024-02-02 12:27:09');
+
 -- --------------------------------------------------------
 
 --
@@ -138,6 +141,30 @@ INSERT INTO `categories` (`id`, `name`, `parent_category_id`, `category_descript
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `customers`
+--
+
+CREATE TABLE `customers` (
+  `id` int(11) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `photo` varchar(255) NOT NULL,
+  `request_time` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`id`, `ip_address`, `username`, `password`, `email`, `photo`, `request_time`) VALUES
+(1, '::1', 'zkrana', '$argon2id$v=19$m=2048,t=4,p=2$dmIvdzUyRks1ZWE2NnlSSQ$X2rHdqP70DKClYidAr4nsArZ7bJsojpQ77b/ZolZl3c', 'emtyYW5hb0BnbWFpbC5jb20=', '../assets/user-profile/zkrana/management.png', '2024-01-24 03:37:50'),
+(2, '127.0.0.1', 'test', '$argon2id$v=19$m=2048,t=4,p=2$RUdCbUphYnN4MVc1WkV1RA$nNcizjgY0o5TN9UZ4nEyvZzEslEfOL2DO3bV+S77XIs', 'dGVzdEBnbWFpbC5jb20=', '../assets/user-profile/test/hs3.jpg', '2024-01-24 09:43:41');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `orders`
 --
 
@@ -147,7 +174,32 @@ CREATE TABLE `orders` (
   `product_id` int(11) DEFAULT NULL,
   `quantity` int(11) DEFAULT NULL,
   `total_price` decimal(10,2) DEFAULT NULL,
-  `order_date` timestamp NOT NULL DEFAULT current_timestamp()
+  `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `order_status_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_status`
+--
+
+CREATE TABLE `order_status` (
+  `id` int(11) NOT NULL,
+  `status_name` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `payment_amount` decimal(10,2) DEFAULT NULL,
+  `payment_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -185,26 +237,17 @@ INSERT INTO `products` (`id`, `name`, `product_photo`, `description`, `price`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `requests`
+-- Table structure for table `product_reviews`
 --
 
-CREATE TABLE `requests` (
+CREATE TABLE `product_reviews` (
   `id` int(11) NOT NULL,
-  `ip_address` varchar(45) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `photo` varchar(255) NOT NULL,
-  `request_time` timestamp NOT NULL DEFAULT current_timestamp()
+  `product_id` int(11) DEFAULT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `rating` int(11) DEFAULT NULL,
+  `review_text` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `requests`
---
-
-INSERT INTO `requests` (`id`, `ip_address`, `username`, `password`, `email`, `photo`, `request_time`) VALUES
-(1, '::1', 'zkrana', '$argon2id$v=19$m=2048,t=4,p=2$dmIvdzUyRks1ZWE2NnlSSQ$X2rHdqP70DKClYidAr4nsArZ7bJsojpQ77b/ZolZl3c', 'emtyYW5hb0BnbWFpbC5jb20=', '../assets/user-profile/zkrana/management.png', '2024-01-24 03:37:50'),
-(2, '127.0.0.1', 'test', '$argon2id$v=19$m=2048,t=4,p=2$RUdCbUphYnN4MVc1WkV1RA$nNcizjgY0o5TN9UZ4nEyvZzEslEfOL2DO3bV+S77XIs', 'dGVzdEBnbWFpbC5jb20=', '../assets/user-profile/test/hs3.jpg', '2024-01-24 09:43:41');
 
 -- --------------------------------------------------------
 
@@ -270,12 +313,32 @@ ALTER TABLE `categories`
   ADD KEY `fk_parent_category` (`parent_category_id`);
 
 --
+-- Indexes for table `customers`
+--
+ALTER TABLE `customers`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `order_status_id` (`order_status_id`);
+
+--
+-- Indexes for table `order_status`
+--
+ALTER TABLE `order_status`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `payments`
+--
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_id` (`order_id`);
 
 --
 -- Indexes for table `products`
@@ -285,10 +348,12 @@ ALTER TABLE `products`
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `requests`
+-- Indexes for table `product_reviews`
 --
-ALTER TABLE `requests`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `product_reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `customer_id` (`customer_id`);
 
 --
 -- Indexes for table `variations`
@@ -305,7 +370,7 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `access_logs`
 --
 ALTER TABLE `access_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `admin_users`
@@ -323,7 +388,7 @@ ALTER TABLE `banner_photos`
 -- AUTO_INCREMENT for table `blocked_ips`
 --
 ALTER TABLE `blocked_ips`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -332,9 +397,27 @@ ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
+-- AUTO_INCREMENT for table `customers`
+--
+ALTER TABLE `customers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `order_status`
+--
+ALTER TABLE `order_status`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `payments`
+--
+ALTER TABLE `payments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -344,10 +427,10 @@ ALTER TABLE `products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
--- AUTO_INCREMENT for table `requests`
+-- AUTO_INCREMENT for table `product_reviews`
 --
-ALTER TABLE `requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `product_reviews`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `variations`
@@ -370,13 +453,27 @@ ALTER TABLE `categories`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `admin_users` (`id`),
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`order_status_id`) REFERENCES `order_status` (`id`);
+
+--
+-- Constraints for table `payments`
+--
+ALTER TABLE `payments`
+  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`);
 
 --
 -- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
+
+--
+-- Constraints for table `product_reviews`
+--
+ALTER TABLE `product_reviews`
+  ADD CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  ADD CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`);
 
 --
 -- Constraints for table `variations`
