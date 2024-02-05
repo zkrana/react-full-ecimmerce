@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  .container {
+    @apply !max-w-7xl mx-auto;
+  }
+
+  .sub-menu {
+    top: 35px !important;
+    width: 210px;
+    z-index: 10;
+  }
+  /* Tailwind CSS Styles */
+  /* .group:hover .sub-sub-menu {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 34px;
+    width: 100%;
+  } */
+  /* Add these styles to your existing CSS file or style tag */
+
+  .group:hover .sub-menu {
+    display: block;
+    position: absolute;
+    left: -5px;
+  }
+
+  .sub-menu {
+    display: none;
+    /* Add any other styles for submenus */
+  }
+
+  .sub-sub-menu {
+    display: none;
+    /* Add any other styles for sub-submenus */
+  }
+  .group .sub-menu li:hover > ul {
+    display: block !important;
+    position: absolute;
+    left: 97%;
+  }
+  .group .sub-menu li > ul {
+    display: none !important;
+  }
+  .category-header {
+    cursor: pointer;
+  }
+
+  .subcategory-list {
+    display: none;
+    margin-left: 20px; /* Adjust the indentation as needed */
+  }
+
+  .expanded .subcategory-list {
+    display: block;
+  }
+
+  .toggle-icon {
+    margin-left: 5px;
+  }
+}
