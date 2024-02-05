@@ -243,39 +243,39 @@ if ($stmt = $connection->prepare($sql)) {
             });
         });
 
-async function fetchEndpoints() {
-    const response = await fetch('../auth/api/getEndpoints.php');
-    const data = await response.json();
-    return data;
-}
+        async function fetchEndpoints() {
+            const response = await fetch('../auth/api/getEndpoints.php');
+            const data = await response.json();
+            return data;
+        }
 
-async function loadEndpoints() {
-    const endpoints = await fetchEndpoints();
-    const allApiContainer = document.getElementById('allApiContainer');
+        async function loadEndpoints() {
+            const endpoints = await fetchEndpoints();
+            const allApiContainer = document.getElementById('allApiContainer');
 
-    endpoints.forEach((endpoint, index) => {
-        const inputId = `apiInput${index + 1}`;
-        const apiInput = document.createElement('div');
-        apiInput.className = 'api-input';
+            endpoints.forEach((endpoint, index) => {
+                const inputId = `apiInput${index + 1}`;
+                const apiInput = document.createElement('div');
+                apiInput.className = 'api-input';
 
-        apiInput.innerHTML = `
-            <input type="text" id="${inputId}" class="form-control" value="${endpoint}" readonly>
-            <button class="btn btn-primary" onclick="copyToClipboard('${inputId}')">Copy</button>
-        `;
+                apiInput.innerHTML = `
+                    <input type="text" id="${inputId}" class="form-control" value="${endpoint}" readonly>
+                    <button class="btn btn-primary" onclick="copyToClipboard('${inputId}')">Copy</button>
+                `;
 
-        allApiContainer.appendChild(apiInput);
-    });
-}
+                allApiContainer.appendChild(apiInput);
+            });
+        }
 
-function copyToClipboard(inputId) {
-    const inputElement = document.getElementById(inputId);
-    inputElement.select();
-    document.execCommand('copy');
-}
+        function copyToClipboard(inputId) {
+            const inputElement = document.getElementById(inputId);
+            inputElement.select();
+            document.execCommand('copy');
+        }
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadEndpoints();
-});
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEndpoints();
+        });
 
     </script>
     <script src="js/main.js"></script>

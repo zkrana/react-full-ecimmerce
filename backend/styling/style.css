@@ -100,6 +100,7 @@ Global Styling
 .h-container {
   padding: 40px;
   transition: all 0.4s ease-in-out;
+  margin-top: 72px;
 }
 .page-heading {
   font-size: 42px;
@@ -114,6 +115,9 @@ Global Styling
 }
 .app-sidebar {
   width: 15%;
+  position: fixed;
+  left: 0;
+  height: 100vh;
 }
 
 .side-header {
@@ -181,7 +185,8 @@ Global Styling
 }
 
 .header-body {
-  width: 85%;
+  width: calc(100% - 15%);
+  margin-left: 15%;
 }
 .logo {
   width: 200px;
@@ -199,7 +204,6 @@ Global Styling
   align-items: center;
 }
 .user {
-  width: 100%;
   gap: 20px;
   padding-right: 40px;
   padding-left: 40px;
@@ -209,6 +213,9 @@ Global Styling
   justify-content: space-between;
   align-items: center;
   height: 72px;
+  position: fixed;
+  width: calc(100% - 15%);
+  z-index: 12;
 }
 .user-pro {
   width: 50px;
@@ -287,6 +294,22 @@ Global Styling
   align-items: center;
   justify-content: end;
   position: relative;
+}
+
+@media screen and (min-width: 1024px) and (max-width: 1280px) {
+  .sidebard-nav {
+    padding: 0 10px 40px 5px;
+  }
+  .app-sidebar {
+    width: 17%;
+  }
+  .header-body {
+    width: calc(100% - 17%);
+    margin-left: 17%;
+  }
+  .h-container {
+    padding: 20px;
+  }
 }
 
 /* 
@@ -536,7 +559,7 @@ Products Page
 }
 @media screen and (max-width: 1024px) {
   .main-prodict-d-wrapper .card {
-    width: calc(50% - 12px) !important;
+    width: calc(50% - 8px) !important;
   }
   .app-sidebar-mb {
     display: flex;
@@ -550,11 +573,14 @@ Products Page
     cursor: pointer;
     position: fixed;
     z-index: 99999;
+    left: 0;
+    z-index: 99999;
   }
   .header-body {
     width: 100%;
     display: flex;
     position: relative;
+    margin-left: 0;
   }
   .user {
     width: calc(100% - 50px);
@@ -576,6 +602,7 @@ Products Page
   }
   .show-sidebar .header-body {
     width: calc(100% - 200px);
+    margin-left: 200px;
   }
   .sidebard-nav {
     padding: 0px 2px 40px 2px;
@@ -595,9 +622,10 @@ Products Page
   }
   .show-sidebar .app-sidebar {
     transform: translateX(0);
-    position: static;
+    position: fixed;
     transition: transform 0.3s ease-in-out;
     z-index: 9999999;
+    left: 0;
   }
   .close {
     display: none;
@@ -613,9 +641,10 @@ Products Page
 @media screen and (max-width: 767px) {
   .show-sidebar .header-body {
     width: 100%;
+    margin-left: 0;
   }
   .show-sidebar .app-sidebar {
-    position: absolute;
+    position: fixed;
     left: 0;
   }
 }
