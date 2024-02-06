@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="assets/styling/style.css">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 </head>
-</head>
 <body>
     <main class=" w-full block h-full">
         <?php include './components/header/header.php'; ?>
@@ -23,6 +22,7 @@
         <?php include './components/footer/footer.php'; ?>
 
     </main>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="./assets/js/main.js"></script>
 

@@ -4,8 +4,8 @@
 // Fetch products from the server (you need to implement this endpoint)
 $productsData = json_decode(file_get_contents("http://localhost/reactcrud/backend/auth/api/product/products.php"), true);
 
-// Initialize likedProducts with an array of false values
-$likedProducts = array_fill(0, count($productsData), false);
+// Initialize likedProducts with an empty array
+$likedProducts = [];
 
 // Include your HTML header, if applicable
 
@@ -23,9 +23,11 @@ foreach ($productsData as $index => $product) {
     echo '        <div class="text-lg font-bold text-blue-600">${' . $product['price'] . '}</div>';
     echo '        <div class="flex flex-col">';
     echo '          <div class="text-gray-600 w-5 h-5 justify-center items-center hover:text-blue-600 transition duration-300 ease-in-out hidden group-hover:flex absolute top-3 right-3 z-10 cursor-pointer" onclick="handleLikeToggle(' . $index . ')">';
-    echo '            <span class="text-lg">' . ($likedProducts[$index] ? '❤️' : '🤍') . '</span>';
+    // Check if $likedProducts is set before accessing its values
+    $likeIcon = isset($likedProducts[$index]) && $likedProducts[$index] ? '❤️' : '🤍';
+    echo '            <span class="text-lg">' . $likeIcon . '</span>';
     echo '          </div>';
-    echo '          <button class="hidden group-hover:block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">';
+    echo '          <button class="group-hover:block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" onclick="addToCart(' . $product['id'] . ')">';
     echo '            Add to Cart';
     echo '          </button>';
     echo '        </div>';
@@ -35,5 +37,4 @@ foreach ($productsData as $index => $product) {
 echo '  </div>';
 echo '</div>';
 
-// Include your HTML footer, if applicable
 ?>
