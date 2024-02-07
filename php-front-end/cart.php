@@ -61,9 +61,12 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
+        var cartItemsContainer = document.getElementById("cartItemsContainer");
+
+        // Function to display cart items
+        function displayCartItems() {
             var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-            var cartItemsContainer = document.getElementById("cartItemsContainer");
 
             cartItems.forEach(function (item) {
                 getProductDetails(item.productId).then(function(productDetails) {
@@ -151,99 +154,120 @@
                     console.error('Error fetching product details:', error);
                 });
             });
-        });
-
-        // Function to update the cart count in the header
-        function updateCartCount() {
-            // Get cart items from local storage
-            var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
-            // Calculate total quantity
-            var totalQuantity = cartItems.reduce(
-                (total, item) => total + item.quantity,
-                0
-            );
-
-            // Display the total quantity in the header
-            document.getElementById("cartCount").textContent = totalQuantity;
         }
-
-        // Function to remove product from cart
-        function removeProductFromCart(productId) {
-            var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-            var index = cartItems.findIndex(function(item) {
-                return item.productId === productId;
             });
-            if (index !== -1) {
-                cartItems.splice(index, 1);
-                localStorage.setItem("cart", JSON.stringify(cartItems));
-            }
-            // Update the cart count after removing the product
-            updateCartCount();
-        }
-
-        // Call updateCartCount function when the page loads to update the cart count in the header
-        updateCartCount();
-
-        // Rest of your code...
-
-                document.addEventListener("DOMContentLoaded", function () {
-                    var cartItemsContainer = document.getElementById("cartItemsContainer");
-
-                    // Check if the cart container is empty
-                    if (cartItemsContainer.innerHTML.trim() === "") {
-                        // Execute this code only if the cart container is empty
-
-                        var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
-                        cartItems.forEach(function (item) {
-                            getProductDetails(item.productId).then(function(productDetails) {
-                                if (productDetails) {
-                                    var card = document.createElement("div");
-                                    card.className = "cart-item justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start";
-                                    cartItemsContainer.appendChild(card);
-
-                                    // Remaining code to display cart items...
-                                }
-                            }).catch(function(error) {
-                                console.error('Error fetching product details:', error);
-                            });
-                        });
-                    }
-                });
-
-                // Event listener for delete icon
-        // Event listener for delete icon
-        document.addEventListener("click", function(event) {
-            if (event.target.classList.contains("delete-icon")) {
-                // Find the parent cart item element
-                var cartItemElement = event.target.closest(".cart-item");
-                console.log("Cart Item Element:", cartItemElement);
-                // Check if cart item element exists and has children
-                if (cartItemElement && cartItemElement.children.length > 0) {
-                    // Log all children of the cart item element
-                    console.log("Children of Cart Item Element:", cartItemElement.children);
-                    
-                    // Find the img element
-                    var imgElement = cartItemElement.querySelector("img");
-                    // Check if img element exists
-                    if (imgElement) {
-                        // Retrieve the product ID from the alt attribute of the image element
-                        var productId = imgElement.alt;
-                        console.log("Product ID:", productId);
-                        // Remove the product from the cart based on its ID
-                        removeProductFromCart(productId);
-                        // Remove the entire cart item from the UI
-                        cartItemElement.remove();
-                    } else {
-                        console.error("Image element not found inside cart item element.");
-                    }
-                } else {
-                    console.error("Cart item element not found or has no children.");
-                }
-            }
         });
 
+    // Function to update the cart count in the header
+    function updateCartCount() {
+        // Get cart items from local storage
+        var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Calculate total quantity
+        var totalQuantity = cartItems.reduce(
+            (total, item) => total + item.quantity,
+            0
+        );
+
+        // Display the total quantity in the header
+        document.getElementById("cartCount").textContent = totalQuantity;
+    }
+
+    // Function to remove product from cart
+    function removeProductFromCart(productId) {
+        var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        var index = cartItems.findIndex(function(item) {
+            return item.productId === productId;
+        });
+        if (index !== -1) {
+            cartItems.splice(index, 1);
+            localStorage.setItem("cart", JSON.stringify(cartItems));
+        }
+        // Update the cart count after removing the product
+        updateCartCount();
+    }
+
+    // Call updateCartCount function when the page loads to update the cart count in the header
+    updateCartCount();
+
+    // Rest of your code...
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var cartItemsContainer = document.getElementById("cartItemsContainer");
+
+        // Function to remove a cart item from the DOM
+        function removeCartItemFromDOM(cartItemElement) {
+            cartItemElement.remove();
+        }
+
+        // Check if the cart container is empty
+        if (cartItemsContainer.innerHTML.trim() === "") {
+            // Execute this code only if the cart container is empty
+
+            var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+            cartItems.forEach(function (item) {
+                getProductDetails(item.productId).then(function(productDetails) {
+                    if (productDetails) {
+                        var card = document.createElement("div");
+                        card.className = "cart-item justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start";
+                        cartItemsContainer.appendChild(card);
+
+                        // Remaining code to display cart items...
+                    }
+                }).catch(function(error) {
+                    console.error('Error fetching product details:', error);
+                });
+            });
+        } else {
+            // If the cart container is not empty, remove items that are not in the local storage
+            var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+            var cartItemElements = cartItemsContainer.querySelectorAll(".cart-item");
+            cartItemElements.forEach(function(cartItemElement) {
+                var imgElement = cartItemElement.querySelector("img");
+                if (imgElement) {
+                    var productId = imgElement.alt;
+                    // Check if the product ID from the HTML DOM is not found in the local storage
+                    if (!cartItems.find(item => item.productId === productId)) {
+                        // Remove the HTML element
+                        removeCartItemFromDOM(cartItemElement);
+                    }
+                }
+            });
+        }
+    });
+
+
+    // Event listener for delete icon
+    document.addEventListener("click", function(event) {
+        if (event.target.classList.contains("delete-icon")) {
+            // Find the parent cart item element
+            var cartItemElement = event.target.closest(".cart-item");
+            // Check if cart item element exists
+            if (cartItemElement) {
+                // Find the img element
+                var imgElement = cartItemElement.querySelector("img");
+                // Check if img element exists
+                if (imgElement) {
+                    // Retrieve the product ID from the alt attribute of the image element
+                    var productId = imgElement.alt;
+                    // Remove the product from the cart based on its ID
+                    removeProductFromCart(productId);
+                    // Remove the entire cart item from the UI
+                    removeCartItemFromDOM(cartItemElement);
+                } else {
+                    console.error("Image element not found inside cart item element.");
+                }
+            } else {
+                console.error("Cart item element not found.");
+            }
+        }
+    });
+
+    // Function to remove a cart item from the DOM
+    function removeCartItemFromDOM(cartItemElement) {
+        cartItemElement.remove();
+    }
 
     </script>
 </body>
