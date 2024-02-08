@@ -18,10 +18,19 @@
                         <i class="fa-regular fa-heart  text-xl"></i>
                         <span id="wishlist" class="absolute -top-1 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1">0</span>
                     </div>
+                <?php
+
+                // Fetch the total number of items in the cart
+                $totalItemsQuery = $connection->prepare("SELECT COUNT(*) AS totalItems FROM cart_items");
+                $totalItemsQuery->execute();
+                $totalItemsResult = $totalItemsQuery->fetch(PDO::FETCH_ASSOC);
+                $totalItems = $totalItemsResult['totalItems'] ?? 0;
+                ?>
+
                 <a href="cart.php">
                     <div class="w-9 h-9 flex justify-center items-center relative cursor-pointer">
                         <i class="fa-solid fa-cart-shopping text-xl"></i>
-                        <span class="absolute -top-1 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount">0</span>
+                        <span class="absolute -top-1 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount"><?php echo $totalItems; ?></span>
                     </div>
                 </a>
 

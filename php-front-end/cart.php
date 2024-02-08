@@ -13,14 +13,86 @@
     <div class="min-h-screen bg-gray-100 pt-20 pb-14">
         <h1 class="mb-10 text-center text-2xl font-bold">Cart Items</h1>
         <div class="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
+
+
+            <?php
+            // Fetch cart items from the database
+            $stmt = $connection->prepare("SELECT cart_items.*, products.name AS product_name, products.description AS description, products.product_photo FROM cart_items INNER JOIN products ON cart_items.product_id = products.id");
+            $stmt->execute();
+            $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $totalPrice = 0; // Initialize total price
+            ?>
             <div class="rounded-lg md:w-2/3" id="cartItemsContainer">
-                <!-- Cart items will be dynamically inserted here -->
+                <!-- Loop through cart items and display them -->
+                <?php foreach ($cartItems as $item): ?>
+                    <?php 
+                        // Calculate item subtotal
+                        $subtotal = $item['price'] * $item['quantity'];
+                        // Add subtotal to total price
+                        $totalPrice += $subtotal;
+                    ?>
+                    <div class="cart-item justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start" data-item-id="<?php echo $item['item_id']; ?>">
+                        <img src="http://localhost/reactcrud/backend/auth/assets/products/<?php echo $item['product_photo']; ?>" alt="<?php echo $item['product_name']; ?>" class="w-full rounded-lg sm:w-40">
+                        <div class="sm:ml-4 sm:flex sm:w-full sm:justify-between">
+                            <div class="mt-5 sm:mt-0">
+                                <h2 class="text-lg font-bold text-gray-900"><?php echo $item['product_name']; ?></h2>
+                                <p class="mt-1 text-xs text-gray-700"><?php echo $item['description']; ?></p>
+                            </div>
+                            <div class="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
+                                <div class="flex items-center border-gray-100">
+                                    <span class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"> - </span>
+                                    <input class="quantity-input h-8 w-8 border bg-white text-center text-xs outline-none" type="number" value="<?php echo $item['quantity']; ?>" min="1" />
+                                    <span class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"> + </span>
+                                </div>
+
+                                <div class="flex items-center space-x-4">
+                                    <p class="text-sm"><?php echo $item['price']; ?></p>
+                                    <div id="removeCart">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 cursor-pointer duration-150 hover:text-red-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal for cart item removed successfully -->
+                    <div id="cartRemovedModal" class="hidden z-10 inset-0 overflow-y-auto">
+                        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                            </div>
+                            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full pb-8">
+                                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                        <h3 class="text-lg font-medium text-gray-900" id="modal-title">
+                                            Item Removed
+                                        </h3>
+                                        <div class="mt-2">
+                                            <p class="text-sm text-gray-500">
+                                                The item has been successfully removed from your cart.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                    <a href="index.php" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                        Continue Shopping
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
+
             <!-- Sub total -->
             <div class="mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3">
                 <div class="mb-2 flex justify-between">
                     <p class="text-gray-700">Subtotal</p>
-                    <p class="text-gray-700">$129.99</p>
+                    <p id="subtotalPrice" class="text-gray-700">$<?php echo number_format($totalPrice, 2); ?></p>
                 </div>
                 <div class="flex justify-between">
                     <p class="text-gray-700">Shipping</p>
@@ -30,245 +102,147 @@
                 <div class="flex justify-between">
                     <p class="text-lg font-bold">Total</p>
                     <div class="">
-                        <p id="totalPrice" class="mb-1 text-lg font-bold">$134.98 USD</p>
+                        <?php 
+                            // Calculate total price including shipping
+                            $totalPrice += 4.99; // Add shipping cost
+                        ?>
+                        <p id="totalPrice" class="mb-1 text-lg font-bold">$<?php echo number_format($totalPrice, 2); ?> USD</p>
                         <p class="text-sm text-gray-700">including VAT</p>
                     </div>
                 </div>
                 <button class="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">Check out</button>
             </div>
         </div>
+
+        
     </div>
 
     <?php include './components/footer/footer.php'; ?>
 
-    <!-- Include any necessary JavaScript files, especially for fetching and displaying cart data -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        // Function to fetch product details based on product ID
-        function getProductDetails(productId) {
-            return new Promise(function(resolve, reject) {
-                $.ajax({
-                    url: 'files/fetchProductById.php',
-                    method: 'POST',
-                    data: { productId: productId },
-                    success: function(response) {
-                        resolve(JSON.parse(response));
-                    },
-                    error: function(xhr, status, error) {
-                        reject(error);
-                    }
-                });
-            });
-        }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        var cartItemsContainer = document.getElementById("cartItemsContainer");
-
-        // Function to display cart items
-        function displayCartItems() {
-            var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
-            cartItems.forEach(function (item) {
-                getProductDetails(item.productId).then(function(productDetails) {
-                    if (productDetails) {
-                        var card = document.createElement("div");
-                        card.className = "cart-item justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start";
-                        cartItemsContainer.appendChild(card);
-
-                        var img = document.createElement("img");
-                        var productPhotoUrl = "http://localhost/reactcrud/backend/auth/assets/products/" + productDetails.product_photo;
-                        img.src = productPhotoUrl;
-                        img.alt = productDetails.name;
-                        img.className = "w-full rounded-lg sm:w-40";
-                        card.appendChild(img);
-
-                        var detailsDiv = document.createElement("div");
-                        detailsDiv.className = "sm:ml-4 sm:flex sm:w-full sm:justify-between";
-                        card.appendChild(detailsDiv);
-
-                        var infoDiv = document.createElement("div");
-                        infoDiv.className = "mt-5 sm:mt-0";
-                        detailsDiv.appendChild(infoDiv);
-
-                        var productName = document.createElement("h2");
-                        productName.className = "text-lg font-bold text-gray-900";
-                        productName.textContent = productDetails.name;
-                        infoDiv.appendChild(productName);
-
-                        var productSize = document.createElement("p");
-                        productSize.className = "mt-1 text-xs text-gray-700";
-                        productSize.textContent = productDetails.description;
-                        infoDiv.appendChild(productSize);
-
-                        var quantityPriceDiv = document.createElement("div");
-                        quantityPriceDiv.className = "mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6";
-                        detailsDiv.appendChild(quantityPriceDiv);
-
-                        var quantityControlDiv = document.createElement("div");
-                        quantityControlDiv.className = "flex items-center border-gray-100";
-                        quantityPriceDiv.appendChild(quantityControlDiv);
-
-                        var minusBtn = document.createElement("span");
-                        minusBtn.className = "cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50";
-                        minusBtn.textContent = "-";
-                        quantityControlDiv.appendChild(minusBtn);
-
-                        var quantityInput = document.createElement("input");
-                        quantityInput.className = "h-8 w-8 border bg-white text-center text-xs outline-none";
-                        quantityInput.type = "number";
-                        quantityInput.value = item.quantity;
-                        quantityInput.min = "1";
-                        quantityControlDiv.appendChild(quantityInput);
-
-                        var plusBtn = document.createElement("span");
-                        plusBtn.className = "cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50";
-                        plusBtn.textContent = "+";
-                        quantityControlDiv.appendChild(plusBtn);
-
-                        var priceDiv = document.createElement("div");
-                        priceDiv.className = "flex items-center space-x-4";
-                        quantityPriceDiv.appendChild(priceDiv);
-
-                        var priceText = document.createElement("p");
-                        priceText.className = "text-sm";
-                        priceText.textContent = productDetails.price;
-                        priceDiv.appendChild(priceText);
-
-                        var deleteIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                        deleteIcon.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-                        deleteIcon.setAttribute("fill", "none");
-                        deleteIcon.setAttribute("viewBox", "0 0 24 24");
-                        deleteIcon.setAttribute("stroke-width", "1.5");
-                        deleteIcon.setAttribute("stroke", "currentColor");
-                        deleteIcon.setAttribute("class", "h-5 w-5 cursor-pointer duration-150 hover:text-red-500 delete-icon"); // Add the delete-icon class here
-                        quantityPriceDiv.appendChild(deleteIcon);
-
-                        var deletePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        deletePath.setAttribute("stroke-linecap", "round");
-                        deletePath.setAttribute("stroke-linejoin", "round");
-                        deletePath.setAttribute("d", "M6 18L18 6M6 6l12 12");
-                        deleteIcon.appendChild(deletePath);
-
-                    }
-                }).catch(function(error) {
-                    console.error('Error fetching product details:', error);
-                });
-            });
-        }
-            });
-        });
-
-    // Function to update the cart count in the header
-    function updateCartCount() {
-        // Get cart items from local storage
-        var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
-        // Calculate total quantity
-        var totalQuantity = cartItems.reduce(
-            (total, item) => total + item.quantity,
-            0
-        );
-
-        // Display the total quantity in the header
-        document.getElementById("cartCount").textContent = totalQuantity;
-    }
-
-    // Function to remove product from cart
-    function removeProductFromCart(productId) {
-        var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-        var index = cartItems.findIndex(function(item) {
-            return item.productId === productId;
-        });
-        if (index !== -1) {
-            cartItems.splice(index, 1);
-            localStorage.setItem("cart", JSON.stringify(cartItems));
-        }
-        // Update the cart count after removing the product
-        updateCartCount();
-    }
-
-    // Call updateCartCount function when the page loads to update the cart count in the header
-    updateCartCount();
-
-    // Rest of your code...
-
-    document.addEventListener("DOMContentLoaded", function () {
-        var cartItemsContainer = document.getElementById("cartItemsContainer");
-
-        // Function to remove a cart item from the DOM
-        function removeCartItemFromDOM(cartItemElement) {
-            cartItemElement.remove();
-        }
-
-        // Check if the cart container is empty
-        if (cartItemsContainer.innerHTML.trim() === "") {
-            // Execute this code only if the cart container is empty
-
-            var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
-            cartItems.forEach(function (item) {
-                getProductDetails(item.productId).then(function(productDetails) {
-                    if (productDetails) {
-                        var card = document.createElement("div");
-                        card.className = "cart-item justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start";
-                        cartItemsContainer.appendChild(card);
-
-                        // Remaining code to display cart items...
-                    }
-                }).catch(function(error) {
-                    console.error('Error fetching product details:', error);
-                });
-            });
-        } else {
-            // If the cart container is not empty, remove items that are not in the local storage
-            var cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-            var cartItemElements = cartItemsContainer.querySelectorAll(".cart-item");
-            cartItemElements.forEach(function(cartItemElement) {
-                var imgElement = cartItemElement.querySelector("img");
-                if (imgElement) {
-                    var productId = imgElement.alt;
-                    // Check if the product ID from the HTML DOM is not found in the local storage
-                    if (!cartItems.find(item => item.productId === productId)) {
-                        // Remove the HTML element
-                        removeCartItemFromDOM(cartItemElement);
-                    }
-                }
-            });
-        }
-    });
-
-
-    // Event listener for delete icon
-    document.addEventListener("click", function(event) {
-        if (event.target.classList.contains("delete-icon")) {
-            // Find the parent cart item element
-            var cartItemElement = event.target.closest(".cart-item");
-            // Check if cart item element exists
-            if (cartItemElement) {
-                // Find the img element
-                var imgElement = cartItemElement.querySelector("img");
-                // Check if img element exists
-                if (imgElement) {
-                    // Retrieve the product ID from the alt attribute of the image element
-                    var productId = imgElement.alt;
-                    // Remove the product from the cart based on its ID
-                    removeProductFromCart(productId);
-                    // Remove the entire cart item from the UI
-                    removeCartItemFromDOM(cartItemElement);
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    // Function to remove cart item
+    function removeCartItem(itemId) {
+        // Send AJAX request to remove cart item
+        $.ajax({
+            url: 'files/removeCartItem.php',
+            type: 'POST',
+            data: { itemId: itemId },
+            success: function(response) {
+                // Parse the JSON response
+                var data = JSON.parse(response);
+                
+                // If removal is successful, remove the cart item from the UI
+                if (data.success) {
+                    $('.cart-item[data-item-id="' + itemId + '"]').remove();
+                    // Show success modal
+                    showCartRemovedModal();
                 } else {
-                    console.error("Image element not found inside cart item element.");
+                    // Display error message if removal was not successful
+                    alert('Error: ' + data.message);
                 }
-            } else {
-                console.error("Cart item element not found.");
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
             }
+        });
+    }
+
+    // Event listener for clicking the remove button
+    $(document).ready(function() {
+        $(document).on('click', '#removeCart', function() {
+            // Get the item ID of the cart item to remove
+            var itemId = $(this).closest('.cart-item').data('item-id');
+            
+            // Call the removeCartItem function
+            removeCartItem(itemId);
+        });
+    });
+
+    // Function to close the modal
+    function closeCartRemovedModal() {
+        document.getElementById('cartRemovedModal').classList.add('hidden');
+    }
+
+    // Function to show the modal
+    function showCartRemovedModal() {
+        document.getElementById('cartRemovedModal').classList.remove('hidden');
+    }
+    $(document).on('click', '.cursor-pointer.rounded-r', function() {
+    // Increment the quantity
+    var input = $(this).siblings('input.quantity-input');
+    var currentValue = parseInt(input.val());
+    if (!isNaN(currentValue)) {
+        input.val(currentValue + 1);
+        input.trigger('change'); // Trigger change event to update price
+    }
+});
+
+$(document).on('click', '.cursor-pointer.rounded-l', function() {
+    // Decrement the quantity
+    var input = $(this).siblings('input.quantity-input');
+    var currentValue = parseInt(input.val());
+    if (!isNaN(currentValue) && currentValue > 1) {
+        input.val(currentValue - 1);
+        input.trigger('change'); // Trigger change event to update price
+    }
+});
+
+// Function to update subtotal and total price
+function updatePrice(itemId, newQuantity) {
+    // Find the cart item with the given itemId
+    var cartItem = $('.cart-item[data-item-id="' + itemId + '"]');
+    
+    // Get the price and calculate the new subtotal
+    var price = parseFloat(cartItem.find('.text-sm').text().replace('$', '')); // Adjust this selector as per your HTML structure
+    var subtotal = price * newQuantity;
+    
+    // Update the subtotal in the UI
+    cartItem.find('.text-sm').text('$' + subtotal.toFixed(2)); // Adjust this selector as per your HTML structure
+    
+    // Recalculate the subtotal of all items
+    var newSubtotal = 0;
+    $('.text-sm').each(function() { // Adjust this selector as per your HTML structure
+        var subtotalValue = parseFloat($(this).text().replace('$', ''));
+        if (!isNaN(subtotalValue)) {
+            newSubtotal += subtotalValue;
         }
     });
 
-    // Function to remove a cart item from the DOM
-    function removeCartItemFromDOM(cartItemElement) {
-        cartItemElement.remove();
-    }
+    // Update the subtotal price in the UI
+    $('#subtotalPrice').text('$' + newSubtotal.toFixed(2));
+    
+    // Calculate the total price including shipping
+    var shippingCost = 4.99;
+    var total = newSubtotal + shippingCost;
+    
+    // Update the total price in the UI
+    $('#totalPrice').text('$' + total.toFixed(2) + ' USD');
+}
 
-    </script>
+
+
+// Event listener for changing quantity
+$(document).ready(function() {
+    $(document).on('change', '.quantity-input', function() {
+        // Get the new quantity
+        var newQuantity = parseInt($(this).val());
+        if (isNaN(newQuantity) || newQuantity < 1) {
+            newQuantity = 1;
+            $(this).val(1);
+        }
+        
+        // Get the item ID
+        var itemId = $(this).closest('.cart-item').data('item-id');
+        
+        // Update the price
+        updatePrice(itemId, newQuantity);
+    });
+});
+
+
+</script>
+
+
 </body>
 </html>
