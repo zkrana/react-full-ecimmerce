@@ -5,6 +5,18 @@ session_start();
 // Connection to the database
 require_once '../auth/connection/config.php';
 
+// Function to get user's IP address
+function getIpAddress() {
+    // Check for shared internet/ISP IP
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
 // Define the addtocart page URL
 $addToCartPage = "addtocart.php";
 
@@ -13,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["productId"])) {
     try {
         // Retrieve product ID from the POST request
         $productId = $_POST["productId"];
-        
+
         // Initialize customerId
         $customerId = null;
 
@@ -22,6 +34,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["productId"])) {
             // Use the existing customer ID
             $customerId = $_SESSION['userId'];
         }
+
+        // Get user's IP address
+        $userIpAddress = getIpAddress();
 
         // Fetch the price of the product from the database
         $stmtPrice = $connection->prepare("SELECT price FROM products WHERE id = ?");
@@ -32,8 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["productId"])) {
         $quantity = 1;
 
         // Insert data into the cart table
-        $stmtCart = $connection->prepare("INSERT INTO cart (customer_id) VALUES (?)");
-        $stmtCart->execute([$customerId]);
+        $stmtCart = $connection->prepare("INSERT INTO cart (customer_id, ip_address) VALUES (?, ?)");
+        $stmtCart->execute([$customerId, $userIpAddress]);
         $cartId = $connection->lastInsertId();
 
         // Insert data into the cart_items table
@@ -47,12 +62,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["productId"])) {
             exit();
         } else {
             // If no rows were affected, there might be an issue with the insertion
-            header("Location: ./cart.php??error=Error%20adding%20product%20to%20cart:%20No%20rows%20affected");
+            header("Location: ./cart.php?error=Error%20adding%20product%20to%20cart:%20No%20rows%20affected");
             exit();
         }
     } catch (PDOException $e) {
         // Send error response
-        header("Location: ./cart.php??error=Error%20adding%20product%20to%20cart:%20" . urlencode($e->getMessage()));
+        header("Location: ./cart.php?error=Error%20adding%20product%20to%20cart:%20" . urlencode($e->getMessage()));
         exit();
     }
 } else {
@@ -61,3 +76,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["productId"])) {
     exit();
 }
 ?>
+

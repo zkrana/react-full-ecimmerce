@@ -64,16 +64,20 @@ $categories = fetchCategories();
 
 ?>
 
-<?php if (isset($categories) && is_array($categories)): ?>
-  <ul class="main-menu flex items-center space-x-6 h-full">
-    <?php foreach ($categories as $category): ?>
-      <li class="relative group">
-        <a href="categories/<?php echo $category['id']; ?>" class="flex items-center text-gray-800 hover:text-gray-600 transition duration-300 cursor-pointer h-11">
-          <?php echo $category['name']; ?>
-        </a>
-        <?php renderSubMenu($category); ?>
-      </li>
-    <?php endforeach; ?>
-  </ul>
-<?php endif; ?>
+<!-- ... Your existing PHP code ... -->
 
+<?php if (isset($categories) && is_array($categories)): ?>
+  <nav class="main-menu-container">
+    <!-- Main Menu -->
+    <ul id="mainMenu" class="main-menu lg:static fixed bottom-0 left-0 p-5 lg:p-0 h-[calc(100vh-90px)] lg:h-auto bg-white lg:bg-transparent w-full lg:flex flex-col items-center lg:flex-row lg:space-x-6 hidden">
+      <?php foreach ($categories as $category): ?>
+        <li class="relative group">
+          <a href="categories/<?php echo $category['id']; ?>" class="flex items-center text-gray-800 hover:text-gray-600 transition duration-300 cursor-pointer">
+            <?php echo $category['name']; ?>
+          </a>
+          <?php renderSubMenu($category); ?>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </nav>
+<?php endif; ?>

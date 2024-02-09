@@ -6,29 +6,46 @@ function handleSearch(event) {
     alert("Search term: " + searchTerm);
   }
 }
+// Mobile Menu
+document.addEventListener("DOMContentLoaded", function () {
+  function mobileMenuButton() {
+    const mainMenu = document.getElementById("mainMenu");
+    mainMenu.classList.toggle("hidden");
+  }
 
-function toggleUserDropdown() {
+  // Attach the event listener to the button
+  const button = document.getElementById("mobileMenuButton");
+  button.addEventListener("click", mobileMenuButton);
+});
+
+// Function to toggle user dropdown// Hide the dropdown initially
+document.addEventListener("DOMContentLoaded", function () {
   const userDropdown = document.querySelector(".main-u");
 
-  // Toggle the 'hidden' class to show/hide the user dropdown
-  userDropdown.classList.toggle("showDrop");
-}
-
-// Add a click event listener to the document to close the dropdown when clicking outside of it
-document.addEventListener("click", function (event) {
-  const userDropdown = document.querySelector(".main-u");
-
-  // Check if the clicked element is outside the user dropdown
-  if (!userDropdown.contains(event.target)) {
-    // Close the dropdown by adding the 'hidden' class
+  // Check if the userDropdown element exists
+  if (userDropdown) {
     userDropdown.classList.add("hidden");
   }
 });
 
-// Hide the dropdown initially
-document.addEventListener("DOMContentLoaded", function () {
+// Rest of your code
+function toggleUserDropdown() {
   const userDropdown = document.querySelector(".main-u");
-  userDropdown.classList.add("hidden");
+
+  // Check if the userDropdown element exists
+  if (userDropdown) {
+    userDropdown.classList.toggle("showDrop");
+  }
+}
+
+document.addEventListener("click", function (event) {
+  const userDropdown = document.querySelector(".main-u");
+
+  if (userDropdown) {
+    if (!userDropdown.contains(event.target)) {
+      userDropdown.classList.add("hidden");
+    }
+  }
 });
 
 console.log("Script is running!"); // Check if this line is logged in the console

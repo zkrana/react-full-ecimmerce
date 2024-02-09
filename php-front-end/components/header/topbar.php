@@ -14,7 +14,7 @@
             </a>
         </div>
 
-        <div class="text-lg font-semibold">
+        <div class=" lg:text-lg txet-base font-semibold sm:block hidden">
             Welcome to our website! Feel free to message us.
         </div>
 

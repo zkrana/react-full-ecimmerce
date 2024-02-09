@@ -34,6 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         session_start();
         $_SESSION['userId'] = $row['id'];
         $_SESSION['username'] = $row['username'];
+         $_SESSION['loggedIn'] = true;
+
+        // Regenerate the session ID to prevent session fixation attacks
+        session_regenerate_id(true);
 
         // Redirect to the dashboard after successful login
         header("Location: ../index.php");
