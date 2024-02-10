@@ -21,7 +21,7 @@ foreach ($categoriesData as $category) {
         echo '          <span class="block w-1/2 text-base font-medium">' . $category['name'] . '</span>';
         echo '          <span class="block w-1/2 text-gray-400 text-sm text-right">(' . calculateTotalProductCount($category) . ($category['product_count'] !== 1 ? '' : '') . ')</span>';
         echo '        </div>';
-        echo '        <a href="/categories/' . $category['id'] . '" class="inline-block text-red-300">Show All</a>';
+        echo '    <a href="/reactcrud/php-front-end/categories/singleCategory.php?category_id=' . $category['id'] . '" class="inline-block text-red-300">Show All</a>';
         echo '      </div>';
         echo '    </div>';
     }

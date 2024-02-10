@@ -5,7 +5,7 @@
     <div class="w-[90%] mx-auto sm:pb-3 pb-4 border-b border-gray-200 sm:pt-2 py-7 pt-4">
         <div class="flex justify-between items-center">
             <div class="logo w-[20%] text-2xl font-bold text-gray-800">
-                <a href="./index.php">Logo</a>
+                <a href="/reactcrud/php-front-end/index.php">Logo</a>
             </div>
 
             <div class="nav w-[60%] px-20 lg:block hidden">
@@ -58,7 +58,7 @@
                             }
 
                             // Display the cart icon with the total number of items
-                            echo '<a href="cart.php">';
+                            echo '<a href="/reactcrud/php-front-end/cart.php">';
                             echo '    <div class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">';
                             echo '        <i class="fa-solid fa-cart-shopping text-xl"></i>';
                             echo '        <span class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount">' . $totalItems . '</span>';
@@ -66,7 +66,7 @@
                             echo '</a>';
                         } else {
                             // No cart found for the user's IP address
-                            echo '<a href="cart.php">';
+                            echo '<a href="/reactcrud/php-front-end/cart.php">';
                             echo '    <div class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">';
                             echo '        <i class="fa-solid fa-cart-shopping text-xl"></i>';
                             echo '        <span class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount">0</span>';
@@ -79,10 +79,9 @@
                     }
                     ?>
 
-
                     <div>
                         <?php if (!$userId) { ?>
-                        <a href="./files/userlogin.php" class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">
+                        <a href="/reactcrud/php-front-end/files/userlogin.php" class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">
                             <i class="fa-solid fa-user text-xl"></i>
                         </a>
                         <?php } ?>
@@ -168,7 +167,7 @@
             </div>
         </div>
     </div>
-    <div class="mainNav flex justify-center items-center pt-2">
+    <div class="mainNav flex justify-center items-center py-5">
         <?php include 'nav.php'; ?>
     </div>
 </div>

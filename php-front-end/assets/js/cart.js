@@ -117,6 +117,22 @@ function updatePrice(itemId, newQuantity) {
   $("#totalPrice").text("$" + total.toFixed(2) + " USD");
 }
 
+function handleUpdateCart(itemId, cartId) {
+  var newQuantity = parseInt($(".quantity-input").val());
+
+  $.ajax({
+    type: "POST",
+    url: "./files/update_cart.php",
+    data: { itemId: itemId, newQuantity: newQuantity, cartId: cartId }, // Include cartId in the data
+    success: function (response) {
+      console.log(response);
+    },
+    error: function (xhr, status, error) {
+      console.error(xhr.responseText);
+    },
+  });
+}
+
 // Event listener for changing quantity
 $(document).ready(function () {
   $(document).on("change", ".quantity-input", function () {

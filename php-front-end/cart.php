@@ -31,7 +31,6 @@
             $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $totalPrice = 0; // Initialize total price
             ?>
-
                 <div class="rounded-lg md:w-2/3" id="cartItemsContainer">
                     <!-- Loop through cart items and display them -->
                     <?php foreach ($cartItems as $item): ?>
@@ -50,9 +49,10 @@
                                 </div>
                                 <div class="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
                                     <div class="flex items-center justify-end border-gray-100">
-                                        <span class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"> - </span>
+                                        <span onclick="handleMinusCart()" class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"> - </span>
                                         <input class="quantity-input h-8 w-8 border bg-white text-center text-xs outline-none" type="number" value="<?php echo $item['quantity']; ?>" min="1" />
-                                        <span class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"> + </span>
+                                        <span onclick="handleUpdateCart(<?php echo $item['item_id']; ?>, <?php echo $cartId; ?>)" class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"> + </span>
+
                                     </div>
 
                                     <div class="flex items-center space-x-4">
@@ -68,23 +68,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Modal for cart item removed successfully -->
-                        <!-- <div id="cartRemovedModal" class="hidden z-10 inset-0 overflow-y-auto">
-                            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full pb-8">
-                                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                        <h3 class="text-lg font-medium text-gray-900" id="modal-title">
-                                            Item Removed
-                                        </h3>
-                                        <div class="mt-2">
-                                            <p class="text-sm text-gray-500">
-                                                The item has been successfully removed from your cart.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
                     <?php endforeach; ?>
                 </div>
 
@@ -129,5 +112,6 @@
     <?php include './components/footer/footer.php'; ?>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="./assets/js/cart.js"></script>
+    
 </body>
 </html>

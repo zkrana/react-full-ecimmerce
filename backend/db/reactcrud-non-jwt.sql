@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 02, 2024 at 11:22 AM
+-- Generation Time: Feb 10, 2024 at 12:09 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -40,7 +40,12 @@ CREATE TABLE `access_logs` (
 
 INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`, `blocked`) VALUES
 (52, '127.0.0.1', '2024-02-02 06:38:11', 0),
-(53, '127.0.0.1', '2024-02-02 07:59:07', 0);
+(53, '127.0.0.1', '2024-02-02 07:59:07', 0),
+(54, '127.0.0.1', '2024-02-03 03:46:02', 0),
+(55, '127.0.0.1', '2024-02-05 02:06:48', 0),
+(56, '127.0.0.1', '2024-02-05 02:39:10', 0),
+(57, '127.0.0.1', '2024-02-08 04:45:17', 0),
+(58, '127.0.0.1', '2024-02-10 07:44:45', 0);
 
 -- --------------------------------------------------------
 
@@ -82,7 +87,9 @@ CREATE TABLE `banner_photos` (
 --
 
 INSERT INTO `banner_photos` (`id`, `photo_name`, `created_at`) VALUES
-(4, '65b8cd010d0cd_photocomposition-horizontal-shopping-banner-with-woman-big-smartphone.jpg', '2024-01-30 10:18:41');
+(4, '65b8cd010d0cd_photocomposition-horizontal-shopping-banner-with-woman-big-smartphone.jpg', '2024-01-30 10:18:41'),
+(5, '65c097f8973e7_vecteezy_shopping-online-on-smartphone-and-new-buy-sale-promotion_7153463.jpg', '2024-02-05 08:10:32'),
+(6, '65c098624b28b_sponline_phone114_generated.jpg', '2024-02-05 08:12:18');
 
 -- --------------------------------------------------------
 
@@ -102,6 +109,49 @@ CREATE TABLE `blocked_ips` (
 
 INSERT INTO `blocked_ips` (`id`, `ip_address`, `blocked_until`) VALUES
 (21, '127.0.0.1', '2024-02-02 12:27:09');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart`
+--
+
+CREATE TABLE `cart` (
+  `cart_id` int(11) NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `ip_address` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`cart_id`, `customer_id`, `ip_address`, `created_at`) VALUES
+(78, 4, '127.0.0.1', '2024-02-10 10:27:09');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart_items`
+--
+
+CREATE TABLE `cart_items` (
+  `item_id` int(11) NOT NULL,
+  `cart_id` int(11) DEFAULT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `quantity` int(11) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `subtotal` int(255) NOT NULL,
+  `total` int(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart_items`
+--
+
+INSERT INTO `cart_items` (`item_id`, `cart_id`, `product_id`, `quantity`, `price`, `subtotal`, `total`) VALUES
+(78, 78, 6, 1, 125.00, 125, 0);
 
 -- --------------------------------------------------------
 
@@ -160,7 +210,8 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`id`, `ip_address`, `username`, `password`, `email`, `photo`, `request_time`) VALUES
 (1, '::1', 'zkrana', '$argon2id$v=19$m=2048,t=4,p=2$dmIvdzUyRks1ZWE2NnlSSQ$X2rHdqP70DKClYidAr4nsArZ7bJsojpQ77b/ZolZl3c', 'emtyYW5hb0BnbWFpbC5jb20=', '../assets/user-profile/zkrana/management.png', '2024-01-24 03:37:50'),
-(2, '127.0.0.1', 'test', '$argon2id$v=19$m=2048,t=4,p=2$RUdCbUphYnN4MVc1WkV1RA$nNcizjgY0o5TN9UZ4nEyvZzEslEfOL2DO3bV+S77XIs', 'dGVzdEBnbWFpbC5jb20=', '../assets/user-profile/test/hs3.jpg', '2024-01-24 09:43:41');
+(2, '127.0.0.1', 'test', '$argon2id$v=19$m=2048,t=4,p=2$RUdCbUphYnN4MVc1WkV1RA$nNcizjgY0o5TN9UZ4nEyvZzEslEfOL2DO3bV+S77XIs', 'dGVzdEBnbWFpbC5jb20=', '../assets/user-profile/test/hs3.jpg', '2024-01-24 09:43:41'),
+(4, '127.0.0.1', 'rana', '$argon2id$v=19$m=2048,t=4,p=2$ZHZYWlRleVQyTkdTVDBvQQ$DCHsClzgmvP6K3sIJg7dkNJAxuoLmQFdhN/Z7c7NLXw', 'AQk6OBQ0QQ4aRARJXxk=', '', '2024-02-06 04:51:08');
 
 -- --------------------------------------------------------
 
@@ -306,6 +357,21 @@ ALTER TABLE `blocked_ips`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`cart_id`),
+  ADD KEY `customer_id` (`customer_id`);
+
+--
+-- Indexes for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD PRIMARY KEY (`item_id`),
+  ADD KEY `cart_id` (`cart_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
 -- Indexes for table `categories`
 --
 ALTER TABLE `categories`
@@ -370,7 +436,7 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `access_logs`
 --
 ALTER TABLE `access_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `admin_users`
@@ -382,13 +448,25 @@ ALTER TABLE `admin_users`
 -- AUTO_INCREMENT for table `banner_photos`
 --
 ALTER TABLE `banner_photos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `blocked_ips`
 --
 ALTER TABLE `blocked_ips`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+
+--
+-- AUTO_INCREMENT for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -400,7 +478,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -441,6 +519,19 @@ ALTER TABLE `variations`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `cart`
+--
+ALTER TABLE `cart`
+  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`);
+
+--
+-- Constraints for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`cart_id`),
+  ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 
 --
 -- Constraints for table `categories`
