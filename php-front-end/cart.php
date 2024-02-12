@@ -49,7 +49,7 @@
                                 </div>
                                 <div class="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
                                     <div class="flex items-center justify-end border-gray-100">
-                                        <span onclick="handleMinusCart()" class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"> - </span>
+                                       <span onclick="handleMinusCart(<?php echo $item['item_id']; ?>, <?php echo $cartId; ?>)" class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"> - </span>
                                         <input class="quantity-input h-8 w-8 border bg-white text-center text-xs outline-none" type="number" value="<?php echo $item['quantity']; ?>" min="1" />
                                         <span onclick="handleUpdateCart(<?php echo $item['item_id']; ?>, <?php echo $cartId; ?>)" class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"> + </span>
 

@@ -8,10 +8,7 @@
     echo '    <h2 class="text-lg font-semibold">New Collections</h2>';
     echo '  </div>';
     echo '  <div class="product-wrapper flex justify-between gap-6">';
-    echo '  <div class="product-sidebar w-[calc(20%-16px)] mt-10">';
-        include 'catSidebar.php';
-    echo '  </div>';
-    echo '    <div class="w-[calc(80%-16px)] mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">';
+    echo '    <div class="w-full mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">';
     
     foreach ($productsData as $product) {
         echo '    <div class="bg-white p-4 rounded-md shadow hover:shadow-lg transition duration-300 ease-in-out relative group">';

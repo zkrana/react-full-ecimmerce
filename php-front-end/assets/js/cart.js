@@ -80,13 +80,13 @@ $(document).on("click", ".cursor-pointer.rounded-l", function () {
 });
 
 // Function to update subtotal and total price
-function updatePrice(itemId, newQuantity) {
+function updatePrice(itemId, newQuantity, currencyCode) {
   // Find the cart item with the given itemId
   var cartItem = $('.cart-item[data-item-id="' + itemId + '"]');
 
   // Get the original price from the hidden element in the cart item
   var originalPriceString = cartItem.find(".original-price").text();
-  var originalPrice = parseFloat(originalPriceString.replace("$", ""));
+  var originalPrice = parseFloat(originalPriceString.replace(/[^\d.-]/g, ""));
 
   // Update the quantity in the UI
   cartItem.find(".quantity-input").val(newQuantity);
@@ -95,37 +95,81 @@ function updatePrice(itemId, newQuantity) {
   var subtotal = originalPrice * newQuantity;
 
   // Update the subtotal in the UI
-  cartItem.find(".text-sm").text("$" + subtotal.toFixed(2));
+  cartItem.find(".text-sm").text(currencyCode + " " + subtotal.toFixed(2));
 
   // Recalculate the subtotal of all items
   var newSubtotal = 0;
   $(".text-sm").each(function () {
-    var subtotalValue = parseFloat($(this).text().replace("$", ""));
+    var subtotalValue = parseFloat(
+      $(this)
+        .text()
+        .replace(/[^\d.-]/g, "")
+    );
     if (!isNaN(subtotalValue)) {
       newSubtotal += subtotalValue;
     }
   });
 
-  // Update the subtotal price in the UI
-  $("#subtotalPrice").text("$" + newSubtotal.toFixed(2));
+  // Update the subtotal price in the UI with the currency symbol
+  $("#subtotalPrice").html(currencyCode + " " + newSubtotal.toFixed(2));
 
   // Calculate the total price including shipping
   var shippingCost = 4.0; // Assuming the shipping cost is $4.00
   var total = newSubtotal + shippingCost;
 
-  // Update the total price in the UI
-  $("#totalPrice").text("$" + total.toFixed(2) + " USD");
+  // Update the total price in the UI with the currency symbol
+  $("#totalPrice").html(
+    '<span class="bold font-semibold text-lg -mt-4">' +
+      currencyCode +
+      "</span>" +
+      total.toFixed(2)
+  );
 }
 
 function handleUpdateCart(itemId, cartId) {
   var newQuantity = parseInt($(".quantity-input").val());
+  console.log(
+    "Updating quantity for itemId: " +
+      itemId +
+      ", newQuantity: " +
+      newQuantity +
+      ", cartId: " +
+      cartId
+  );
 
   $.ajax({
     type: "POST",
     url: "./files/update_cart.php",
-    data: { itemId: itemId, newQuantity: newQuantity, cartId: cartId }, // Include cartId in the data
+    data: { itemId: itemId, newQuantity: newQuantity, cartId: cartId },
     success: function (response) {
       console.log(response);
+    },
+    error: function (xhr, status, error) {
+      console.error(xhr.responseText);
+    },
+  });
+}
+
+function handleMinusCart(itemId, cartId) {
+  var newQuantity = parseInt($(".quantity-input").val());
+
+  $.ajax({
+    type: "POST",
+    url: "./files/decrease_cart.php",
+    data: { itemId: itemId, newQuantity: newQuantity, cartId: cartId },
+    success: function (response) {
+      // Parse the JSON response
+      var jsonResponse = JSON.parse(response);
+
+      console.log(jsonResponse);
+
+      // Optionally, update the UI based on the response
+      if (jsonResponse.success) {
+        $(".quantity-input").val(newQuantity);
+        // Update other UI elements as needed
+      } else {
+        alert(jsonResponse.message); // Show an error message
+      }
     },
     error: function (xhr, status, error) {
       console.error(xhr.responseText);
@@ -147,7 +191,7 @@ $(document).ready(function () {
     var itemId = $(this).closest(".cart-item").data("item-id");
 
     // Update the price
-    updatePrice(itemId, newQuantity);
+    updatePrice(itemId, newQuantity, "৳");
   });
 });
 

@@ -19,8 +19,10 @@
                 <?php include './components/banner-slider.php' ?>
             </div>
         </div>
-        <div class="w-[90%] mx-auto min-h-screen block relative mt-12">
-            <?php include './components/ecommerce/ecomAll.php' ?>
+        <div class="container">
+            <div class="w-full min-h-screen block relative mt-12">
+                <?php include './components/ecommerce/ecomAll.php' ?>
+            </div>
         </div>
         <?php include './components/footer/footer.php'; ?>
 

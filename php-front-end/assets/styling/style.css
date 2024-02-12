@@ -833,6 +833,10 @@ video {
   margin-bottom: -0.5rem;
 }
 
+.-mt-4 {
+  margin-top: -1rem;
+}
+
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -1093,16 +1097,8 @@ video {
   width: calc(100% - 128px);
 }
 
-.w-\[calc\(20\%-16px\)\] {
-  width: calc(20% - 16px);
-}
-
 .w-\[calc\(25\%-24px\)\] {
   width: calc(25% - 24px);
-}
-
-.w-\[calc\(80\%-16px\)\] {
-  width: calc(80% - 16px);
 }
 
 .w-full {
