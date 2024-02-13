@@ -22,15 +22,25 @@
         <div class="bg-gray-100 pt-20 pb-14 mt-7">
             <h1 class="mb-10 text-center text-2xl font-bold">Cart Items</h1>
             <div class="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
-            <?php
-            // Fetch cart items from the database
-            $stmt = $connection->prepare("SELECT cart_items.*, products.name AS product_name, products.description AS description, products.currency_code AS currency_code, products.product_photo FROM cart_items INNER JOIN products ON cart_items.product_id = products.id WHERE cart_items.cart_id IN (SELECT cart_id FROM cart WHERE ip_address = :ip_address)");
+    <?php
+    $stmt = $connection->prepare("SELECT cart_items.*, 
+            products.name AS product_name, 
+            products.description AS description, 
+            products.currency_code AS currency_code, 
+            products.product_photo 
+    FROM cart_items 
+    INNER JOIN products 
+    ON cart_items.product_id = products.id 
+    WHERE cart_items.cart_id IN 
+            (SELECT cart_id FROM cart WHERE ip_address = :ip_address)");
 
-            $stmt->bindParam(':ip_address', $userIP); // Assuming you have $userIP defined somewhere
-            $stmt->execute();
-            $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $totalPrice = 0; // Initialize total price
-            ?>
+    $stmt->bindParam(':ip_address', $userIP); // Assuming you have $userIP defined somewhere
+    $stmt->execute();
+    $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $totalPrice = 0; // Initialize total price
+    $totalQuantity = 0; // Initialize total quantity
+    ?>
                 <div class="rounded-lg md:w-2/3" id="cartItemsContainer">
                     <!-- Loop through cart items and display them -->
                     <?php foreach ($cartItems as $item): ?>
@@ -39,6 +49,9 @@
                             $subtotal = $item['price'] * $item['quantity'];
                             // Add subtotal to total price
                             $totalPrice += $subtotal;
+
+                            // Add quantity to total quantity
+    $totalQuantity += $item['quantity'];
                         ?>
                         <div class="cart-item justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start" data-item-id="<?php echo $item['item_id']; ?>">
                             <img src="http://localhost/reactcrud/backend/auth/assets/products/<?php echo $item['product_photo']; ?>" alt="<?php echo $item['product_name']; ?>" class="w-full rounded-lg sm:w-40">
@@ -48,13 +61,6 @@
                                     <p class="mt-1 text-xs text-gray-700"><?php echo $item['description']; ?></p>
                                 </div>
                                 <div class="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
-                                    <div class="flex items-center justify-end border-gray-100">
-                                       <span onclick="handleMinusCart(<?php echo $item['item_id']; ?>, <?php echo $cartId; ?>)" class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"> - </span>
-                                        <input class="quantity-input h-8 w-8 border bg-white text-center text-xs outline-none" type="number" value="<?php echo $item['quantity']; ?>" min="1" />
-                                        <span onclick="handleUpdateCart(<?php echo $item['item_id']; ?>, <?php echo $cartId; ?>)" class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"> + </span>
-
-                                    </div>
-
                                     <div class="flex items-center space-x-4">
                                         <p><?php echo $item['currency_code'] ?></p>
                                         <p class="hidden original-price"><?php echo $item['price']; ?></p>
@@ -71,39 +77,34 @@
                     <?php endforeach; ?>
                 </div>
 
-                <!-- Sub total -->
-                <div class="mt-6 h-full md:mt-0 md:w-1/3">
-                    <div class="rounded-lg border bg-white p-6 shadow-md ">
-                        <div class="mb-2 flex justify-between">
-                            <p class="text-gray-700">Subtotal</p>
-                            <p id="subtotalPrice" class="text-gray-700">$<?php echo number_format($totalPrice, 2); ?></p>
-                        </div>
-                        <div class="flex justify-between">
-                            <p class="text-gray-700">Shipping</p>
-                            <p class="text-gray-700">$4.99</p>
-                        </div>
-                        <hr class="my-4" />
-                        <div class="flex justify-between">
-                            <p class="text-lg font-bold">Total</p>
-                            <div class="">
-                                <?php 
-                                    // Calculate total price including shipping
-                                    $totalPrice += 4.99; // Add shipping cost
-                                ?>
-                                <p id="totalPrice" class="mb-1 text-lg font-bold">$<?php echo number_format($totalPrice, 2); ?> USD</p>
-                                <p class="text-sm text-gray-700">including VAT</p>
-                            </div>
-                        </div>
-                        <button class="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600" onclick="checkout()" <?php echo empty($cartItems) ? 'disabled' : ''; ?>>Check out</button>
 
-                    </div>
-                    
-                    <div class="py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-center w-full mt-5">
-                        <a href="index.php" type="button" class="w-full text-center block rounded-md  px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:text-sm">
-                            Continue Shopping
-                        </a>
-                    </div>
+                <!-- Subtotal and Total -->
+    <!-- Subtotal and Total -->
+    <div class="mt-6 h-full md:mt-0 md:w-1/3">
+        <div class="rounded-lg border bg-white p-6 shadow-md ">
+            <div class="mb-2 flex justify-between">
+                <p class="text-gray-700">Subtotal</p>
+                <p id="subtotalPrice" class="text-gray-700">$<?php echo number_format($totalPrice, 2); ?></p>
+            </div>
+            <div class="flex justify-between">
+                <p class="text-gray-700">Total Quantity:</p>
+                <p class="text-gray-700"><?php echo $totalQuantity; ?></p>
+            </div>
+            <hr class="my-4" />
+            <div class="flex justify-between">
+                <p class="text-lg font-bold">Total</p>
+                <div class="">
+                    <p id="totalPrice" class="mb-1 text-lg font-bold">$<?php echo number_format($totalPrice, 2); ?> USD</p>
                 </div>
+            </div>
+            <button class="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600" onclick="checkout()" <?php echo empty($cartItems) ? 'disabled' : ''; ?>>Check out</button>
+        </div>
+        <div class="py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-center w-full mt-5">
+            <a href="index.php" type="button" class="w-full text-center block rounded-md  px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:text-sm">
+                Continue Shopping
+            </a>
+        </div>
+    </div>
             </div>
         </div>
     </div>

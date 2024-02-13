@@ -82,22 +82,81 @@
                     </div>
                     <div class="px-3 md:w-5/12">
                         <div class="w-full mx-auto rounded-lg bg-white border border-gray-200 p-3 text-gray-800 font-light mb-6">
-                            <div class="w-full flex mb-3 items-center">
-                                <div class="w-32">
-                                    <span class="text-gray-600 font-semibold">Contact</span>
-                                </div>
-                                <div class="flex-grow pl-3">
-                                    <span>Scott Windon</span>
-                                </div>
-                            </div>
-                            <div class="w-full flex items-center">
-                                <div class="w-32">
-                                    <span class="text-gray-600 font-semibold">Billing Address</span>
-                                </div>
-                                <div class="flex-grow pl-3">
-                                    <span>123 George Street, Sydney, NSW 2000 Australia</span>
-                                </div>
-                            </div>
+                            <h2 class="text-2xl font-semibold mb-6">Shipping Details</h2>
+
+                                <form action="process_form.php" method="post">
+
+                                    <!-- First Name -->
+                                    <div class="mb-4">
+                                        <label for="first_name" class="block text-sm font-medium text-gray-600">First Name</label>
+                                        <input type="text" id="first_name" name="first_name" class="mt-1 p-2 w-full border rounded-md">
+                                    </div>
+
+                                    <!-- Last Name -->
+                                    <div class="mb-4">
+                                        <label for="last_name" class="block text-sm font-medium text-gray-600">Last Name</label>
+                                        <input type="text" id="last_name" name="last_name" class="mt-1 p-2 w-full border rounded-md">
+                                    </div>
+
+                                    <!-- Billing Address -->
+                                    <div class="mb-4">
+                                        <label for="billing_address" class="block text-sm font-medium text-gray-600">Billing Address</label>
+                                        <textarea id="billing_address" name="billing_address" class="mt-1 p-2 w-full border rounded-md"></textarea>
+                                    </div>
+
+                                    <!-- City -->
+                                    <div class="mb-4">
+                                        <label for="city" class="block text-sm font-medium text-gray-600">City</label>
+                                        <input type="text" id="city" name="city" class="mt-1 p-2 w-full border rounded-md">
+                                    </div>
+
+                                    <!-- State -->
+                                    <div class="mb-4">
+                                        <label for="state" class="block text-sm font-medium text-gray-600">State</label>
+                                        <input type="text" id="state" name="state" class="mt-1 p-2 w-full border rounded-md">
+                                    </div>
+
+                                    <!-- Postal Code -->
+                                    <div class="mb-4">
+                                        <label for="postal_code" class="block text-sm font-medium text-gray-600">Postal Code</label>
+                                        <input type="text" id="postal_code" name="postal_code" class="mt-1 p-2 w-full border rounded-md">
+                                    </div>
+
+                                    <!-- Country -->
+                                    <div class="mb-4">
+                                        <label for="country" class="block text-sm font-medium text-gray-600">Country</label>
+                                        <select id="country" name="country" class="mt-1 p-2 w-full border rounded-md">
+                                            <option value="Bangladesh" selected>Bangladesh</option>
+                                            <option value="India">India</option>
+                                            <option value="United States">United States</option>
+                                            <option value="Canada">Canada</option>
+                                            <option value="Australia">Australia</option>
+                                            <option value="United Kingdom">United Kingdom</option>
+                                            <option value="Germany">Germany</option>
+                                            <option value="France">France</option>
+                                            <option value="Brazil">Brazil</option>
+                                            <option value="China">China</option>
+                                            <option value="Japan">Japan</option>
+                                            <option value="South Korea">South Korea</option>
+                                            <option value="Russia">Russia</option>
+                                            <option value="Mexico">Mexico</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Nigeria">Nigeria</option>
+                                            <option value="Argentina">Argentina</option>
+                                            <option value="Italy">Italy</option>
+                                            <option value="Spain">Spain</option>
+                                            <option value="Netherlands">Netherlands</option>
+                                        </select>
+                                    </div>
+
+
+                                    <!-- Phone Number -->
+                                    <div class="mb-4">
+                                        <label for="phone_number" class="block text-sm font-medium text-gray-600">Phone Number</label>
+                                        <input type="tel" id="phone_number" name="phone_number" class="mt-1 p-2 w-full border rounded-md">
+                                    </div>
+                                </form>
+
                         </div>
                         <div class="w-full mx-auto rounded-lg bg-white border border-gray-200 text-gray-800 font-light mb-6">
                             <div class="w-full p-3 border-b border-gray-200">
