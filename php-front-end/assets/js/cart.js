@@ -57,23 +57,4 @@ function checkout() {
     alert("Your cart is empty. Add items to proceed.");
     return;
   }
-
-  // Check user login status using an AJAX request
-  $.ajax({
-    url: "./files/checkLogin.php",
-    type: "GET",
-    success: function (response) {
-      console.log("AJAX success:", response);
-      if (response === "loggedIn") {
-        console.log("User logged in. Redirecting to checkout page.");
-        window.location.href = "./checkout.php";
-      } else {
-        console.log("User not logged in. Redirecting to login page.");
-        window.location.href = "./files/userlogin.php";
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("Error checking login status:", error);
-    },
-  });
 }
