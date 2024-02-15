@@ -1,7 +1,7 @@
-<!-- header-top.php -->
-
 <?php
-// Assuming you have a database connection already established
+
+//Database connection config
+
 $config = array(
     'db_hostname' => 'localhost',
     'db_name' => 'reactcrud-non-jwt',

@@ -83,7 +83,7 @@ if ($stmt = $connection->prepare($sql)) {
                             </a>
                         </li>
                         <li>
-                            <a href="">
+                            <a href="orders.php">
                                   <i class="fa-solid fa-cart-shopping"></i>
                                 <span class="block">Order</span>
                             </a>
@@ -197,48 +197,16 @@ if ($stmt = $connection->prepare($sql)) {
                     </div>
                 </div>
                 <div class="h-container">
-                    <div class="main">
-                        <h1 class="page-heading"> Customer's </h1>
-                        <p>
-                            All customers data
-                        </p>
-
-                        <div class="message max-width-400px">
-                            <?php
-                            // Check for success query parameter
-                            if (isset($_GET['success'])) {
-                                $successMsg = $_GET['success'];
-                                echo '<div id="error" class="max-w-400px alert alert-success mt-2" role="alert">' . $successMsg . '</div>';
-                            }
-
-                            // Display error message if available
-                            if (isset($_GET['error'])) {
-                                $errorMsg = $_GET['error']; // You should set an appropriate error message here
-                                echo '<div class="alert alert-danger" role="alert">' . $errorMsg . '</div>';
-                            }
-                        ?>
-                        </div>
-
-                            <!-- Appwarance Actions Bar -->
-                        <div class="appwarance-actions-bar">
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadBannerModal">
-                            Add Banner Photo
-                            </button>
-                        </div>
-
+                    <div class="overflow-auto">
                         <?php
-                        // Fetch customers along with their order count from the database
-                        $sql = "SELECT customers.id, customers.ip_address, customers.username, customers.email, customers.photo, customers.request_time, COUNT(orders.id) AS order_count
-                                FROM customers
-                                LEFT JOIN orders ON customers.id = orders.user_id
-                                GROUP BY customers.id";
+                        // Include config file
+                        require_once "../auth/db-connection/config.php";
+
+                        // Fetch all customers from the database
+                        $sql = "SELECT * FROM customers";
                         $result = $connection->query($sql);
 
-                        function xorDecrypt($input)
-                        {
-                            return base64_decode($input);
-                        }
-
+                        // Check if there are any rows
                         if ($result->rowCount() > 0) {
                             echo '<table class="table mt-3">
                                     <thead>
@@ -248,39 +216,61 @@ if ($stmt = $connection->prepare($sql)) {
                                             <th scope="col">Username</th>
                                             <th scope="col">Email</th>
                                             <th scope="col">Photo</th>
+                                            <th scope="col">Last Name</th>
                                             <th scope="col">Request Time</th>
-                                            <th scope="col">Order Count</th>
-                                            <th scope="col">Actions</th>
+                                            <th scope="col">First Name</th>
+                                            <th scope="col">Billing Address</th>
+                                            <th scope="col">City</th>
+                                            <th scope="col">State</th>
+                                            <th scope="col">Postal Code</th>
+                                            <th scope="col">Country</th>
+                                            <th scope="col">Phone Number</th>
                                         </tr>
                                     </thead>
                                     <tbody>';
 
                             // Output data of each row
                             while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                $decryptedEmail = xorDecrypt($row["email"], 'shTYTS,os(**0te455432%3sgks$#SG');
+
                                 echo '<tr>
                                         <th scope="row">' . $row["id"] . '</th>
                                         <td>' . $row["ip_address"] . '</td>
                                         <td>' . $row["username"] . '</td>
-                                        <td>' . xorDecrypt($row["email"]) . '</td>
-                                        <td class="customer-photo">';
-
-                                // Extracting photo name
-                                $photoPath = $row["photo"];
-                                $photoName = pathinfo($photoPath, PATHINFO_BASENAME);
-
-                                echo '<img src="../auth/assets/user-profile/' . $row["username"] . '/' . $photoName . '" alt="' . $row["username"] . '" />
-                                        </td>
+                                        <td>' . $decryptedEmail . '</td>
+                                        <td><img src="../auth/assets/user-profile/' . $row["username"] . '/' . $row["photo"] . '" alt="' . $row["username"] . '" /></td>
+                                        <td>' . $row["last_name"] . '</td>
                                         <td>' . $row["request_time"] . '</td>
-                                        <td>' . $row["order_count"] . '</td>
-                                        <td>
-                                            <a type="button" href="../auth/backend-assets/customer/view_orders.php?user_id=' . $row["id"] . '" class="btn btn-primary">View Orders</a>
-                                        </td>
+                                        <td>' . $row["first_name"] . '</td>
+                                        <td>' . $row["billing_address"] . '</td>
+                                        <td>' . $row["city"] . '</td>
+                                        <td>' . $row["state"] . '</td>
+                                        <td>' . $row["postal_code"] . '</td>
+                                        <td>' . $row["country"] . '</td>
+                                        <td>' . $row["phone_number"] . '</td>
                                     </tr>';
                             }
 
                             echo '</tbody></table>';
                         } else {
                             echo "No customers found.";
+                        }
+
+                        // Close the database connection
+                        $connection = null;
+
+                        // Decrypt function
+                        function xorDecrypt($input, $key)
+                        {
+                            $decodedInput = base64_decode($input);
+                            $decrypted = '';
+                            $keyLength = strlen($key);
+
+                            for ($i = 0; $i < strlen($decodedInput); $i++) {
+                                $decrypted .= $decodedInput[$i] ^ $key[$i % $keyLength];
+                            }
+
+                            return $decrypted;
                         }
                         ?>
                     </div>
@@ -316,7 +306,44 @@ if ($stmt = $connection->prepare($sql)) {
         // Trigger form submission
         document.getElementById("bannerUploadForm").submit();
     }
+
     </script>
     <script src="js/main.js"></script>
+        <script>
+        // Enable the dropdown on click
+        document.querySelectorAll('.order-status-dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('click', function () {
+                this.removeAttribute('disabled');
+            });
+        });
+
+          document.addEventListener('DOMContentLoaded', function () {
+        // Enable the dropdown on change
+        document.querySelectorAll('.order-status-dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('change', function () {
+                var userId = this.dataset.userId; // Get the user ID from the data attribute
+                var newOrderStatus = this.value; // Get the selected order status
+
+                // Send an AJAX request to update_order_status.php
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '../auth/backend-assets/update_order_status.php ', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Update successful, you can handle success feedback if needed
+                            console.log('Order status updated successfully.');
+                        } else {
+                            // Handle error or display error message
+                            console.error('Error updating order status: ' + response.message);
+                        }
+                    }
+                };
+                xhr.send('user_id=' + userId + '&new_order_status=' + newOrderStatus);
+            });
+        });
+    });
+    </script>
 </body>
 </html>

@@ -82,7 +82,7 @@ if ($stmt = $connection->prepare($sql)) {
                             </a>
                         </li>
                         <li>
-                            <a href="">
+                            <a href="orders.php">
                                   <i class="fa-solid fa-cart-shopping"></i>
                                 <span class="block">Order</span>
                             </a>

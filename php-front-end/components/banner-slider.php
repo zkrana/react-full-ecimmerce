@@ -18,7 +18,7 @@ $banners = isset($data['banners']) ? $data['banners'] : [];
         <?php foreach ($banners as $banner): ?>
           <div class="swiper-slide">
             <img
-              class="w-full h-[450px] object-cover"
+              class="w-full h-[450px] object-fill"
               src="http://localhost/reactcrud/backend/auth/assets/banner/<?php echo $banner['photo_name']; ?>"
               alt="<?php echo $banner['photo_name']; ?>"
             />

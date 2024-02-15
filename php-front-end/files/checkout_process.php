@@ -20,19 +20,26 @@ try {
     // Get billing details from the POST request
     $billingDetails = $_POST['billing_details'];
 
-    // Update billing details in the customers table
-    $updateBillingDetails = $connection->prepare("UPDATE customers SET first_name = ?, last_name = ?, billing_address = ?, city = ?, state = ?, postal_code = ?, country = ?, phone_number = ? WHERE id = ?");
-    $updateBillingDetails->execute([
-        $billingDetails['first_name'],
-        $billingDetails['last_name'],
-        $billingDetails['billing_address'],
-        $billingDetails['city'],
-        $billingDetails['state'],
-        $billingDetails['postal_code'],
-        $billingDetails['country'],
-        $billingDetails['phone_number'],
-        $customerId // Move the customer ID to the last parameter
-    ]);
+    // Check if billing details are already filled for the customer
+    $checkBillingDetails = $connection->prepare("SELECT id FROM customers WHERE id = ?");
+    $checkBillingDetails->execute([$customerId]);
+    $billingDetailsExist = $checkBillingDetails->rowCount() > 0;
+
+    // If billing details are not already filled, update them
+    if (!$billingDetailsExist) {
+        $updateBillingDetails = $connection->prepare("UPDATE customers SET first_name = ?, last_name = ?, billing_address = ?, city = ?, state = ?, postal_code = ?, country = ?, phone_number = ? WHERE id = ?");
+        $updateBillingDetails->execute([
+            $billingDetails['first_name'],
+            $billingDetails['last_name'],
+            $billingDetails['billing_address'],
+            $billingDetails['city'],
+            $billingDetails['state'],
+            $billingDetails['postal_code'],
+            $billingDetails['country'],
+            $billingDetails['phone_number'],
+            $customerId
+        ]);
+    }
 
     // Calculate totals
     $subTotal = $vat = $totalDiscount = $grandTotal = 0;
@@ -50,7 +57,7 @@ try {
 
     // Insert into orders table
     $insertOrder = $connection->prepare("INSERT INTO `orders` (user_id, quantity, total_price, order_date, order_status_id) VALUES (?, ?, ?, NOW(), 1)");
-    $insertOrder->execute([$customerId, count($cartItems), $grandTotal]); // Use count($cartItems) for quantity
+    $insertOrder->execute([$customerId, count($cartItems), $grandTotal]);
 
     // Get the order ID
     $orderId = $connection->lastInsertId();
@@ -64,15 +71,33 @@ try {
         $insertOrderItem->execute([$orderId, $item['product_id'], $item['quantity'], $subtotal]);
     }
 
-    // Update the orders table with the correct user_id
-    $updateOrders = $connection->prepare("UPDATE `orders` SET user_id = ? WHERE id = ?");
-    $updateOrders->execute([$customerId, $orderId]);
+    // Process payment
+    $paymentMethod = $_POST['paymentMethod'];
+    $transactionCode = $_POST['transactionCode'];
+
+    $insertPayment = $connection->prepare("INSERT INTO `payments` (order_id, payment_amount, payment_date, payment_method, status, user_id) VALUES (?, ?, NOW(), ?, 'Pending', ?)");
+    $insertPayment->execute([$orderId, $grandTotal, $paymentMethod, $customerId]);
+
+    if ($insertPayment->rowCount() === 0) {
+        // Handle the case where the payment insertion was not successful
+        // Redirect or log an error message
+        header("Location: ../checkout.php?error=Payment insertion failed");
+        exit();
+    }
+
+    // Delete cart items associated with the user ID
+    $deleteCartItems = $connection->prepare("DELETE FROM `cart_items` WHERE cart_id IN (SELECT cart_id FROM `cart` WHERE customer_id = ?)");
+    $deleteCartItems->execute([$customerId]);
+
+    // Delete the cart
+    $deleteCart = $connection->prepare("DELETE FROM `cart` WHERE customer_id = ?");
+    $deleteCart->execute([$customerId]);
 
     // Commit the transaction
     $connection->commit();
 
-    // Redirect or perform further actions
-    header('Location: ../checkout.php');
+    // Redirect to the order confirmation page with order information
+    header('Location: ../orderConfirmed.php?order_id=' . $orderId);
     exit();
 } catch (PDOException $e) {
     // Rollback the transaction in case of an error

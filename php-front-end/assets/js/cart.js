@@ -51,10 +51,3 @@ function removeCartItemWithDelay(itemId) {
 }
 
 // Loggin Check
-function checkout() {
-  // Check if the checkout button is disabled
-  if ($("#checkoutButton").prop("disabled")) {
-    alert("Your cart is empty. Add items to proceed.");
-    return;
-  }
-}

@@ -88,12 +88,9 @@
                                 echo '        <h2 class="text-xl font-semibold mb-2">' . $product['name'] . '</h2>';
                                 echo '        <div class="flex flex-col gap-3">';
                                 echo '          <div class="text-lg font-bold text-blue-600">' . $product['currency_code'] . ' ' . $product['price'] . '</div>';
-                                echo '          <form method="post" action="../files/addToCart.php">';
-                                echo '            <input type="hidden" name="productId" value="' . $product['id'] . '">';
-                                echo '            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">';
+                                echo '            <button type="submit" class="add-to-cart-btn bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" data-product-id="' . $product['id'] . '">';
                                 echo '              Add to Cart';
                                 echo '            </button>';
-                                echo '          </form>';
                                 echo '        </div>';
                                 echo '      </div>';
                                 echo '    </div>';
@@ -126,6 +123,52 @@
     </div>
 
     <?php include '../components/footer/footer.php'; ?>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // AJAX function to check if the user is logged in
+        $(".add-to-cart-btn").on("click", function() {
+            var productId = $(this).data("product-id");
+
+            $.ajax({
+                type: "POST",
+                url: "../files/checkLogin.php", // Replace with your actual backend endpoint for checking login status
+                data: {productId: productId},
+                success: function(response) {
+                    if (response === "loggedIn") {
+                        // If logged in, proceed with adding to cart
+                        addToCart(productId);
+                    } else {
+                        // If not logged in, handle as needed (e.g., show login modal)
+                        window.location.href = "../files/userlogin.php";
+                    }
+                },
+                error: function() {
+                    console.error("Error checking login status");
+                }
+            });
+        });
+
+        // Function to add product to cart and refresh the page
+        function addToCart(productId) {
+            $.ajax({
+                type: "POST",
+                url: "../files/addToCart.php",
+                data: {productId: productId},
+                success: function(response) {
+                    // Handle success (e.g., update cart count)
+                    // No need to show the popup, directly refresh the page
+                    location.reload();
+                },
+                error: function() {
+                    console.error("Error adding product to cart");
+                }
+            });
+        }
+    });
+</script>
+
 </body>
 
 </html>

@@ -38,6 +38,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["productId"])) {
         // Get user's IP address
         $userIpAddress = getIpAddress();
 
+        // Check if the product is already in the cart
+        $stmtCheck = $connection->prepare("SELECT COUNT(*) FROM cart_items WHERE cart_id IN (SELECT cart_id FROM cart WHERE customer_id = ?) AND product_id = ?");
+        $stmtCheck->execute([$customerId, $productId]);
+        $productCount = $stmtCheck->fetchColumn();
+
+        if ($productCount > 0) {
+            // Product already in the cart, show a pop-up or handle the message as needed
+            header("Location: ../cart.php?error=Product%20already%20in%20cart");
+            exit();
+        }
+
         // Fetch the price of the product from the database
         $stmtPrice = $connection->prepare("SELECT price FROM products WHERE id = ?");
         $stmtPrice->execute([$productId]);

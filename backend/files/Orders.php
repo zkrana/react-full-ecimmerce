@@ -39,7 +39,7 @@ if ($stmt = $connection->prepare($sql)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Settings</title>
+    <title>Orders</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
@@ -62,7 +62,7 @@ if ($stmt = $connection->prepare($sql)) {
                 </div>
                 <div class="sidebard-nav">
                     <ul>
-                        <li class="active">
+                        <li class="">
                             <a href="dashboard.php">
                                 <i class="fa-solid fa-table-columns"></i>
                                 <span class="block">Dashboard</span>
@@ -82,13 +82,13 @@ if ($stmt = $connection->prepare($sql)) {
                                 <span class="block">Products</span>
                             </a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="orders.php">
                                   <i class="fa-solid fa-cart-shopping"></i>
                                 <span class="block">Order</span>
                             </a>
                         </li>
-                        <li>
+                        <li class="">
                             <a href="customers.php">
                                 <i class="fa-solid fa-user-group"></i>
                                 <span class="block">Customers</span>
@@ -122,7 +122,7 @@ if ($stmt = $connection->prepare($sql)) {
                             </a>
                         </li>
 
-                         <li class="devided-nav">
+                         <li class="devided-nav ">
                             <a href="appearance.php">
                                 <i class="fa-solid fa-tag"></i>
                                 <span class="block">Appearances</span>
@@ -196,179 +196,190 @@ if ($stmt = $connection->prepare($sql)) {
                         </div>
                     </div>
                 </div>
-
                 <div class="h-container">
-                    <div class="main flex">
-                        <h1 class="page-heading"> Admin Settings </h1>
-                        <div class="admin-s-wrapper flex max-w-400px">
-                            <button type="button" class="btn btn-danger" onclick="showBlockedIP()">Blocked IP</button>
-                            <button type="button" class="btn btn-secondary" onclick="showAccessLogs()">Access Logs</button>
-                        </div>
-                    </div>
-                    <div class="admin-s-body mt-5">
-                        <div id="blockedIPSection" class="hidden">
-                            <h3>Blocked IP Section</h3>
-                            <?php
-                                // Check for success parameter in the URL
-                                if (isset($_GET["success"]) && $_GET["success"] == 1) {
-                                    echo "<div class='alert alert-success'>Blocked IP deleted successfully.</div>";
-                                } elseif (isset($_GET["error"]) && $_GET["error"] == 1) {
-                                    echo "<div class='alert alert-danger'>Error deleting blocked IP. Please try again.</div>";
-                                }
-                            ?>
+                    <?php
+                    // Check for success query parameter
+                    if (isset($_GET['success'])) {
+                        $successMsg = $_GET['success'];
+                        echo '<div id="error" class="max-w-400px alert alert-success mt-2" role="alert">' . $successMsg . '</div>';
+                    }
 
-                            <table id="blockedIPTable" class="table table-striped mt-3">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>IP Address</th>
-                                        <th>Blocked Until</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- PHP code to fetch and display blocked IP data -->
-                                    <?php
-                                    // Include your database connection code here
+                    // Display error message if available
+                    if (isset($_GET['error'])) {
+                        $errorMsg = $_GET['error']; // You should set an appropriate error message here
+                        echo '<div class="alert alert-danger" role="alert">' . $errorMsg . '</div>';
+                    }
+                    ?>
 
-                                    // Fetch blocked IP data from the database with pagination
-                                    $limit = 20; // Number of records per page
-                                    $page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 1;
-                                    $start = ($page - 1) * $limit;
+                    <div class="main">
+                        <h1 class="page-heading">Order's</h1>
+                        <p>All orders data</p>
 
-                                    $sql = "SELECT * FROM blocked_ips LIMIT $start, $limit";
-                                    $stmt = $connection->prepare($sql);
-                                    $stmt->execute();
-                                    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        <?php
+                        // Fetch customers along with their order count from the database
+                        $sql = "SELECT
+                                    customers.id,
+                                    customers.ip_address,
+                                    customers.username,
+                                    customers.email,
+                                    customers.photo,
+                                    customers.request_time,
+                                    COUNT(orders.id) AS order_count,
+                                    MAX(orders.order_status_id) AS order_status,
+                                    payments.payment_amount,
+                                    payments.payment_method
+                                FROM customers
+                                LEFT JOIN orders ON customers.id = orders.user_id
+                                LEFT JOIN payments ON orders.id = payments.order_id
+                                GROUP BY customers.id";
+                        $result = $connection->query($sql);
 
-                                    // Display the data in the table
-                                    foreach ($result as $row) {
-                                        echo "<tr>";
-                                        echo "<td>{$row['id']}</td>";
-                                        echo "<td>{$row['ip_address']}</td>";
-                                        echo "<td>{$row['blocked_until']}</td>";
-                                        echo "<td>
-                                        <a href='../auth/backend-assets/admin-settings/del_block_ip?id={$row['id']}'>Delete</a>
-                                        </td>";
-                                        echo "</tr>";
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
+                        // Decrypt
+                        function xorDecrypt($input, $key)
+                        {
+                            // Decode the base64-encoded input
+                            $decodedInput = base64_decode($input);
 
-                            <!-- Pagination -->
-                            <ul class="pagination">
-                                <?php
-                                $sql = "SELECT COUNT(*) as count FROM blocked_ips";
-                                $stmt = $connection->prepare($sql);
-                                $stmt->execute();
-                                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                                $total_pages = ceil($row['count'] / $limit);
+                            // XOR decryption
+                            $decrypted = '';
+                            $keyLength = strlen($key);
 
-                                for ($i = 1; $i <= $total_pages; $i++) {
-                                    echo "<li class='page-item'><a class='page-link' href='?page=$i'>$i</a></li>";
-                                }
-                                ?>
-                            </ul>
-                        </div>
+                            for ($i = 0; $i < strlen($decodedInput); $i++) {
+                                $decrypted .= $decodedInput[$i] ^ $key[$i % $keyLength];
+                            }
 
-                        <div id="accessLogsSection" class="hidden">
-                            <h3>Access Logs Section</h3>
-                            <?php
-                                // Check for success parameter in the URL
-                                if (isset($_GET["success"]) && $_GET["success"] == 1) {
-                                    echo "<div id='error' class='alert alert-success'>Access log deleted successfully.</div>";
-                                } elseif (isset($_GET["error"]) && $_GET["error"] == 1) {
-                                    echo "<div id='error' class='alert alert-danger'>Error deleting Access log. Please try again.</div>";
-                                }
-                            ?>
+                            return $decrypted;
+                        }
 
-                            <table id="accessLogsTable" class="table table-striped mt-3">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>IP Address</th>
-                                        <th>Access Time</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- PHP code to fetch and display access logs data -->
-                                    <?php
-                                    // Fetch access logs data from the database with pagination
-                                    $limit = 20; // Number of records per page
-                                    $page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 1;
-                                    $start = ($page - 1) * $limit;
+                        if ($result->rowCount() > 0) {
+                            echo '<table class="table mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">IP Address</th>
+                                            <th scope="col">Username</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Photo</th>
+                                            <th scope="col">Request Time</th>
+                                            <th scope="col">Order Count</th>
+                                            <th scope="col">Order Status</th>
+                                            <th scope="col">Payment Amount</th>
+                                            <th scope="col">Payment Method</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>';
 
-                                    $sql = "SELECT * FROM access_logs LIMIT $start, $limit";
-                                    $stmt = $connection->prepare($sql);
-                                    $stmt->execute();
-                                    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            // Output data of each row
+                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                $decryptedEmail = xorDecrypt($row["email"], 'shTYTS,os(**0te455432%3sgks$#SG');
+                                echo '<tr>
+                                        <th scope="row">' . $row["id"] . '</th>
+                                        <td>' . $row["ip_address"] . '</td>
+                                        <td>' . $row["username"] . '</td>
+                                        <td>' . $decryptedEmail . '</td>
+                                        <td class="customer-photo">';
 
+                                // Extracting photo name
+                                $photoPath = $row["photo"];
+                                $photoName = pathinfo($photoPath, PATHINFO_BASENAME);
 
-                                    // Display the data in the table
-                                    foreach ($result as $row) {
-                                        echo "<tr>";
-                                        echo "<td>{$row['id']}</td>";
-                                        echo "<td>{$row['ip_address']}</td>";
-                                        echo "<td>{$row['access_time']}</td>";
-                                        echo "<td>
-                                                <a href='../auth/backend-assets/admin-settings/del_aces_logs.php?id={$row['id']}'>Delete</a> |  
-                                                <button class='block-unblock-btn btn btn-danger' data-id='{$row['id']}' data-blocked='{$row['blocked']}'>
-                                                    " . ($row['blocked'] ? "Unblock" : "Block") . "
-                                                </button>
-                                            </td>";
-                                        echo "</tr>";
-                                    }
+                                echo '<img src="../auth/assets/user-profile/' . $row["username"] . '/' . $photoName . '" alt="' . $row["username"] . '" />
+                                        </td>
+                                        <td>' . $row["request_time"] . '</td>
+                                        <td>' . $row["order_count"] . '</td>
+                                        <td>
+                                            <select class="form-select order-status-dropdown" aria-label="Order Status" data-user-id="' . $row["id"] . '">
+                                                <option value="1" ' . (isset($row["order_status"]) && $row["order_status"] == 1 ? 'selected' : '') . '>Pending</option>
+                                                <option value="2" ' . (isset($row["order_status"]) && $row["order_status"] == 2 ? 'selected' : '') . '>Processing</option>
+                                                <option value="3" ' . (isset($row["order_status"]) && $row["order_status"] == 3 ? 'selected' : '') . '>Shipped</option>
+                                            </select>
+                                        </td>
+                                        <td>' . $row["payment_amount"] . '</td>
+                                        <td>' . $row["payment_method"] . '</td>
+                                        <td>
+                                            <a type="button" href="../files/customer/view_orders.php?user_id=' . $row["id"] . '" class="btn btn-primary view-orders-btn">View Orders</a>
+                                        </td>
+                                    </tr>';
+                            }
 
-                                    ?>
-                                </tbody>
-                            </table>
-
-                            <!-- Pagination -->
-                            <ul class="pagination">
-                                <?php
-                                $sql = "SELECT COUNT(*) as count FROM access_logs";
-                                $stmt = $connection->prepare($sql);
-                                $stmt->execute();
-                                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                                $total_pages = ceil($row['count'] / $limit);
-
-                                for ($i = 1; $i <= $total_pages; $i++) {
-                                    echo "<li class='page-item'><a class='page-link' href='?page=$i'>$i</a></li>";
-                                }
-                                ?>
-                            </ul>
-                        </div>
-
+                            echo '</tbody></table>';
+                        } else {
+                            echo "No customers found.";
+                        }
+                        ?>
                     </div>
                 </div>
+
             </div>
         </div>
 
     </main>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    
     <script>
         function toggleUserOptions() {
             var options = document.getElementById("userOptions");
             options.style.display = (options.style.display === 'flex') ? 'none' : 'flex';
         }
+            // script.js
         document.addEventListener('DOMContentLoaded', function () {
-        const wrapperIcon = document.querySelector('.app-sidebar-mb');
-        const appWrapperS = document.querySelector('.app-wrapper');
-        const deskNav =  document.getElementById("des-nav");
+            const wrapperIcon = document.querySelector('.app-sidebar-mb');
+            const appWrapperS = document.querySelector('.app-wrapper');
+            const deskNav =  document.getElementById("des-nav");
+
         wrapperIcon.addEventListener('click', function () {
-        appWrapperS.classList.toggle('show-sidebar');
+                appWrapperS.classList.toggle('show-sidebar');
             });
         deskNav.addEventListener('click', function () {
-        appWrapperS.classList.remove('show-sidebar');
+                appWrapperS.classList.remove('show-sidebar');
             });
         });
 
+         function submitForm() {
+        // Trigger form submission
+        document.getElementById("bannerUploadForm").submit();
+    }
 
     </script>
     <script src="js/main.js"></script>
+        <script>
+        // Enable the dropdown on click
+        document.querySelectorAll('.order-status-dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('click', function () {
+                this.removeAttribute('disabled');
+            });
+        });
+
+          document.addEventListener('DOMContentLoaded', function () {
+        // Enable the dropdown on change
+        document.querySelectorAll('.order-status-dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('change', function () {
+                var userId = this.dataset.userId; // Get the user ID from the data attribute
+                var newOrderStatus = this.value; // Get the selected order status
+
+                // Send an AJAX request to update_order_status.php
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '../auth/backend-assets/update_order_status.php ', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Update successful, you can handle success feedback if needed
+                            console.log('Order status updated successfully.');
+                        } else {
+                            // Handle error or display error message
+                            console.error('Error updating order status: ' + response.message);
+                        }
+                    }
+                };
+                xhr.send('user_id=' + userId + '&new_order_status=' + newOrderStatus);
+            });
+        });
+    });
+    </script>
 </body>
 </html>

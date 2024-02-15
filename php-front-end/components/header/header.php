@@ -1,4 +1,24 @@
-<?php include "userfetch.php"; ?>
+<?php
+ob_start();
+// Include your userfetch.php file
+include "userfetch.php";
+
+// Function to fetch user ID from the session
+function getUserID()
+{
+    // Check if user ID is set in the session
+    if (isset($_SESSION['userId'])) {
+        return $_SESSION['userId'];
+    } else {
+        // Return a default value or handle the case when user ID is not set
+        return null;
+    }
+}
+
+// Fetch user's ID
+$userID = getUserID();
+
+?>
 
 <div class="block">
     <?php include 'topbar.php'; ?>
@@ -19,139 +39,132 @@
                         <span id="wishlist" class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1">0</span>
                     </div>
                     <?php
-                    // Fetch user's IP address
-                    function getUserIP()
-                    {
-                        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                            return $_SERVER['HTTP_CLIENT_IP'];
-                        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-                        } else {
-                            return $_SERVER['REMOTE_ADDR'];
-                        }
-                    }
+                    // Fetch all cart IDs based on the user's ID
+                    if ($userID !== null) {
+                        try {
+                        $cartQuery = $connection->prepare("SELECT cart_id FROM cart WHERE customer_id = :customer_id");
+                            $cartQuery->bindParam(':customer_id', $userID);
+                            if ($cartQuery->execute()) {
+                                $cartIds = $cartQuery->fetchAll(PDO::FETCH_COLUMN);
 
-                    // Fetch user's IP address
-                    $userIP = getUserIP();
+                                // If cart IDs are found, fetch and display total items
+                                if (!empty($cartIds)) {
+                                    // Fetch and count items for each cart
+                                    $totalItems = 0;
+                                    foreach ($cartIds as $cartId) {
+                                        $cartItemsQuery = $connection->prepare("SELECT COUNT(*) FROM cart_items WHERE cart_id = :cart_id");
+                                        $cartItemsQuery->bindParam(':cart_id', $cartId);
 
-                    // Fetch all cart IDs based on the user's IP address
-                    $cartQuery = $connection->prepare("SELECT cart_id FROM cart WHERE ip_address = :ip_address");
-                    $cartQuery->bindParam(':ip_address', $userIP);
+                                        if ($cartItemsQuery->execute()) {
+                                            $totalItems += $cartItemsQuery->fetchColumn();
+                                        } else {
+                                            // Handle cart items query error
+                                            echo 'Error fetching cart items: ' . implode(' - ', $cartItemsQuery->errorInfo());
+                                        }
+                                    }
 
-                    if ($cartQuery->execute()) {
-                        $cartIds = $cartQuery->fetchAll(PDO::FETCH_COLUMN);
-
-                        // If cart IDs are found, fetch and display total items
-                        if (!empty($cartIds)) {
-                            // Fetch and count items for each cart
-                            $totalItems = 0;
-                            foreach ($cartIds as $cartId) {
-                                $cartItemsQuery = $connection->prepare("SELECT COUNT(*) FROM cart_items WHERE cart_id = :cart_id");
-                                $cartItemsQuery->bindParam(':cart_id', $cartId);
-
-                                if ($cartItemsQuery->execute()) {
-                                    $totalItems += $cartItemsQuery->fetchColumn();
+                                    // Display the cart icon with the total number of items
+                                    echo '<a href="/reactcrud/php-front-end/cart.php">';
+                                    echo '    <div class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">';
+                                    echo '        <i class="fa-solid fa-cart-shopping text-xl"></i>';
+                                    echo '        <span class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount">' . $totalItems . '</span>';
+                                    echo '    </div>';
+                                    echo '</a>';
                                 } else {
-                                    // Handle cart items query error
-                                    echo 'Error fetching cart items: ' . $cartItemsQuery->errorInfo()[2];
+                                    // No cart found for the user
+                                    echo '<a href="/reactcrud/php-front-end/cart.php">';
+                                    echo '    <div class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">';
+                                    echo '        <i class="fa-solid fa-cart-shopping text-xl"></i>';
+                                    echo '        <span class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount">0</span>';
+                                    echo '    </div>';
+                                    echo '</a>';
                                 }
+                            } else {
+                                // Handle cart query error
+                                echo 'Error executing cart query: ' . implode(' - ', $cartQuery->errorInfo());
                             }
-
-                            // Display the cart icon with the total number of items
-                            echo '<a href="/reactcrud/php-front-end/cart.php">';
-                            echo '    <div class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">';
-                            echo '        <i class="fa-solid fa-cart-shopping text-xl"></i>';
-                            echo '        <span class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount">' . $totalItems . '</span>';
-                            echo '    </div>';
-                            echo '</a>';
-                        } else {
-                            // No cart found for the user's IP address
-                            echo '<a href="/reactcrud/php-front-end/cart.php">';
-                            echo '    <div class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">';
-                            echo '        <i class="fa-solid fa-cart-shopping text-xl"></i>';
-                            echo '        <span class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount">0</span>';
-                            echo '    </div>';
-                            echo '</a>';
+                        } catch (PDOException $e) {
+                            // Handle other database-related errors
+                            echo 'Error: ' . $e->getMessage();
                         }
                     } else {
-                        // Handle cart query error
-                        echo 'Error executing cart query: ' . $cartQuery->errorInfo()[2];
+                        // User not logged in
+                        echo '<a href="/reactcrud/php-front-end/cart.php">';
+                        echo '    <div class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">';
+                        echo '        <i class="fa-solid fa-cart-shopping text-xl"></i>';
+                        echo '        <span class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1" id="cartCount">0</span>';
+                        echo '    </div>';
+                        echo '</a>';
                     }
                     ?>
 
                     <div>
-                        <?php if (!$userId) { ?>
+                    <?php if (!$userID) { ?>
                         <a href="/reactcrud/php-front-end/files/userlogin.php" class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center relative cursor-pointer">
                             <i class="fa-solid fa-user text-xl"></i>
                         </a>
-                        <?php } ?>
-                        <?php if ($userId) { ?>
-                            <div class="user-p flex items-center justify-end relative">
-                                <div class="d-u sm:w-11 w-7 sm:h-11 h-7 rounded-full bg-white border border-gray-200 p-1 flex justify-center items-center text-white cursor-pointer"
-                                    onclick="toggleUserDropdown()">
-                                    <img src="http://localhost/reactcrud/backend/auth/<?php echo $userPhoto; ?>" alt="User"
-                                        class="w-10 h-10 rounded-full object-cover">
-                                </div>
-
-                                <?php if ($user) { ?>
-                                    <div class="main-u hidden absolute right-0 top-12 w-72 rounded-md px-4 pt-5 pb-4 shadow-md border border-gray-300 bg-white z-50">
-                                        <div class="u-header pb-3 border-b border-slate-200">
-                                            <?php if ($userPhoto) { ?>
-                                                <div class="u-status flex items-center gap-2">
-                                                    <div class="u w-11 h-11 bg-slate-400 rounded-full m-1 flex justify-center items-center border-2 border-gray-500">
-                                                        <img src="http://localhost/reactcrud/backend/auth/<?php echo $userPhoto; ?>" alt="User" class="w-10 h-10 rounded-full object-cover">
-                                                    </div>
-
-                                                    <div class="uer">
-                                                        <span class="block text-base text-black">
-                                                            <?php echo ucfirst($username); ?>
-                                                        </span>
-                                                        <span class="block text-base text-black">
-                                                            Employee
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            <?php } else { ?>
-                                                <div class="u-status flex items-center gap-2">
-                                                    <form action="../../auth/photo-upload.php" method="post" enctype="multipart/form-data" id="uploadForm">
-                                                        <div class="u-h-d flex gap-3 items-center pb-3 border-b border-slate-200 cursor-pointer">
-                                                            <label for="photoInput" class="upload-label">
-                                                                Upload Photo
-                                                            </label>
-                                                            <input type="file" id="photoInput" accept="image/*" class="hidden">
-                                                        </div>
-
-                                                        <!-- Display uploaded image -->
-                                                        <div id="uploadedImageContainer" class="hidden">
-                                                            <img id="uploadedImage" src="" alt="Uploaded Photo">
-                                                        </div>
-                                                    </form>
-                                                    <div class="uer">
-                                                        <span class="block text-base text-black">
-                                                            <?php echo ucfirst($username); ?>
-                                                        </span>
-                                                        <span class="block text-base text-black">
-                                                            Employee
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            <?php } ?>
-                                        </div>
-                                        <ul className="flex flex-col gap-3 mt-3">
-                                            <li>Profile</li>
-                                            <li>Security</li>
-                                            <li>Book</li>
-                                            <li className=" pt-3 border-t border-slate-200">
-                                                <a variant="contained" href="components/logout.php">
-                                                Logout
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                <?php } ?>
+                    <?php } ?>
+                    <?php if ($userID) { ?>
+                        <div class="user-p flex items-center justify-end relative">
+                            <div class="d-u sm:w-11 w-7 sm:h-11 h-7 rounded-full bg-white border border-gray-200
+                             flex justify-center items-center text-white cursor-pointer"
+                                onclick="toggleUserDropdown()">
+                                <img src="/reactcrud/php-front-end/assets/user-profile/user-profile-icon-vector-avatar-600nw-2247726673.webp" alt="User"
+                                    class="w-full h-full rounded-full object-cover">
                             </div>
-                        <?php } ?>
-                    </div>
+
+                            <?php if ($user) { ?>
+                                <div class="main-u hidden absolute right-0 top-12 w-72 rounded-md px-4 pt-5 pb-4 shadow-md border border-gray-300 bg-white z-50">
+                                    <div class="u-header pb-3 border-b border-slate-200">
+                                        <?php if ($userPhoto) { ?>
+                                            <div class="u-status flex items-center gap-2">
+                                                <div class="u w-11 h-11 bg-slate-400 rounded-full m-1 flex justify-center items-center border-2 border-gray-500">
+                                                    <img src="http://localhost/reactcrud/backend/auth/<?php echo $userPhoto; ?>" alt="User" class="w-10 h-10 rounded-full object-cover">
+                                                </div>
+
+                                                <div class="uer">
+                                                    <span class="block text-base text-black">
+                                                        <?php echo ucfirst($username); ?>
+                                                    </span>
+                                                    <span class="block text-base text-black">
+                                                        user
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        <?php } else { ?>
+                                            <div class="u-status flex items-center gap-2">
+                                                <div class="d-u sm:w-11 w-7 sm:h-11 h-7 rounded-full bg-white border border-gray-200
+                                                flex justify-center items-center text-white">
+                                                    <img src="/reactcrud/php-front-end/assets/user-profile/user-profile-icon-vector-avatar-600nw-2247726673.webp" alt="User"
+                                                        class="w-full h-full rounded-full object-cover">
+                                                </div>
+                                                <div class="uer">
+                                                    <span class="block text-base text-black">
+                                                        <?php echo ucfirst($username); ?>
+                                                    </span>
+                                                    <span class="block text-base text-black">
+                                                        User
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                    <ul class="flex flex-col gap-3 mt-3">
+                                        <li>Profile</li>
+                                        <li>Security</li>
+                                        <li>Book</li>
+                                        <li class="pt-3 border-t border-slate-200">
+                                            <a variant="contained" href="/reactcrud/php-front-end/components/logout.php">
+                                            Logout
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    <?php } ?>
+                </div>
+
                 </div>
 
                 <!-- Hamburger Icon for Smaller Screens -->
@@ -167,7 +180,28 @@
             </div>
         </div>
     </div>
-    <div class="mainNav flex justify-center items-center py-5">
-        <?php include 'nav.php'; ?>
+    <div class="mainNav max-w-7xl mx-auto py-5">
+        <div class="w-[90%] mx-auto flex justify-between items-center">
+            <?php include 'nav.php'; ?>
+            <div>
+                <nav>
+                    <ul>
+                        <li> <a href="./track-order.php"> Track Order</a> </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    // Rest of your code
+function toggleUserDropdown() {
+  const userDropdown = document.querySelector(".main-u");
+
+  // Check if the userDropdown element exists
+  if (userDropdown) {
+    userDropdown.classList.toggle("showDrop");
+  }
+}
+</script>

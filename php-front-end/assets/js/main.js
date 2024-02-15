@@ -28,16 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// Rest of your code
-function toggleUserDropdown() {
-  const userDropdown = document.querySelector(".main-u");
-
-  // Check if the userDropdown element exists
-  if (userDropdown) {
-    userDropdown.classList.toggle("showDrop");
-  }
-}
-
 document.addEventListener("click", function (event) {
   const userDropdown = document.querySelector(".main-u");
 
@@ -46,23 +36,6 @@ document.addEventListener("click", function (event) {
       userDropdown.classList.add("hidden");
     }
   }
-});
-
-// Swiper initialization code
-var swiper = new Swiper(".swiper-container", {
-  slidesPerView: 1,
-  spaceBetween: 10,
-  navigation: {
-    nextEl: ".swiper-button-next",
-    prevEl: ".swiper-button-prev",
-  },
-  autoplay: {
-    duration: 3000,
-  },
-  pagination: {
-    el: ".swiper-pagination",
-    clickable: true,
-  },
 });
 
 // Category
