@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 14, 2024 at 12:03 PM
+-- Generation Time: Feb 15, 2024 at 12:06 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -45,7 +45,11 @@ INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`, `blocked`) VALUES
 (55, '127.0.0.1', '2024-02-05 02:06:48', 0),
 (56, '127.0.0.1', '2024-02-05 02:39:10', 0),
 (57, '127.0.0.1', '2024-02-08 04:45:17', 0),
-(58, '127.0.0.1', '2024-02-10 07:44:45', 0);
+(58, '127.0.0.1', '2024-02-10 07:44:45', 0),
+(59, '127.0.0.1', '2024-02-15 05:57:03', 0),
+(60, '127.0.0.1', '2024-02-15 10:01:26', 0),
+(61, '127.0.0.1', '2024-02-15 10:03:26', 0),
+(62, '127.0.0.1', '2024-02-15 10:34:33', 0);
 
 -- --------------------------------------------------------
 
@@ -68,6 +72,7 @@ CREATE TABLE `admin_users` (
 --
 
 INSERT INTO `admin_users` (`id`, `username`, `password`, `email`, `profile_photo`, `is_admin`, `date`) VALUES
+(0, 'rana', '$2y$10$RW2pSFacmGQdARoarTeEfeg5SiqZF3NLSxseNUOyC.SqBAI.wZkES', 'rana@gmail.com', 'super-admin/rana/pexels-tima-miroshnichenko-5439443.jpg', 0, '2024-02-15 10:01:16'),
 (21, 'zkrana', '$2y$10$kiRvG1wE418aRMjXZkCmuemut2iZLCOZTTZzMnglnZXLdLcyfTwAC', 'zkranao@gmail.com', 'super-admin/zkrana/handsome-man-with-laptop.jpg', 0, '2024-01-26 05:42:11');
 
 -- --------------------------------------------------------
@@ -123,15 +128,6 @@ CREATE TABLE `cart` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `cart`
---
-
-INSERT INTO `cart` (`cart_id`, `customer_id`, `ip_address`, `created_at`) VALUES
-(139, 4, '127.0.0.1', '2024-02-14 03:56:28'),
-(140, 4, '127.0.0.1', '2024-02-14 03:56:29'),
-(141, 4, '127.0.0.1', '2024-02-14 03:56:31');
-
 -- --------------------------------------------------------
 
 --
@@ -147,15 +143,6 @@ CREATE TABLE `cart_items` (
   `subtotal` decimal(10,2) DEFAULT NULL,
   `total` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `cart_items`
---
-
-INSERT INTO `cart_items` (`item_id`, `cart_id`, `product_id`, `quantity`, `price`, `subtotal`, `total`) VALUES
-(140, 139, 6, 1, 125.00, NULL, 0),
-(141, 140, 56, 1, 125.00, NULL, 0),
-(142, 141, 3, 1, 1500.00, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -195,24 +182,6 @@ INSERT INTO `categories` (`id`, `name`, `parent_category_id`, `category_descript
 -- --------------------------------------------------------
 
 --
--- Table structure for table `checkout`
---
-
-CREATE TABLE `checkout` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `item_id` int(11) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
-  `subtotal` decimal(10,2) DEFAULT NULL,
-  `shipping_cost` decimal(10,2) DEFAULT NULL,
-  `total` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `customers`
 --
 
@@ -239,7 +208,8 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `ip_address`, `username`, `password`, `email`, `photo`, `request_time`, `first_name`, `last_name`, `billing_address`, `city`, `state`, `postal_code`, `country`, `phone_number`) VALUES
-(4, '127.0.0.1', 'rana', '$argon2id$v=19$m=2048,t=4,p=2$ZHZYWlRleVQyTkdTVDBvQQ$DCHsClzgmvP6K3sIJg7dkNJAxuoLmQFdhN/Z7c7NLXw', 'AQk6OBQ0QQ4aRARJXxk=', '', '2024-02-06 04:51:08', 'Ziaul', 'Kabir', 'Uttara', 'Dhaka', 'Uttara', '1230', 'Bangladesh', '01824228717');
+(4, '127.0.0.1', 'rana', '$argon2id$v=19$m=2048,t=4,p=2$ZHZYWlRleVQyTkdTVDBvQQ$DCHsClzgmvP6K3sIJg7dkNJAxuoLmQFdhN/Z7c7NLXw', 'AQk6OBQ0QQ4aRARJXxk=', '', '2024-02-06 04:51:08', 'Ziaul', 'Kabir', 'Uttara', 'Dhaka', 'Uttara', '1230', 'Bangladesh', '01824228717'),
+(15, '127.0.0.1', 'zkrana', '$argon2id$v=19$m=2048,t=4,p=2$NGo2SFlzME1NMGdHcVdkSw$vZL1ndoyI8m1SC4bkSiqlUMx6DRz4J/psc3Sns58vH0', 'CQMmODoyQy8URUtDXFoGW1g=', '', '2024-02-15 08:51:44', 'Ziaul', 'ASDD', 'ASDFGHH', 'ADSFG', 'ADSFFGH', 'ASD', 'Bangladesh', '01824228717');
 
 -- --------------------------------------------------------
 
@@ -262,7 +232,10 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `product_id`, `quantity`, `total_price`, `order_date`, `order_status_id`) VALUES
-(18, 4, NULL, 3, 1905.00, '2024-02-14 11:03:02', 1);
+(36, 4, NULL, 4, 5122.50, '2024-02-15 03:44:53', 2),
+(37, 4, NULL, 2, 2537.50, '2024-02-15 05:19:32', 2),
+(38, 4, NULL, 2, 255.00, '2024-02-15 05:24:09', 2),
+(40, 15, NULL, 3, 2675.00, '2024-02-15 09:59:27', 2);
 
 -- --------------------------------------------------------
 
@@ -283,9 +256,17 @@ CREATE TABLE `order_items` (
 --
 
 INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `total_price`) VALUES
-(28, 18, 6, 1, 125.00),
-(29, 18, 56, 1, 125.00),
-(30, 18, 3, 1, 1500.00);
+(99, 36, 6, 1, 125.00),
+(100, 36, 3, 1, 1500.00),
+(101, 36, 5, 1, 2200.00),
+(102, 36, 58, 1, 850.00),
+(103, 37, 5, 1, 2200.00),
+(104, 37, 6, 1, 125.00),
+(105, 38, 6, 1, 125.00),
+(106, 38, 56, 1, 125.00),
+(110, 40, 6, 1, 125.00),
+(111, 40, 56, 1, 125.00),
+(112, 40, 5, 1, 2200.00);
 
 -- --------------------------------------------------------
 
@@ -314,11 +295,21 @@ INSERT INTO `order_status` (`id`, `status_name`) VALUES
 --
 
 CREATE TABLE `payments` (
-  `id` int(11) NOT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `payment_amount` decimal(10,2) DEFAULT NULL,
-  `payment_date` timestamp NOT NULL DEFAULT current_timestamp()
+  `payment_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `payment_amount` decimal(10,2) NOT NULL,
+  `payment_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `payment_method` varchar(255) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payments`
+--
+
+INSERT INTO `payments` (`payment_id`, `order_id`, `payment_amount`, `payment_date`, `payment_method`, `status`, `user_id`) VALUES
+(1, 40, 2675.00, '2024-02-15 09:59:27', 'bkash', 'Pending', 15);
 
 -- --------------------------------------------------------
 
@@ -446,14 +437,6 @@ ALTER TABLE `categories`
   ADD KEY `fk_parent_category` (`parent_category_id`);
 
 --
--- Indexes for table `checkout`
---
-ALTER TABLE `checkout`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `item_id` (`item_id`);
-
---
 -- Indexes for table `customers`
 --
 ALTER TABLE `customers`
@@ -486,8 +469,9 @@ ALTER TABLE `order_status`
 -- Indexes for table `payments`
 --
 ALTER TABLE `payments`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`);
+  ADD PRIMARY KEY (`payment_id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `products`
@@ -519,7 +503,7 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `access_logs`
 --
 ALTER TABLE `access_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `banner_photos`
@@ -537,13 +521,13 @@ ALTER TABLE `blocked_ips`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=142;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=143;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=170;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -552,28 +536,22 @@ ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
--- AUTO_INCREMENT for table `checkout`
---
-ALTER TABLE `checkout`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
 
 --
 -- AUTO_INCREMENT for table `order_status`
@@ -585,7 +563,7 @@ ALTER TABLE `order_status`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -629,13 +607,6 @@ ALTER TABLE `categories`
   ADD CONSTRAINT `fk_parent_category` FOREIGN KEY (`parent_category_id`) REFERENCES `categories` (`id`);
 
 --
--- Constraints for table `checkout`
---
-ALTER TABLE `checkout`
-  ADD CONSTRAINT `checkout_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `customers` (`id`),
-  ADD CONSTRAINT `checkout_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `cart_items` (`item_id`);
-
---
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
@@ -654,7 +625,8 @@ ALTER TABLE `order_items`
 -- Constraints for table `payments`
 --
 ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`);
+  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `customers` (`id`);
 
 --
 -- Constraints for table `products`
