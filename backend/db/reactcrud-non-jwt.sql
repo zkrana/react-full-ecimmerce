@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 15, 2024 at 12:06 PM
+-- Generation Time: Feb 16, 2024 at 11:29 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -49,7 +49,12 @@ INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`, `blocked`) VALUES
 (59, '127.0.0.1', '2024-02-15 05:57:03', 0),
 (60, '127.0.0.1', '2024-02-15 10:01:26', 0),
 (61, '127.0.0.1', '2024-02-15 10:03:26', 0),
-(62, '127.0.0.1', '2024-02-15 10:34:33', 0);
+(62, '127.0.0.1', '2024-02-15 10:34:33', 0),
+(63, '127.0.0.1', '2024-02-16 02:05:27', 0),
+(64, '127.0.0.1', '2024-02-16 02:49:20', 0),
+(65, '127.0.0.1', '2024-02-16 06:26:27', 0),
+(66, '127.0.0.1', '2024-02-16 10:14:56', 0),
+(67, '127.0.0.1', '2024-02-16 10:26:59', 0);
 
 -- --------------------------------------------------------
 
@@ -232,10 +237,13 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `product_id`, `quantity`, `total_price`, `order_date`, `order_status_id`) VALUES
-(36, 4, NULL, 4, 5122.50, '2024-02-15 03:44:53', 2),
-(37, 4, NULL, 2, 2537.50, '2024-02-15 05:19:32', 2),
-(38, 4, NULL, 2, 255.00, '2024-02-15 05:24:09', 2),
-(40, 15, NULL, 3, 2675.00, '2024-02-15 09:59:27', 2);
+(36, 4, NULL, 4, 5122.50, '2024-02-15 03:44:53', 4),
+(37, 4, NULL, 2, 2537.50, '2024-02-15 05:19:32', 4),
+(38, 4, NULL, 2, 255.00, '2024-02-15 05:24:09', 4),
+(40, 15, NULL, 3, 2675.00, '2024-02-15 09:59:27', 4),
+(41, 4, NULL, 1, 117.50, '2024-02-16 02:38:36', 5),
+(44, 4, NULL, 1, 2400.00, '2024-02-16 10:23:52', 2),
+(46, 4, NULL, 1, 1269.20, '2024-02-16 10:26:15', 5);
 
 -- --------------------------------------------------------
 
@@ -266,7 +274,10 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `total_pr
 (106, 38, 56, 1, 125.00),
 (110, 40, 6, 1, 125.00),
 (111, 40, 56, 1, 125.00),
-(112, 40, 5, 1, 2200.00);
+(112, 40, 5, 1, 2200.00),
+(113, 41, 6, 1, 125.00),
+(116, 44, 5, 1, 2200.00),
+(118, 46, 57, 1, 1172.00);
 
 -- --------------------------------------------------------
 
@@ -285,8 +296,10 @@ CREATE TABLE `order_status` (
 
 INSERT INTO `order_status` (`id`, `status_name`) VALUES
 (1, 'Pending'),
-(2, 'Processing'),
-(3, 'Shipped');
+(2, 'Payment Received'),
+(3, 'Processing'),
+(4, 'Shipped'),
+(5, 'Cancel');
 
 -- --------------------------------------------------------
 
@@ -300,6 +313,7 @@ CREATE TABLE `payments` (
   `payment_amount` decimal(10,2) NOT NULL,
   `payment_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `payment_method` varchar(255) NOT NULL,
+  `transanction_code` varchar(255) NOT NULL,
   `status` varchar(50) NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -308,8 +322,11 @@ CREATE TABLE `payments` (
 -- Dumping data for table `payments`
 --
 
-INSERT INTO `payments` (`payment_id`, `order_id`, `payment_amount`, `payment_date`, `payment_method`, `status`, `user_id`) VALUES
-(1, 40, 2675.00, '2024-02-15 09:59:27', 'bkash', 'Pending', 15);
+INSERT INTO `payments` (`payment_id`, `order_id`, `payment_amount`, `payment_date`, `payment_method`, `transanction_code`, `status`, `user_id`) VALUES
+(1, 40, 2675.00, '2024-02-15 09:59:27', 'bkash', '', 'Paid', 15),
+(2, 41, 117.50, '2024-02-16 02:38:36', 'bkash', '', 'Paid', 4),
+(3, 44, 2400.00, '2024-02-16 10:23:52', 'bkash', '', 'Paid', 4),
+(4, 46, 1269.20, '2024-02-16 10:26:15', 'bkash', '45HSBXGS329', 'Paid', 4);
 
 -- --------------------------------------------------------
 
@@ -335,7 +352,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `product_photo`, `description`, `price`, `category_id`, `stock_quantity`, `currency_code`, `created_at`, `updated_at`) VALUES
-(3, ' Apple iPhone 14 Pro Max', 0x6950686f6e652d31342d50726f2d446565702d507572706c652d373330302e6a7067, 'iPhone 14 Pro Max', 1500.00, 1, 4, 'BDT', '2024-01-27 09:24:18', '2024-02-01 02:57:49'),
+(3, ' Apple iPhone 14 Pro Max', 0x6950686f6e652d31342d50726f2d446565702d507572706c652d373330302e6a7067, 'iPhone 14 Pro Max', 1500.00, 1, 6, 'BDT', '2024-01-27 09:24:18', '2024-02-16 10:13:59'),
 (5, 'Laikou California Vitamin C Serum ', 0x62303638626332346230633063633134376338636165623465356533363864612e6a70675f33303078307137352e77656270, 'badgeLaikou California Vitamin C Serum Antioxidant Remove Spots -17 ml', 2200.00, 31, 25, 'BDT', '2024-01-27 09:34:01', '2024-02-01 05:46:35'),
 (6, 'রুম স্লিপার শীতকালীন রুম স্লিপার', 0x66633734333462633734616464646664626537316563393666353565653330622e6a70675f373530783735302e6a70675f2e77656270, 'রুম স্লিপার শীতকালীন রুম স্লিপার শীতকালীন উষ্ণ রুম স্লিপার শীতকালীন জুতা পুরুষ/মহিলাদের জন্য ঘরের জুতা', 125.00, 3, 35, 'BDT', '2024-01-29 04:47:03', '2024-01-29 04:47:03'),
 (56, 'Dexe Hair Building Fiber-22g', 0x31312d382e6a7067, 'খাঁটি dexe চুলের বিল্ডিং ফাইবার 22g-কালো', 125.00, 30, 20, 'BDT', '2024-01-30 06:06:31', '2024-01-30 06:06:31'),
@@ -503,7 +520,7 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `access_logs`
 --
 ALTER TABLE `access_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `banner_photos`
@@ -521,13 +538,13 @@ ALTER TABLE `blocked_ips`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=173;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=170;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=174;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -545,25 +562,25 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
 
 --
 -- AUTO_INCREMENT for table `order_status`
 --
 ALTER TABLE `order_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `products`
