@@ -74,9 +74,9 @@ try {
     // Process payment
     $paymentMethod = $_POST['paymentMethod'];
     $transactionCode = $_POST['transactionCode'];
+    $insertPayment = $connection->prepare("INSERT INTO `payments` (order_id, payment_amount, payment_date, payment_method, transanction_code, status, user_id) VALUES (?, ?, NOW(), ?, ?, 'Pending', ?)");
+    $insertPayment->execute([$orderId, $grandTotal, $paymentMethod, $transactionCode, $customerId]);
 
-    $insertPayment = $connection->prepare("INSERT INTO `payments` (order_id, payment_amount, payment_date, payment_method, status, user_id) VALUES (?, ?, NOW(), ?, 'Pending', ?)");
-    $insertPayment->execute([$orderId, $grandTotal, $paymentMethod, $customerId]);
 
     if ($insertPayment->rowCount() === 0) {
         // Handle the case where the payment insertion was not successful

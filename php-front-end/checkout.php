@@ -302,7 +302,7 @@ if (empty($cartItems)) {
 
                             <div class="w-full p-3">
                                 <label for="transactionCode" class="block text-sm font-medium text-gray-700">Transaction Code</label>
-                                <input type="text" id="transactionCode" name="transactionCode" class="h-11 form-input shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-mdmt-1 p-2 w-full border rounded-md">
+                                <input type="text" id="transactionCode" name="transactionCode" class="h-11 form-input shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-mdmt-1 p-2 border rounded-md">
                             </div>
 
                         </div>
