@@ -197,6 +197,8 @@ if ($stmt = $connection->prepare($sql)) {
                     </div>
                 </div>
                 <div class="h-container">
+                    <h1 class="page-heading">Customers's</h1>
+                    <p>All customers data</p>
                     <div class="overflow-auto">
                         <?php
                         // Include config file

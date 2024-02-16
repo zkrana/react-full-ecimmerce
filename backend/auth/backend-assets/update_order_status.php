@@ -2,20 +2,38 @@
 require_once '../db-connection/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $userId = isset($_POST['user_id']) ? $_POST['user_id'] : '';
+    $orderId = isset($_POST['order_id']) ? $_POST['order_id'] : '';
     $newOrderStatus = isset($_POST['new_order_status']) ? $_POST['new_order_status'] : '';
 
-    if (!empty($userId) && !empty($newOrderStatus)) {
+    if (!empty($orderId) && !empty($newOrderStatus)) {
         // Update the order status in the 'orders' table
-        $updateSql = "UPDATE orders SET order_status_id = :newOrderStatus WHERE user_id = :userId";
-        $updateQuery = $connection->prepare($updateSql);
-        $updateQuery->bindParam(':newOrderStatus', $newOrderStatus, PDO::PARAM_INT);
-        $updateQuery->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $updateQuery->execute();
+        $updateOrderSql = "UPDATE orders SET order_status_id = :newOrderStatus WHERE id = :orderId";
+        $updateOrderQuery = $connection->prepare($updateOrderSql);
+        $updateOrderQuery->bindParam(':newOrderStatus', $newOrderStatus, PDO::PARAM_INT);
+        $updateOrderQuery->bindParam(':orderId', $orderId, PDO::PARAM_INT);
 
-        // You can add additional logic or error handling here if needed
-        echo json_encode(['success' => true]);
-        exit;
+        // Update the payment status in the 'payments' table
+        $paymentStatus = ($newOrderStatus == 1) ? 'Pending' : 'Paid';
+        $updatePaymentSql = "UPDATE payments SET status = :paymentStatus WHERE order_id = :orderId";
+        $updatePaymentQuery = $connection->prepare($updatePaymentSql);
+        $updatePaymentQuery->bindParam(':paymentStatus', $paymentStatus, PDO::PARAM_STR);
+        $updatePaymentQuery->bindParam(':orderId', $orderId, PDO::PARAM_INT);
+
+        try {
+            $connection->beginTransaction();
+
+            $updateOrderQuery->execute();
+            $updatePaymentQuery->execute();
+
+            $connection->commit();
+
+            echo json_encode(['success' => true]);
+            exit;
+        } catch (PDOException $e) {
+            $connection->rollBack();
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            exit;
+        }
     }
 }
 

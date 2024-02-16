@@ -16,10 +16,17 @@
         echo '      <h2 class="text-xl font-semibold mb-2">' . $product['name'] . '</h2>';
         echo '      <div class="flex flex-col gap-3">';
         echo '        <div class="text-lg font-bold text-blue-600">'. $product['currency_code'] .' ' . $product['price'] .'</div>';
-        echo '        <button type="button" class="add-to-cart-btn bg-blue-600 text-white px-4 py-2 rounded-md 
-                    hover:bg-blue-700 transition duration-300 ease-in-out" data-product-id="' . $product['id'] . '">';
-        echo '            Add to Cart';
-        echo '        </button>';
+        
+        // Check if the "quantity" key exists before trying to access it
+        if (isset($product['stock_quantity']) && $product['stock_quantity'] > 0) {
+            echo '        <button type="button" class="add-to-cart-btn bg-blue-600 text-white px-4 py-2 rounded-md 
+                        hover:bg-blue-700 transition duration-300 ease-in-out" data-product-id="' . $product['id'] . '">';
+            echo '            Add to Cart';
+            echo '        </button>';
+        } else {
+            echo '        <div class="text-red-500">Out of stock</div>';
+        }
+        
         echo '      </div>';
         echo '    </div>';
     }
@@ -28,6 +35,8 @@
     echo ' </div>';
     echo '</div>';
 ?>
+
+
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>

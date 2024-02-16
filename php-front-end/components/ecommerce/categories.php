@@ -6,13 +6,13 @@ $categoriesData = json_decode(file_get_contents("http://localhost/reactcrud/back
 
 // Include your HTML header, if applicable
 
-echo '<div class="flex flex-wrap gap-8">';
+echo '<div class="flex flex-wrap xl:gap-8 gap-5">';
 $categoriesToShow = ['Men\'s & Boy\'s Fashion', 'Women\'s & Girl\'s Fashion', 'Kids', 'Health & Beauty'];
 
 foreach ($categoriesData as $category) {
     // Check if the current category is in the list of categories to show
     if (in_array($category['name'], $categoriesToShow)) {
-        echo '    <div class="ecom-cat-item w-[calc(25%-24px)] flex space-x-4 justify-between rounded p-3 border border-slate-200">';
+        echo '    <div class="ecom-cat-item xl:w-[calc(25%-24px)] lg:w-[calc(33.3333%-13.3333px)] sm:w-[calc(50%-13.3333px)] w-full flex space-x-4 justify-between rounded p-3 border border-slate-200">';
         echo '      <div class="ecom-cat-photo w-32 h-32 rounded-sm border border-slate-200 bg-gray-300 flex justify-center items-center">';
         echo '        <img src="http://localhost/reactcrud/backend/auth/assets/categories/' . $category['id'] . '/' . $category['photo_name'] . '" alt="Category Image: ' . $category['name'] . '" class="w-full h-full object-fill" />';
         echo '      </div>';

@@ -793,3 +793,51 @@ View Order
     overflow: auto;
   }
 }
+.table.view_order thead th {
+  width: 20%;
+}
+
+.order-filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.heading {
+  width: 20%;
+}
+.filter-wrapper {
+  width: 50%;
+}
+.filter-wrapper .row {
+  display: flex;
+  align-items: end;
+}
+@media screen and (max-width: 1366px) {
+  .order {
+    overflow: auto;
+  }
+  .filter-wrapper form > div {
+    width: 190px !important;
+  }
+  .filter-wrapper {
+    display: flex;
+    justify-content: end;
+  }
+  .filter-wrapper form > div:last-child {
+    width: 136px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .order-filter {
+    flex-direction: column;
+    align-items: baseline;
+  }
+  .heading {
+    width: 100%;
+  }
+  .filter-wrapper {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

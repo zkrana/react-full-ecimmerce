@@ -17,11 +17,11 @@ $maxAttempts = 3;
 $lockoutTime = 300; // 5 minutes
 $blockTime = 3600; // 1 hour
 
-// if (isset($_SESSION['login_attempts']) && $_SESSION['login_attempts'] >= $maxAttempts) {
-//     blockIpAddress($_SERVER['REMOTE_ADDR'], $blockTime);
-//     header("location: ../../index.php?error=account_locked");
-//     exit;
-// }
+if (isset($_SESSION['login_attempts']) && $_SESSION['login_attempts'] >= $maxAttempts) {
+    blockIpAddress($_SERVER['REMOTE_ADDR'], $blockTime);
+    header("location: ../../index.php?error=account_locked");
+    exit;
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $clientTimeZone = isset($_POST['timezone']) ? $_POST['timezone'] : 'UTC';
@@ -29,11 +29,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $_SESSION['login_attempts'] = isset($_SESSION['login_attempts']) ? $_SESSION['login_attempts'] + 1 : 1;
 
-    // if (isset($_SESSION['last_login_attempt_time']) &&
-    //     time() - $_SESSION['last_login_attempt_time'] < $lockoutTime) {
-    //     header("location: ../../index.php?error=rate_limited");
-    //     exit;
-    // }
+    if (isset($_SESSION['last_login_attempt_time']) &&
+        time() - $_SESSION['last_login_attempt_time'] < $lockoutTime) {
+        header("location: ../../index.php?error=rate_limited");
+        exit;
+    }
 
     $_SESSION['last_login_attempt_time'] = time();
 
@@ -111,44 +111,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// function blockIpAddress($ipAddress, $blockTime) {
-//     global $connection;
-//     $clientTimeZone = isset($_POST['timezone']) ? $_POST['timezone'] : 'UTC';
-//     date_default_timezone_set($clientTimeZone);
+function blockIpAddress($ipAddress, $blockTime) {
+    global $connection;
+    $clientTimeZone = isset($_POST['timezone']) ? $_POST['timezone'] : 'UTC';
+    date_default_timezone_set($clientTimeZone);
 
-//     // Debug: Print client's time zone and current server time
-//     echo "Client's Time Zone: $clientTimeZone<br>";
-//     echo "Server's Time: " . date('Y-m-d H:i:s') . "<br>";
+    // Debug: Print client's time zone and current server time
+    echo "Client's Time Zone: $clientTimeZone<br>";
+    echo "Server's Time: " . date('Y-m-d H:i:s') . "<br>";
 
-//     $checkQuery = "SELECT * FROM blocked_ips WHERE ip_address = ? AND blocked_until > NOW()";
-//     $checkStmt = $connection->prepare($checkQuery);
-//     $checkStmt->execute([$ipAddress]);
-//     $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
+    $checkQuery = "SELECT * FROM blocked_ips WHERE ip_address = ? AND blocked_until > NOW()";
+    $checkStmt = $connection->prepare($checkQuery);
+    $checkStmt->execute([$ipAddress]);
+    $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
-//     if (!$checkResult) {
-//         $minBlockTime = 15 * 60; // 15 minutes in seconds
-//         $blockedUntil = date('Y-m-d H:i:s', strtotime("+ " . max($blockTime, $minBlockTime) . " seconds"));
+    if (!$checkResult) {
+        $minBlockTime = 15 * 60; // 15 minutes in seconds
+        $blockedUntil = date('Y-m-d H:i:s', strtotime("+ " . max($blockTime, $minBlockTime) . " seconds"));
 
-//         // Debug: Print calculated blockedUntil time
-//         echo "Blocked Until: $blockedUntil<br>";
+        // Debug: Print calculated blockedUntil time
+        echo "Blocked Until: $blockedUntil<br>";
 
-//         $insertQuery = "INSERT INTO blocked_ips (ip_address, blocked_until) VALUES (?, ?)";
-//         $insertStmt = $connection->prepare($insertQuery);
-//         $insertStmt->execute([$ipAddress, $blockedUntil]);
-//     } else {
-//         $blockedUntil = $checkResult['blocked_until'];
+        $insertQuery = "INSERT INTO blocked_ips (ip_address, blocked_until) VALUES (?, ?)";
+        $insertStmt = $connection->prepare($insertQuery);
+        $insertStmt->execute([$ipAddress, $blockedUntil]);
+    } else {
+        $blockedUntil = $checkResult['blocked_until'];
 
-//         if (strtotime($blockedUntil) <= time()) {
-//             $removeQuery = "DELETE FROM blocked_ips WHERE ip_address = ?";
-//             $removeStmt = $connection->prepare($removeQuery);
-//             $removeStmt->execute([$ipAddress]);
-//         }
-//     }
+        if (strtotime($blockedUntil) <= time()) {
+            $removeQuery = "DELETE FROM blocked_ips WHERE ip_address = ?";
+            $removeStmt = $connection->prepare($removeQuery);
+            $removeStmt->execute([$ipAddress]);
+        }
+    }
 
-//     $checkStmt = null;
-//     $insertStmt = null;
-//     $removeStmt = null;
-// }
+    $checkStmt = null;
+    $insertStmt = null;
+    $removeStmt = null;
+}
 
 function logAccess($ipAddress) {
     global $connection;

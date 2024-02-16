@@ -136,4 +136,25 @@
       padding-right: 0.75rem;
     }
   }
+
+  .fixedHead {
+    position: fixed;
+    top: 0;
+    max-width: 100% !important;
+    width: 100%;
+    z-index: 1000;
+    left: 0;
+    right: 0;
+    background-color: white; /* Customize the background color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a box shadow if desired */
+  }
+  .fixedHead > div:first-child {
+    @apply max-w-7xl mx-auto w-full;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .fixedHead {
+      padding: 0 16px;
+    }
+  }
 }

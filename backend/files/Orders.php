@@ -196,6 +196,111 @@ if ($stmt = $connection->prepare($sql)) {
                         </div>
                     </div>
                 </div>
+
+                <?php
+                // Function to get order status name
+                function getOrderStatusName($statusId) {
+                    // You can replace this with a database query to get the status name based on the status ID
+                    $statusNames = [
+                        1 => 'Pending',
+                        2 => 'Payment Received',
+                        3 => 'Processing',
+                        4 => 'Shipped',
+                        5 => 'Cancel',
+                    ];
+
+                    return isset($statusNames[$statusId]) ? $statusNames[$statusId] : 'Unknown';
+                }
+
+                // Function to decrypt email
+                function xorDecrypt($input, $key) {
+                    // Decode the base64-encoded input
+                    $decodedInput = base64_decode($input);
+
+                    // XOR decryption
+                    $decrypted = '';
+                    $keyLength = strlen($key);
+
+                    for ($i = 0; $i < strlen($decodedInput); $i++) {
+                        $decrypted .= $decodedInput[$i] ^ $key[$i % $keyLength];
+                    }
+
+                    return $decrypted;
+                }
+
+
+                // Determine whether the select box should be disabled
+                // $disabledAttribute = ($orderStatus == 5) ? 'disabled' : '';
+                // Fetch orders along with customer details from the database based on date filter
+                if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
+                    $start_date = $_GET['start_date'];
+                    $end_date = $_GET['end_date'];
+
+                    // Validate and sanitize the input dates (you should enhance this based on your requirements)
+                    $start_date = filter_var($start_date, FILTER_SANITIZE_STRING);
+                    $end_date = filter_var($end_date, FILTER_SANITIZE_STRING);
+
+                    // Debugging: Print start_date, end_date, and the modified SQL query
+                    // echo "Debug: Start Date: $start_date, End Date: $end_date<br>";
+
+                    // Adjust the SQL query to fetch orders within the specified date range
+                    $sql = "SELECT
+                                orders.id AS order_id,
+                                customers.id AS customer_id,
+                                customers.ip_address,
+                                customers.username,
+                                customers.email,
+                                customers.photo,
+                                customers.request_time,
+                                orders.quantity AS quantity,
+                                orders.order_status_id AS order_status,
+                                payments.payment_amount,
+                                payments.payment_method
+                            FROM customers
+                            LEFT JOIN orders ON customers.id = orders.user_id
+                            LEFT JOIN payments ON orders.id = payments.order_id
+                            WHERE orders.order_date BETWEEN :start_date AND DATE_ADD(:end_date, INTERVAL 1 DAY)
+                            ORDER BY orders.id DESC";
+
+                    // Debugging: Print the modified SQL query
+                    // echo "Debug: SQL Query: $sql<br>";
+
+                    $stmt = $connection->prepare($sql);
+                    $stmt->bindParam(':start_date', $start_date, PDO::PARAM_STR);
+                    $stmt->bindParam(':end_date', $end_date, PDO::PARAM_STR);
+                    $stmt->execute();
+                    // After executing the query
+                // echo "Debug: Number of Rows: " . $stmt->rowCount() . "<br>";
+
+                } else {
+                    // If no date filter is applied, fetch all orders
+                    $sql = "SELECT
+                                orders.id AS order_id,
+                                customers.id AS customer_id,
+                                customers.ip_address,
+                                customers.username,
+                                customers.email,
+                                customers.photo,
+                                customers.request_time,
+                                orders.quantity AS quantity,
+                                orders.order_status_id AS order_status,
+                                payments.payment_amount,
+                                payments.payment_method
+                            FROM customers
+                            LEFT JOIN orders ON customers.id = orders.user_id
+                            LEFT JOIN payments ON orders.id = payments.order_id
+                            ORDER BY orders.id DESC";
+
+                    // Debugging: Print the SQL query
+                    // echo "Debug: SQL Query: $sql<br>";
+
+                    $stmt = $connection->query($sql);
+                }
+
+                // Display the orders
+                ?>
+
+
                 <div class="h-container">
                     <?php
                     // Check for success query parameter
@@ -212,103 +317,115 @@ if ($stmt = $connection->prepare($sql)) {
                     ?>
 
                     <div class="main">
-                        <h1 class="page-heading">Order's</h1>
-                        <p>All orders data</p>
+                        <div class="order-filter">
+                            <div class="heading">
+                                <h1 class="page-heading">Order's</h1>
+                                <p>All orders data</p>
+                            </div>
+                            <div class="filter-wrapper">
+                                <form method="get" action="" class="row g-3">
+                                    <div class="col-md-5">
+                                        <label for="start_date" class="form-label">Start Date:</label>
+                                        <input type="date" id="start_date" name="start_date" class="form-control">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="end_date" class="form-label">End Date:</label>
+                                        <input type="date" id="end_date" name="end_date" class="form-control">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-primary">Apply Filter</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    <div class="order">
+                         <?php
+                        if ($stmt->rowCount() > 0) {
+                        echo '<table class="table mt-3">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#Order ID</th>
+                                        <th scope="col">IP Address</th>
+                                        <th scope="col">Username</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Product Count</th>
+                                        <th scope="col">Request Time</th>
+                                        <th scope="col">Order Status</th>
+                                        <th scope="col">Payment Amount</th>
+                                        <th scope="col">Payment Method</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>';
 
-                        <?php
-                        // Fetch customers along with their order count from the database
-                        $sql = "SELECT
-                                    customers.id,
-                                    customers.ip_address,
-                                    customers.username,
-                                    customers.email,
-                                    customers.photo,
-                                    customers.request_time,
-                                    COUNT(orders.id) AS order_count,
-                                    MAX(orders.order_status_id) AS order_status,
-                                    payments.payment_amount,
-                                    payments.payment_method
-                                FROM customers
-                                LEFT JOIN orders ON customers.id = orders.user_id
-                                LEFT JOIN payments ON orders.id = payments.order_id
-                                GROUP BY customers.id";
-                        $result = $connection->query($sql);
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            $decryptedEmail = xorDecrypt($row["email"], 'shTYTS,os(**0te455432%3sgks$#SG');
 
-                        // Decrypt
-                        function xorDecrypt($input, $key)
-                        {
-                            // Decode the base64-encoded input
-                            $decodedInput = base64_decode($input);
+                            // Set the order status based on the database result
+                            $orderStatus = $row["order_status"];
 
-                            // XOR decryption
-                            $decrypted = '';
-                            $keyLength = strlen($key);
-
-                            for ($i = 0; $i < strlen($decodedInput); $i++) {
-                                $decrypted .= $decodedInput[$i] ^ $key[$i % $keyLength];
+                            // Determine the background color based on the order status
+                            switch ($orderStatus) {
+                                case 1:
+                                    $bgColor = 'background-color: #ffffcc;'; // Light yellow
+                                    break;
+                                case 2:
+                                    $bgColor = 'background-color: #ccffcc;'; // Light green
+                                    break;
+                                case 3:
+                                    $bgColor = 'background-color: #c2f0c2;'; // Light pastel green
+                                    break;
+                                case 4:
+                                    $bgColor = 'background-color: #d9ffd9;'; // Very light green
+                                    $statusText = 'Complete';
+                                    break;
+                                case 5:
+                                    $bgColor = 'background-color: #ffcccc;'; // Light red for Cancel
+                                    $statusText = 'Cancel';
+                                    break;
+                                default:
+                                    $bgColor = '';
+                                    $statusText = 'Unknown';
                             }
 
-                            return $decrypted;
+                            // If the order status is "Shipped," set statusText to "Complete"
+                            if ($orderStatus == 4) {
+                                $statusText = 'Complete';
+                            }
+
+                            $disabledAttribute = ($orderStatus == 4 || $orderStatus == 5) ? 'disabled' : '';
+
+                            echo '<tr style="' . $bgColor . '">
+                                    <th scope="row">' . $row["order_id"] . '</th>
+                                    <td>' . $row["ip_address"] . '</td>
+                                    <td>' . $row["username"] . '</td>
+                                    <td>' . $decryptedEmail . '</td>
+                                    <td>' . (isset($row['quantity']) ? $row['quantity'] : 'N/A') . '</td>
+                                    <td>' . $row["request_time"] . '</td>
+                                    <td>
+                                        <select class="form-select order-status-dropdown" aria-label="Order Status" data-order-id="' . $row["order_id"] . '" ' . $disabledAttribute . ' style="' . $bgColor . ';">
+                                            <option value="1" ' . ($orderStatus == 1 ? 'selected' : '') . '>Pending</option>
+                                            <option value="2" ' . ($orderStatus == 2 ? 'selected' : '') . '>Payment Received</option>
+                                            <option value="3" ' . ($orderStatus == 3 ? 'selected' : '') . '>Processing</option>
+                                            <option value="4" ' . ($orderStatus == 4 ? 'selected' : '') . '>' . $statusText . '</option>
+                                            <option value="5" ' . ($orderStatus == 5 ? 'selected' : '') . '>Cancel</option>
+                                        </select>
+                                    </td>
+                                    <td>' . $row["payment_amount"] . '</td>
+                                    <td>' . $row["payment_method"] . '</td>
+                                    <td>
+                                        <a type="button" href="../files/customer/view_orders.php?order_id=' . $row["order_id"] . '" class="btn btn-primary view-orders-btn">View Orders</a>
+                                    </td>
+                                </tr>';
                         }
-
-                        if ($result->rowCount() > 0) {
-                            echo '<table class="table mt-3">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">IP Address</th>
-                                            <th scope="col">Username</th>
-                                            <th scope="col">Email</th>
-                                            <th scope="col">Photo</th>
-                                            <th scope="col">Request Time</th>
-                                            <th scope="col">Order Count</th>
-                                            <th scope="col">Order Status</th>
-                                            <th scope="col">Payment Amount</th>
-                                            <th scope="col">Payment Method</th>
-                                            <th scope="col">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>';
-
-                            // Output data of each row
-                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                $decryptedEmail = xorDecrypt($row["email"], 'shTYTS,os(**0te455432%3sgks$#SG');
-                                echo '<tr>
-                                        <th scope="row">' . $row["id"] . '</th>
-                                        <td>' . $row["ip_address"] . '</td>
-                                        <td>' . $row["username"] . '</td>
-                                        <td>' . $decryptedEmail . '</td>
-                                        <td class="customer-photo">';
-
-                                // Extracting photo name
-                                $photoPath = $row["photo"];
-                                $photoName = pathinfo($photoPath, PATHINFO_BASENAME);
-
-                                echo '<img src="../auth/assets/user-profile/' . $row["username"] . '/' . $photoName . '" alt="' . $row["username"] . '" />
-                                        </td>
-                                        <td>' . $row["request_time"] . '</td>
-                                        <td>' . $row["order_count"] . '</td>
-                                        <td>
-                                            <select class="form-select order-status-dropdown" aria-label="Order Status" data-user-id="' . $row["id"] . '">
-                                                <option value="1" ' . (isset($row["order_status"]) && $row["order_status"] == 1 ? 'selected' : '') . '>Pending</option>
-                                                <option value="2" ' . (isset($row["order_status"]) && $row["order_status"] == 2 ? 'selected' : '') . '>Processing</option>
-                                                <option value="3" ' . (isset($row["order_status"]) && $row["order_status"] == 3 ? 'selected' : '') . '>Shipped</option>
-                                            </select>
-                                        </td>
-                                        <td>' . $row["payment_amount"] . '</td>
-                                        <td>' . $row["payment_method"] . '</td>
-                                        <td>
-                                            <a type="button" href="../files/customer/view_orders.php?user_id=' . $row["id"] . '" class="btn btn-primary view-orders-btn">View Orders</a>
-                                        </td>
-                                    </tr>';
-                            }
-
                             echo '</tbody></table>';
                         } else {
-                            echo "No customers found.";
+                            echo "No orders found.";
                         }
                         ?>
+                    
                     </div>
+                   </div>
                 </div>
 
             </div>
@@ -352,34 +469,41 @@ if ($stmt = $connection->prepare($sql)) {
                 this.removeAttribute('disabled');
             });
         });
+        document.addEventListener('DOMContentLoaded', function () {
+            // Enable the dropdown on change
+            document.querySelectorAll('.order-status-dropdown').forEach(function (dropdown) {
+                dropdown.addEventListener('change', function () {
+                    var orderId = this.dataset.orderId; // Change 'userId' to 'orderId' for consistency
+                    var newOrderStatus = this.value; // Get the selected order status
 
-          document.addEventListener('DOMContentLoaded', function () {
-        // Enable the dropdown on change
-        document.querySelectorAll('.order-status-dropdown').forEach(function (dropdown) {
-            dropdown.addEventListener('change', function () {
-                var userId = this.dataset.userId; // Get the user ID from the data attribute
-                var newOrderStatus = this.value; // Get the selected order status
+                    console.log('Order ID:', orderId);
+                    console.log('New Order Status:', newOrderStatus);
 
-                // Send an AJAX request to update_order_status.php
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', '../auth/backend-assets/update_order_status.php ', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        var response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            // Update successful, you can handle success feedback if needed
-                            console.log('Order status updated successfully.');
-                        } else {
-                            // Handle error or display error message
-                            console.error('Error updating order status: ' + response.message);
+                    // Send an AJAX request to update_order_status.php
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '../auth/backend-assets/update_order_status.php', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4) {
+                            console.log('Response:', xhr.responseText);
+                            if (xhr.status === 200) {
+                                var response = JSON.parse(xhr.responseText);
+                                if (response.success) {
+                                    // Update successful, you can handle success feedback if needed
+                                    console.log('Order status updated successfully.');
+                                } else {
+                                    // Handle error or display error message
+                                    console.error('Error updating order status: ' + response.message);
+                                }
+                            } else {
+                                console.error('HTTP request failed with status ' + xhr.status);
+                            }
                         }
-                    }
-                };
-                xhr.send('user_id=' + userId + '&new_order_status=' + newOrderStatus);
+                    };
+                    xhr.send('order_id=' + orderId + '&new_order_status=' + newOrderStatus);
+                });
             });
         });
-    });
     </script>
 </body>
 </html>
