@@ -53,7 +53,7 @@ if ($stmt = $connection->prepare($sql)) {
             <div class="app-sidebar">
                 <div class="side-header flex pr-3">
                     <div class="logo flex">
-                        <img src="images/logo.webp" alt="logo">
+                        <img src="../images/logo.webp" alt="logo">
                     </div>
                     <div id="des-nav" class="wrapper-n-icon">
                         <i class="fa-solid fa-bars"></i>

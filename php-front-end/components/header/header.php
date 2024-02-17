@@ -115,8 +115,7 @@ $userID = getUserID();
                                 <div class="d-u sm:w-11 w-7 sm:h-11 h-7 rounded-full bg-white border border-gray-200
                                 flex justify-center items-center text-white cursor-pointer"
                                     onclick="toggleUserDropdown()">
-                                    <img src="/reactcrud/php-front-end/assets/user-profile/user-profile-icon-vector-avatar-600nw-2247726673.webp" alt="User"
-                                        class="w-full h-full rounded-full object-cover">
+                                    <img src="http://localhost/reactcrud/php-front-end/<?php echo $userID; ?>/<?php echo $userPhoto; ?>" alt="User" class="w-10 h-10 rounded-full object-cover">
                                 </div>
 
                                 <?php if ($user) { ?>
@@ -125,7 +124,7 @@ $userID = getUserID();
                                             <?php if ($userPhoto) { ?>
                                                 <div class="u-status flex items-center gap-2">
                                                     <div class="u w-11 h-11 bg-slate-400 rounded-full m-1 flex justify-center items-center border-2 border-gray-500">
-                                                        <img src="http://localhost/reactcrud/backend/auth/<?php echo $userPhoto; ?>" alt="User" class="w-10 h-10 rounded-full object-cover">
+                                                        <img src="http://localhost/reactcrud/php-front-end/<?php echo $userID; ?>/<?php echo $userPhoto; ?>" alt="User" class="w-10 h-10 rounded-full object-cover">
                                                     </div>
 
                                                     <div class="uer">
@@ -156,7 +155,9 @@ $userID = getUserID();
                                             <?php } ?>
                                         </div>
                                         <ul class="flex flex-col gap-3 mt-3">
-                                            <li>Profile</li>
+                                            <li> 
+                                                <a href="/reactcrud/php-front-end/userprofile.php">Profile</a>
+                                            </li>
                                             <li>Security</li>
                                             <li>Book</li>
                                             <li class="pt-3 border-t border-slate-200">

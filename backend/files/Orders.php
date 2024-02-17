@@ -364,7 +364,10 @@ if ($stmt = $connection->prepare($sql)) {
                             // Set the order status based on the database result
                             $orderStatus = $row["order_status"];
 
-                            // Determine the background color based on the order status
+                            // Initialize $statusText
+                            $statusText = '';
+
+                            // Determine the background color and status text based on the order status
                             switch ($orderStatus) {
                                 case 1:
                                     $bgColor = 'background-color: #ffffcc;'; // Light yellow
@@ -377,7 +380,7 @@ if ($stmt = $connection->prepare($sql)) {
                                     break;
                                 case 4:
                                     $bgColor = 'background-color: #d9ffd9;'; // Very light green
-                                    $statusText = 'Complete';
+                                    $statusText = 'Shipped';
                                     break;
                                 case 5:
                                     $bgColor = 'background-color: #ffcccc;'; // Light red for Cancel
@@ -418,6 +421,7 @@ if ($stmt = $connection->prepare($sql)) {
                                     </td>
                                 </tr>';
                         }
+
                             echo '</tbody></table>';
                         } else {
                             echo "No orders found.";
@@ -473,23 +477,20 @@ if ($stmt = $connection->prepare($sql)) {
             // Enable the dropdown on change
             document.querySelectorAll('.order-status-dropdown').forEach(function (dropdown) {
                 dropdown.addEventListener('change', function () {
-                    var orderId = this.dataset.orderId; // Change 'userId' to 'orderId' for consistency
-                    var newOrderStatus = this.value; // Get the selected order status
-
-                    console.log('Order ID:', orderId);
-                    console.log('New Order Status:', newOrderStatus);
+                    var orderId = this.dataset.orderId;
+                    var newOrderStatus = this.value;
 
                     // Send an AJAX request to update_order_status.php
                     var xhr = new XMLHttpRequest();
                     xhr.open('POST', '../auth/backend-assets/update_order_status.php', true);
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
                     xhr.onreadystatechange = function () {
                         if (xhr.readyState === 4) {
-                            console.log('Response:', xhr.responseText);
                             if (xhr.status === 200) {
                                 var response = JSON.parse(xhr.responseText);
                                 if (response.success) {
-                                    // Update successful, you can handle success feedback if needed
+                                    // Update successful
                                     console.log('Order status updated successfully.');
                                 } else {
                                     // Handle error or display error message
@@ -500,10 +501,20 @@ if ($stmt = $connection->prepare($sql)) {
                             }
                         }
                     };
+
                     xhr.send('order_id=' + orderId + '&new_order_status=' + newOrderStatus);
                 });
             });
+
+            // Enable the dropdown on click
+            document.querySelectorAll('.order-status-dropdown').forEach(function (dropdown) {
+                dropdown.addEventListener('click', function () {
+                    this.removeAttribute('disabled');
+                });
+            });
         });
+
+
     </script>
 </body>
 </html>

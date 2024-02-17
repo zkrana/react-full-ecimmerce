@@ -73,7 +73,7 @@ if (empty($cartItems)) {
                                         <div class="flex-grow pl-3">
                                             <h6 class="font-semibold uppercase text-gray-600"><?php echo $item['product_name']; ?></h6>
                                             <p class="text-gray-400 flex gap-2 items-center">
-                                                <button class="decrement w-5 h-5 flex justify-center items-center bg-slate-200 rounded-sm" data-item-id="<?php echo $item['item_id']; ?>">-</button>
+                                                <button type="button" class="decrement w-5 h-5 flex justify-center items-center bg-slate-200 rounded-sm" data-item-id="<?php echo $item['item_id']; ?>">-</button>
 
                                                 <span class="quantity w-5 h-5 flex items-center justify-center border border-slate-200" 
                                                     data-item-id="<?php echo $item['item_id']; ?>"
@@ -81,7 +81,7 @@ if (empty($cartItems)) {
                                                     <?php echo $item['quantity']; ?>
                                                 </span>
 
-                                                <button class="increment w-5 h-5 flex justify-center items-center bg-slate-200 rounded-sm" data-item-id="<?php echo $item['item_id']; ?>">+</button>
+                                                <button type="button" class="increment w-5 h-5 flex justify-center items-center bg-slate-200 rounded-sm" data-item-id="<?php echo $item['item_id']; ?>">+</button>
                                             </p>
                                         </div>
                                         <div>
@@ -121,7 +121,7 @@ if (empty($cartItems)) {
                                     </div>
                                 </div>
                                 <div class="px-2">
-                                    <button class="block w-full max-w-xs mx-auto border border-transparent bg-gray-400 hover:bg-gray-500 focus:bg-gray-500 text-white rounded-md px-5 py-2 font-semibold">APPLY</button>
+                                    <button type="button" class="block w-full max-w-xs mx-auto border border-transparent bg-gray-400 hover:bg-gray-500 focus:bg-gray-500 text-white rounded-md px-5 py-2 font-semibold">APPLY</button>
                                 </div>
                             </div>
                         </div>
@@ -170,44 +170,42 @@ if (empty($cartItems)) {
                     <div class="px-3 md:w-5/12">
                         <div class="w-full mx-auto rounded-lg bg-white border border-gray-200 p-3 text-gray-800 font-light mb-6">
                             <h2 class="text-2xl font-semibold mb-6">Shipping Details</h2>
-                            <div id="error-message" class="text-red-500 text-sm mb-4"></div>
+                            <?php
+                            if(isset($_GET['error'])){
+                                echo '<div id="error-message" class="text-red-500 text-base mb-4">' .$_GET['error'] .'</div>';
+                            }
+                            ?>
                             <div>
                                 <!-- First Name -->
                                 <div class="mb-4">
                                     <label for="first_name" class="block text-sm font-medium text-gray-600">First Name</label>
                                     <input type="text" id="first_name" name="billing_details[first_name]" class="mt-1 p-2 w-full border rounded-md">
                                 </div>
-
                                 <!-- Last Name -->
                                 <div class="mb-4">
                                     <label for="last_name" class="block text-sm font-medium text-gray-600">Last Name</label>
                                     <input type="text" id="last_name" name="billing_details[last_name]" class="mt-1 p-2 w-full border rounded-md">
                                 </div>
-
                                 <!-- Billing Address -->
                                 <div class="mb-4">
                                     <label for="billing_address" class="block text-sm font-medium text-gray-600">Billing Address</label>
                                     <textarea id="billing_address" name="billing_details[billing_address]" class="mt-1 p-2 w-full border rounded-md"></textarea>
                                 </div>
-
                                 <!-- City -->
                                 <div class="mb-4">
                                     <label for="city" class="block text-sm font-medium text-gray-600">City</label>
                                     <input type="text" id="city" name="billing_details[city]" class="mt-1 p-2 w-full border rounded-md">
                                 </div>
-
                                 <!-- State -->
                                 <div class="mb-4">
                                     <label for="state" class="block text-sm font-medium text-gray-600">State</label>
                                     <input type="text" id="state" name="billing_details[state]" class="mt-1 p-2 w-full border rounded-md">
                                 </div>
-
                                 <!-- Postal Code -->
                                 <div class="mb-4">
                                     <label for="postal_code" class="block text-sm font-medium text-gray-600">Postal Code</label>
                                     <input type="text" id="postal_code" name="billing_details[postal_code]" class="mt-1 p-2 w-full border rounded-md">
                                 </div>
-
                                 <!-- Country -->
                                 <div class="mb-4">
                                     <label for="country" class="block text-sm font-medium text-gray-600">Country</label>
@@ -218,7 +216,6 @@ if (empty($cartItems)) {
                                         <option value="UK">UK</option>
                                     </select>
                                 </div>
-
                                 <!-- Phone Number -->
                                 <div class="mb-4">
                                     <label for="phone_number" class="block text-sm font-medium text-gray-600">Phone Number</label>
@@ -320,40 +317,57 @@ if (empty($cartItems)) {
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $(".increment").on("click", function () {
-                updateQuantity($(this).data("item-id"), 1);
-            });
+$(document).ready(function () {
+    $(".increment").on("click", function () {
+        updateQuantity($(this).data("item-id"), 1);
+    });
 
-            $(".decrement").on("click", function () {
-                updateQuantity($(this).data("item-id"), -1);
-            });
+    $(".decrement").on("click", function () {
+        updateQuantity($(this).data("item-id"), -1);
+    });
 
-            function updateQuantity(itemId, change) {
-                var quantityElement = $(".quantity[data-item-id=" + itemId + "]");
-                var priceElement = $(".price[data-item-id=" + itemId + "]");
-                var unitPrice = parseFloat(quantityElement.data("unit-price"));
+    function updateQuantity(itemId, change) {
+        var quantityElement = $(".quantity[data-item-id=" + itemId + "]");
+        var unitPrice = parseFloat(quantityElement.data("unit-price"));
 
-                if (isNaN(unitPrice)) {
-                    console.error("Invalid unit price");
-                    return;
-                }
+        if (isNaN(unitPrice)) {
+            console.error("Invalid unit price");
+            return;
+        }
 
-                var currentQuantity = parseInt(quantityElement.text());
-                var newQuantity = currentQuantity + change;
+        var currentQuantity = parseInt(quantityElement.text());
+        var newQuantity = currentQuantity + change;
 
-                if (newQuantity < 1) {
-                    return; // Prevent negative quantities
-                }
+        if (newQuantity < 1) {
+            return; // Prevent negative quantities
+        }
 
-                // Update quantity on the page
-                quantityElement.text(newQuantity);
+        // Update quantity on the page
+        quantityElement.text(newQuantity);
 
-                // Calculate and update price on the page
-                var newPrice = newQuantity * unitPrice;
-                priceElement.text("$" + newPrice.toFixed(2));
+        // Calculate new price
+        var newPrice = newQuantity * unitPrice;
+
+        // Update price on the page
+        $(".price[data-item-id=" + itemId + "]").text("$" + newPrice.toFixed(2));
+
+        // Send AJAX request to update quantity in the database
+        $.ajax({
+            type: "POST",
+            url: "files/update_quantity.php", // Replace with your server-side script
+            data: { itemId: itemId, newQuantity: newQuantity },
+            success: function (response) {
+                // Handle success response if needed
+                console.log("Quantity updated successfully in the database.");
+            },
+            error: function (xhr, status, error) {
+                // Handle error response if needed
+                console.error("Error updating quantity: " + error);
             }
         });
+    }
+});
+
 
             // Check if there is an error message parameter in the URL
         const urlParams = new URLSearchParams(window.location.search);

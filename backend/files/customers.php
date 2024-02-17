@@ -227,6 +227,7 @@ if ($stmt = $connection->prepare($sql)) {
                                             <th scope="col">Postal Code</th>
                                             <th scope="col">Country</th>
                                             <th scope="col">Phone Number</th>
+                                            <th scope="col">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>';
@@ -250,6 +251,8 @@ if ($stmt = $connection->prepare($sql)) {
                                         <td>' . $row["postal_code"] . '</td>
                                         <td>' . $row["country"] . '</td>
                                         <td>' . $row["phone_number"] . '</td>
+                                        <td><a class="btn btn-danger" href="#?id='. $row["id"].'">Delete</a></td>
+
                                     </tr>';
                             }
 

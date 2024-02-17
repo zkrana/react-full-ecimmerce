@@ -9,16 +9,40 @@ try {
     // Start a database transaction
     $connection->beginTransaction();
 
+    // Check if the form is submitted
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header("Location: ../checkout.php?error=Invalid form submission");
+        exit();
+    }
+
+    // Check if billing details are provided
+    $billingDetails = $_POST['billing_details'];
+    if (empty($billingDetails['first_name']) || empty($billingDetails['last_name']) || empty($billingDetails['billing_address'])) {
+        header("Location: ../checkout.php?error=Please fill out all required billing details");
+        exit();
+    }
+
+    // Check if transaction code and payment method are provided
+    $paymentMethod = $_POST['paymentMethod'];
+    $transactionCode = $_POST['transactionCode'];
+    if (empty($transactionCode) || empty($paymentMethod)) {
+        header("Location: ../checkout.php?error=Transaction code and payment method are required");
+        exit();
+    }
+
     // Retrieve the cart items
     $cartItemsQuery = $connection->prepare("SELECT * FROM `cart_items`");
     $cartItemsQuery->execute();
     $cartItems = $cartItemsQuery->fetchAll(PDO::FETCH_ASSOC);
 
+    // Check if there are items in the cart
+    if (empty($cartItems)) {
+        header("Location: ../cart.php?error=Your cart is empty");
+        exit();
+    }
+
     // Get customerId (you may need to adapt this to your logic)
     $customerId = $_SESSION['userId']; // Assuming customerId is stored in the session
-
-    // Get billing details from the POST request
-    $billingDetails = $_POST['billing_details'];
 
     // Check if billing details are already filled for the customer
     $checkBillingDetails = $connection->prepare("SELECT id FROM customers WHERE id = ?");

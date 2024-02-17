@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 16, 2024 at 11:29 AM
+-- Generation Time: Feb 17, 2024 at 11:09 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -54,7 +54,9 @@ INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`, `blocked`) VALUES
 (64, '127.0.0.1', '2024-02-16 02:49:20', 0),
 (65, '127.0.0.1', '2024-02-16 06:26:27', 0),
 (66, '127.0.0.1', '2024-02-16 10:14:56', 0),
-(67, '127.0.0.1', '2024-02-16 10:26:59', 0);
+(67, '127.0.0.1', '2024-02-16 10:26:59', 0),
+(68, '127.0.0.1', '2024-02-17 04:19:17', 0),
+(69, '127.0.0.1', '2024-02-17 07:56:56', 0);
 
 -- --------------------------------------------------------
 
@@ -213,7 +215,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `ip_address`, `username`, `password`, `email`, `photo`, `request_time`, `first_name`, `last_name`, `billing_address`, `city`, `state`, `postal_code`, `country`, `phone_number`) VALUES
-(4, '127.0.0.1', 'rana', '$argon2id$v=19$m=2048,t=4,p=2$ZHZYWlRleVQyTkdTVDBvQQ$DCHsClzgmvP6K3sIJg7dkNJAxuoLmQFdhN/Z7c7NLXw', 'AQk6OBQ0QQ4aRARJXxk=', '', '2024-02-06 04:51:08', 'Ziaul', 'Kabir', 'Uttara', 'Dhaka', 'Uttara', '1230', 'Bangladesh', '01824228717'),
+(4, '127.0.0.1', 'rana', '$argon2id$v=19$m=2048,t=4,p=2$ZHZYWlRleVQyTkdTVDBvQQ$DCHsClzgmvP6K3sIJg7dkNJAxuoLmQFdhN/Z7c7NLXw', 'AQk6OBQ0QQ4aRARJXxk=', '../assets/user-profile/4/65d075038be93_pexels-jess-bailey-designs-788946.jpg', '2024-02-06 04:51:08', 'Ziaul', 'Kabir', 'Uttara', 'Dhaka', 'Uttara', '1230', 'Bangladesh', '01824228717'),
 (15, '127.0.0.1', 'zkrana', '$argon2id$v=19$m=2048,t=4,p=2$NGo2SFlzME1NMGdHcVdkSw$vZL1ndoyI8m1SC4bkSiqlUMx6DRz4J/psc3Sns58vH0', 'CQMmODoyQy8URUtDXFoGW1g=', '', '2024-02-15 08:51:44', 'Ziaul', 'ASDD', 'ASDFGHH', 'ADSFG', 'ADSFFGH', 'ASD', 'Bangladesh', '01824228717');
 
 -- --------------------------------------------------------
@@ -243,7 +245,16 @@ INSERT INTO `orders` (`id`, `user_id`, `product_id`, `quantity`, `total_price`, 
 (40, 15, NULL, 3, 2675.00, '2024-02-15 09:59:27', 4),
 (41, 4, NULL, 1, 117.50, '2024-02-16 02:38:36', 5),
 (44, 4, NULL, 1, 2400.00, '2024-02-16 10:23:52', 2),
-(46, 4, NULL, 1, 1269.20, '2024-02-16 10:26:15', 5);
+(46, 4, NULL, 1, 1269.20, '2024-02-16 10:26:15', 5),
+(47, 4, NULL, 1, 117.50, '2024-02-17 04:17:48', 1),
+(48, 4, NULL, 1, 117.50, '2024-02-17 04:18:45', 1),
+(49, 4, NULL, 1, 117.50, '2024-02-17 04:24:46', 1),
+(50, 4, NULL, 1, 117.50, '2024-02-17 05:17:35', 1),
+(51, 4, NULL, 1, 117.50, '2024-02-17 05:40:17', 4),
+(52, 4, NULL, 1, 117.50, '2024-02-17 05:58:30', 4),
+(53, 4, NULL, 1, 117.50, '2024-02-17 06:15:33', 4),
+(54, 4, NULL, 2, 5370.00, '2024-02-17 07:55:24', 1),
+(55, 4, NULL, 2, 4050.00, '2024-02-17 07:59:41', 1);
 
 -- --------------------------------------------------------
 
@@ -277,7 +288,12 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `total_pr
 (112, 40, 5, 1, 2200.00),
 (113, 41, 6, 1, 125.00),
 (116, 44, 5, 1, 2200.00),
-(118, 46, 57, 1, 1172.00);
+(118, 46, 57, 1, 1172.00),
+(119, 47, 6, 1, 125.00),
+(126, 54, 6, 4, 500.00),
+(127, 54, 5, 2, 4400.00),
+(128, 55, 5, 1, 2200.00),
+(129, 55, 3, 1, 1500.00);
 
 -- --------------------------------------------------------
 
@@ -326,7 +342,16 @@ INSERT INTO `payments` (`payment_id`, `order_id`, `payment_amount`, `payment_dat
 (1, 40, 2675.00, '2024-02-15 09:59:27', 'bkash', '', 'Paid', 15),
 (2, 41, 117.50, '2024-02-16 02:38:36', 'bkash', '', 'Paid', 4),
 (3, 44, 2400.00, '2024-02-16 10:23:52', 'bkash', '', 'Paid', 4),
-(4, 46, 1269.20, '2024-02-16 10:26:15', 'bkash', '45HSBXGS329', 'Paid', 4);
+(4, 46, 1269.20, '2024-02-16 10:26:15', 'bkash', '45HSBXGS329', 'Paid', 4),
+(5, 47, 117.50, '2024-02-17 04:17:48', 'bkash', '', 'Pending', 4),
+(6, 48, 117.50, '2024-02-17 04:18:45', 'bkash', '', 'Pending', 4),
+(7, 49, 117.50, '2024-02-17 04:24:46', 'bkash', '', 'Pending', 4),
+(8, 50, 117.50, '2024-02-17 05:17:35', 'bkash', '', 'Pending', 4),
+(9, 51, 117.50, '2024-02-17 05:40:17', 'bkash', '45HSBXGS329', 'Paid', 4),
+(10, 52, 117.50, '2024-02-17 05:58:30', 'bkash', '45HSBXGS329', 'Paid', 4),
+(11, 53, 117.50, '2024-02-17 06:15:33', 'bkash', '45HSBXGS329', 'Paid', 4),
+(12, 54, 5370.00, '2024-02-17 07:55:24', 'bkash', '45HSBXGS329', 'Pending', 4),
+(13, 55, 4050.00, '2024-02-17 07:59:41', 'bkash', '45HSBXGS329', 'Pending', 4);
 
 -- --------------------------------------------------------
 
@@ -520,7 +545,7 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `access_logs`
 --
 ALTER TABLE `access_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `banner_photos`
@@ -538,13 +563,13 @@ ALTER TABLE `blocked_ips`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=173;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=185;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=174;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -562,13 +587,13 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
 
 --
 -- AUTO_INCREMENT for table `order_status`
@@ -580,7 +605,7 @@ ALTER TABLE `order_status`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `products`
