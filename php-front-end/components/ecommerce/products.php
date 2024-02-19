@@ -11,26 +11,84 @@
     echo '    <div class="w-full mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">';
     
     foreach ($productsData as $product) {
-        echo '    <div class="bg-white p-4 rounded-md shadow hover:shadow-lg transition duration-300 ease-in-out relative group">';
+       echo '<div class="product-item bg-white p-4 group rounded-md shadow hover:shadow-lg transition duration-300 ease-in-out relative group" data-product-id="' . $product['id'] . '">';
+        
+        // Wishlist icon initially hidden
+        echo '        <div class="wishlist-icon hidden absolute right-3 top-3 w-6 h-6 flex justify-center items-center text-lg hover:text-base cursor-pointer hover:bg-slate-400 hover:text-white hover:rounded-full">';
+        echo '            <i class="fa-regular fa-heart"></i>';
+        echo '        </div>';
+        
         echo '      <img src="http://localhost/reactcrud/backend/auth/assets/products/' . $product['product_photo'] . '" alt="' . $product['name'] . '" class="w-full h-40 object-cover rounded-md mb-4" />';
-        echo '      <h2 class="text-xl font-semibold mb-2">' . $product['name'] . '</h2>';
+        echo '      <h2 class="text-xl font-semibold mb-2 h-28">' . $product['name'] . '</h2>';
         echo '      <div class="flex flex-col gap-3">';
         echo '        <div class="text-lg font-bold text-blue-600">'. $product['currency_code'] .' ' . $product['price'] .'</div>';
         
-        // Check if the "quantity" key exists before trying to access it
         if (isset($product['stock_quantity']) && $product['stock_quantity'] > 0) {
-            echo '        <button type="button" class="add-to-cart-btn bg-blue-600 text-white px-4 py-2 rounded-md 
+            // Add to Cart button
+            echo '<button type="button" class="add-to-cart-btn bg-blue-600 text-white px-4 py-2 rounded-md 
                         hover:bg-blue-700 transition duration-300 ease-in-out" data-product-id="' . $product['id'] . '">';
             echo '            Add to Cart';
             echo '        </button>';
         } else {
+            // Out of stock message
             echo '        <div class="text-red-500">Out of stock</div>';
         }
         
         echo '      </div>';
         echo '    </div>';
     }
-    
+
+    // JavaScript or jQuery code to show the wishlist icon on hover
+    echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const productItems = document.querySelectorAll(".product-item");
+
+            productItems.forEach(item => {
+                const wishlistIcon = item.querySelector(".wishlist-icon");
+
+                item.addEventListener("mouseenter", function() {
+                    if (wishlistIcon) {
+                        wishlistIcon.classList.remove("hidden");
+                    }
+                });
+
+                item.addEventListener("mouseleave", function() {
+                    if (wishlistIcon) {
+                        wishlistIcon.classList.add("hidden");
+                    }
+                });
+
+                wishlistIcon.addEventListener("click", function() {
+                    const productId = item.getAttribute("data-product-id");
+
+                    // Perform AJAX request to add to wishlist
+                    fetch("./files/add-to-wishlist.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            productId: productId,
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle the response, e.g., show a success message
+                        console.log(data);
+                        if (data.success) {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        // Handle errors
+                        console.error("Error:", error);
+                    });
+                });
+            });
+        });
+    </script>';
+
+
     echo '  </div>';
     echo ' </div>';
     echo '</div>';

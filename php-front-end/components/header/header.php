@@ -19,7 +19,7 @@ function getUserID()
 $userID = getUserID();
 
 ?>
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <div class="block">
     <?php include 'topbar.php'; ?>
     <div id="stickyHeader" class="max-w-7xl mx-auto transition-all">
@@ -40,10 +40,10 @@ $userID = getUserID();
 
                 <div class="header-actions flex justify-end lg:gap-2 gap-6 items-center sm:w-[20%] w-[60%]">
                     <div class="head-ecom-wall w-50 h-10 flex items-center justify-end lg:gap-2 gap-4">
-                        <div class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center text-lg relative cursor-pointer">
-                            <i class="fa-regular fa-heart  text-xl"></i>
-                            <span id="wishlist" class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1">0</span>
-                        </div>
+                        <a href="./wishlist.php" class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center text-lg relative cursor-pointer" id="wishlistIcon">
+                            <i class="fa-regular fa-heart text-xl"></i>
+                            <span id="wishlistCount" class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1">0</span>
+                        </a>
                         <?php
                         // Fetch all cart IDs based on the user's ID
                         if ($userID !== null) {
@@ -172,7 +172,7 @@ $userID = getUserID();
                         <?php } ?>
                     </div>
 
-                    </div>
+                </div>
 
                     <!-- Hamburger Icon for Smaller Screens -->
                     <div class="lg:hidden">
@@ -202,32 +202,65 @@ $userID = getUserID();
     </div>
 </div>
 
-<script>
-    // Rest of your code
-function toggleUserDropdown() {
-  const userDropdown = document.querySelector(".main-u");
+<!-- Include jQuery -->
+ <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-  // Check if the userDropdown element exists
-  if (userDropdown) {
-    userDropdown.classList.toggle("showDrop");
+  <script>
+      // Function to toggle user dropdown
+  function toggleUserDropdown() {
+    const userDropdown = document.querySelector(".main-u");
+
+    // Check if the userDropdown element exists
+    if (userDropdown) {
+      userDropdown.classList.toggle("showDrop");
+    }
   }
-}
+jQuery(document).ready(function ($) {
+  // Sticky header functionality
+  const header = document.getElementById('stickyHeader');
+  let lastScrollY = window.scrollY;
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const header = document.getElementById('stickyHeader');
-    let lastScrollY = window.scrollY;
+  window.addEventListener('scroll', function () {
+    const currentScrollY = window.scrollY;
 
-    window.addEventListener('scroll', function () {
-      const currentScrollY = window.scrollY;
+    if (currentScrollY > 300) {
+      header.classList.add('fixedHead');
+    } else {
+      header.classList.remove('fixedHead');
+    }
 
-      if (currentScrollY > 300) {
-        header.classList.add('fixedHead');
-      } else {
-        header.classList.remove('fixedHead');
-      }
-
-      lastScrollY = currentScrollY;
-    });
+    lastScrollY = currentScrollY;
   });
 
-</script>
+    // Function to update the wishlist count
+    function updateWishlistCount() {
+        $.ajax({
+        type: "GET",
+        url: "./files/wishlist_count_endpoint.php", // Replace with the actual endpoint URL
+        dataType: "json",
+        success: function (response) {
+            if (response.success) {
+            // Update the wishlist count on the page
+            $("#wishlistCount").text(response.wishlistCount);
+            } else {
+            console.error("Error fetching wishlist count: " + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX request failed: " + status + " - " + error);
+            console.error(xhr.responseText); // Log the detailed error response
+        }
+        });
+    }
+
+    // Initial call to update wishlist count on page load
+    updateWishlistCount();
+
+    // Optionally, set up a click event on the wishlist icon to trigger an update
+    $("#wishlistIcon").on("click", function () {
+        updateWishlistCount();
+    });
+    });
+
+  </script>
+
