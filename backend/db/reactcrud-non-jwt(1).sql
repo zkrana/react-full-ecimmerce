@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 17, 2024 at 11:09 AM
+-- Generation Time: Feb 20, 2024 at 11:52 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -56,7 +56,8 @@ INSERT INTO `access_logs` (`id`, `ip_address`, `access_time`, `blocked`) VALUES
 (66, '127.0.0.1', '2024-02-16 10:14:56', 0),
 (67, '127.0.0.1', '2024-02-16 10:26:59', 0),
 (68, '127.0.0.1', '2024-02-17 04:19:17', 0),
-(69, '127.0.0.1', '2024-02-17 07:56:56', 0);
+(69, '127.0.0.1', '2024-02-17 07:56:56', 0),
+(70, '127.0.0.1', '2024-02-19 02:13:50', 0);
 
 -- --------------------------------------------------------
 
@@ -428,6 +429,35 @@ INSERT INTO `variations` (`id`, `product_id`, `color`, `sim`, `storage`, `type`,
 (51, 73, '#fddcd7', 'eSim', '', NULL, '../../assets/products/73/variation_2/843fde75724772e6c9f1e0031a6fe0ba.jpg_750x750.jpg_.webp'),
 (52, 73, '#800000', 'eSim', '', NULL, '../../assets/products/73/variation_3/4fec6769e276cb5f30824afdb101f1b7.jpg_750x750.jpg_.webp');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wishlists`
+--
+
+CREATE TABLE `wishlists` (
+  `wishlistId` int(11) NOT NULL,
+  `customerId` int(11) DEFAULT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `userIdentifier` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wishlist_items`
+--
+
+CREATE TABLE `wishlist_items` (
+  `wishlistItemId` int(11) NOT NULL,
+  `wishlistId` int(11) DEFAULT NULL,
+  `productId` int(11) DEFAULT NULL,
+  `priority` int(11) DEFAULT NULL,
+  `quantity` int(11) DEFAULT NULL,
+  `itemPrice` decimal(10,2) DEFAULT NULL,
+  `userIdentifier` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -538,6 +568,20 @@ ALTER TABLE `variations`
   ADD KEY `variations_ibfk_1` (`product_id`);
 
 --
+-- Indexes for table `wishlists`
+--
+ALTER TABLE `wishlists`
+  ADD PRIMARY KEY (`wishlistId`),
+  ADD KEY `customerId` (`customerId`);
+
+--
+-- Indexes for table `wishlist_items`
+--
+ALTER TABLE `wishlist_items`
+  ADD PRIMARY KEY (`wishlistItemId`),
+  ADD KEY `wishlistId` (`wishlistId`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -545,7 +589,7 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `access_logs`
 --
 ALTER TABLE `access_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT for table `banner_photos`
@@ -563,13 +607,13 @@ ALTER TABLE `blocked_ips`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=185;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -624,6 +668,18 @@ ALTER TABLE `product_reviews`
 --
 ALTER TABLE `variations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+
+--
+-- AUTO_INCREMENT for table `wishlists`
+--
+ALTER TABLE `wishlists`
+  MODIFY `wishlistId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `wishlist_items`
+--
+ALTER TABLE `wishlist_items`
+  MODIFY `wishlistItemId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Constraints for dumped tables
@@ -688,6 +744,18 @@ ALTER TABLE `product_reviews`
 --
 ALTER TABLE `variations`
   ADD CONSTRAINT `variations_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `wishlists`
+--
+ALTER TABLE `wishlists`
+  ADD CONSTRAINT `wishlists_ibfk_1` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `wishlist_items`
+--
+ALTER TABLE `wishlist_items`
+  ADD CONSTRAINT `wishlist_items_ibfk_1` FOREIGN KEY (`wishlistId`) REFERENCES `wishlists` (`wishlistId`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
