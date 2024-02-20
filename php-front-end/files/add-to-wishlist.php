@@ -22,6 +22,10 @@ if (!$userIdentifier) {
 try {
     $connection->beginTransaction();
 
+    // Debugging: Add debugging statements
+    error_log('Debug: $customerId - ' . $customerId);
+    error_log('Debug: $userIdentifier - ' . $userIdentifier);
+
     // Fetch product details based on $productId
     $sqlGetProductDetails = "SELECT price FROM products WHERE id = ?";
     $stmtGetProductDetails = $connection->prepare($sqlGetProductDetails);
@@ -36,46 +40,47 @@ try {
     $productPrice = $productDetails['price'];
     $quantity = 1; // Assuming a constant quantity of 1
 
-    // Step 2: Insert a new wishlist record with the user's unique identifier
-    $sqlInsertWishlist = "INSERT IGNORE INTO wishlists (customerId, userIdentifier) VALUES (?, ?)";
-    $stmtInsertWishlist = $connection->prepare($sqlInsertWishlist);
-    $stmtInsertWishlist->execute([$customerId, $userIdentifier]);
+    // Step 2: Check if a wishlist already exists for the customer and user identifier
+    $sqlCheckWishlist = "SELECT wishlistId FROM wishlists WHERE customerId = COALESCE(?, customerId) AND userIdentifier = COALESCE(?, userIdentifier)";
+    $stmtCheckWishlist = $connection->prepare($sqlCheckWishlist);
+    $stmtCheckWishlist->execute([$customerId, $userIdentifier]);
+    $wishlistId = $stmtCheckWishlist->fetchColumn();
 
-    // Step 3: Get the WishlistID for the customer (or null)
-    if ($customerId !== null) {
-        $sqlGetWishlistID = "SELECT wishlistId FROM wishlists WHERE customerId = ? AND userIdentifier IS NULL";
-    } else {
-        $sqlGetWishlistID = "SELECT wishlistId FROM wishlists WHERE userIdentifier = ? AND customerId IS NULL";
+    // If the WishlistID does not exist, insert a new wishlist record
+    if (!$wishlistId) {
+        $sqlInsertNewWishlist = "INSERT INTO wishlists (customerId, userIdentifier) VALUES (?, ?)";
+        $stmtInsertNewWishlist = $connection->prepare($sqlInsertNewWishlist);
+        $stmtInsertNewWishlist->execute([$customerId, $userIdentifier]);
+        $wishlistId = $connection->lastInsertId();
     }
 
-    $stmtGetWishlistID = $connection->prepare($sqlGetWishlistID);
-    $stmtGetWishlistID->execute([$customerId ?? $userIdentifier]);
+    // Set a default priority value or define $priority as needed
+    $priority = 1; // Adjust as necessary
 
-    // If the WishlistID exists for the customer, use it; otherwise, insert a new wishlist record
-    if ($wishlistId = $stmtGetWishlistID->fetchColumn()) {
-        // Step 4: Insert the product into the wishlist_items table
-        $sqlInsertWishlistItem = "INSERT INTO wishlist_items (wishlistId, productId, priority, quantity, itemPrice, userIdentifier)
-                                  VALUES (?, ?, ?, ?, ?, ?)";
-        $stmtInsertWishlistItem = $connection->prepare($sqlInsertWishlistItem);
-        $stmtInsertWishlistItem->execute([$wishlistId, $productId, $priority, $quantity, $productPrice, $userIdentifier]);
+    // Step 4: Insert the product into the wishlist_items table
+    $sqlInsertWishlistItem = "INSERT INTO wishlist_items (wishlistId, productId, priority, quantity, itemPrice, userIdentifier)
+                              VALUES (?, ?, ?, ?, ?, ?)";
+    $stmtInsertWishlistItem = $connection->prepare($sqlInsertWishlistItem);
+    $stmtInsertWishlistItem->execute([$wishlistId, $productId, $priority, $quantity, $productPrice, $userIdentifier]);
 
-        // If successful, return a JSON response
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'message' => 'Product added to wishlist successfully']);
-    } else {
-        // If the WishlistID is not found, return a JSON response with an error message
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Error adding product to wishlist: Wishlist not found']);
-    }
+    // Debugging: Add debugging statement
+    error_log('Debug: Product added to wishlist successfully');
+
+    // If successful, return a JSON response
+    header('Content-Type: application/json');
+    echo json_encode(['success' => true, 'message' => 'Product added to wishlist successfully']);
 
     $connection->commit();
 } catch (Exception $e) {
+    // Debugging: Add debugging statement
+    error_log('Debug: Error adding product to wishlist: ' . $e->getMessage());
+
     // If there's an exception, return a JSON response with an error message
     $connection->rollBack();
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Error adding product to wishlist: ' . $e->getMessage()]);
+} finally {
+    // Close the database connection
+    $connection = null;
 }
-
-// Close the database connection
-$connection = null;
 ?>

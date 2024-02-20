@@ -40,48 +40,43 @@
 
     // JavaScript or jQuery code to show the wishlist icon on hover
     echo '<script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const productItems = document.querySelectorAll(".product-item");
+        $(document).ready(function() {
+            $(".product-item").each(function() {
+                var productItem = $(this);
+                var wishlistIcon = productItem.find(".wishlist-icon");
+                var productId = productItem.data("product-id");
 
-            productItems.forEach(item => {
-                const wishlistIcon = item.querySelector(".wishlist-icon");
-
-                item.addEventListener("mouseenter", function() {
-                    if (wishlistIcon) {
-                        wishlistIcon.classList.remove("hidden");
-                    }
-                });
-
-                item.addEventListener("mouseleave", function() {
-                    if (wishlistIcon) {
-                        wishlistIcon.classList.add("hidden");
-                    }
-                });
-
-                wishlistIcon.addEventListener("click", function() {
-                    const productId = item.getAttribute("data-product-id");
-
-                    // Perform AJAX request to add to wishlist
-                    fetch("./files/add-to-wishlist.php", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            productId: productId,
-                        }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Handle the response, e.g., show a success message
-                        console.log(data);
-                        if (data.success) {
-                            window.location.reload();
+                productItem.hover(
+                    function() {
+                        if (wishlistIcon) {
+                            wishlistIcon.removeClass("hidden");
                         }
-                    })
-                    .catch(error => {
-                        // Handle errors
-                        console.error("Error:", error);
+                    },
+                    function() {
+                        if (wishlistIcon) {
+                            wishlistIcon.addClass("hidden");
+                        }
+                    }
+                );
+
+                wishlistIcon.click(function() {
+                    // Perform AJAX request to add to wishlist
+                    $.ajax({
+                        method: "POST",
+                        url: "./files/add-to-wishlist.php",
+                        contentType: "application/json",
+                        data: JSON.stringify({ productId: productId }),
+                        success: function(data) {
+                            // Handle the response, e.g., show a success message
+                            console.log(data);
+                            if (data.success) {
+                                window.location.reload();
+                            }
+                        },
+                        error: function(error) {
+                            // Handle errors
+                            console.error("Error:", error);
+                        }
                     });
                 });
             });

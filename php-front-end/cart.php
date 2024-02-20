@@ -16,7 +16,7 @@
                 <h1 class="text-3xl md:text-5xl font-bold text-gray-600">Cart.</h1>
             </div>
             <div class="mb-5 text-gray-400">
-                <a href="index.php" class="focus:outline-none hover:underline text-gray-500">Home</a> / <span class="text-gray-600">Cart</span>
+                <a href="<?php echo $baseUrl; ?>" class="focus:outline-none hover:underline text-gray-500">Home</a> / <span class="text-gray-600">Cart</span>
             </div>
         </div>
         <div class="bg-gray-100 pt-20 pb-14 mt-7">

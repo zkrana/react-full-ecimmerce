@@ -1,8 +1,7 @@
-<!-- banner.php -->
-
 <?php
+$apiUrl = "http://localhost/reactcrud/backend";
 // Fetch banners from the server
-$apiEndpoint = "http://localhost/reactcrud/backend/auth/api/banner/banner.php";
+$apiEndpoint = "$apiUrl/auth/api/banner/banner.php";
 $response = file_get_contents($apiEndpoint);
 $data = json_decode($response, true);
 
@@ -18,8 +17,8 @@ $banners = isset($data['banners']) ? $data['banners'] : [];
         <?php foreach ($banners as $banner): ?>
           <div class="swiper-slide">
             <img
-              class="w-full h-[450px] object-fill"
-              src="http://localhost/reactcrud/backend/auth/assets/banner/<?php echo $banner['photo_name']; ?>"
+              class="w-full sm:h-[450px] h-full object-fill"
+              src="<?php echo $apiUrl; ?>/auth/assets/banner/<?php echo $banner['photo_name']; ?>"
               alt="<?php echo $banner['photo_name']; ?>"
             />
           </div>

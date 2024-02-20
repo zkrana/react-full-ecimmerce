@@ -157,4 +157,25 @@
       padding: 0 16px;
     }
   }
+
+  /*
+  Mobile Menu
+  */
+  @media screen and (max-width: 1023px) {
+    #mainMenu {
+      width: 1000%;
+      background: #fff;
+      z-index: 999999;
+      top: 0;
+      height: 100vh;
+    }
+    #mainMenu li ul {
+      display: block;
+      position: static;
+      box-shadow: none;
+    }
+    .MbNavMenuShow {
+      @apply !flex;
+    }
+  }
 }
