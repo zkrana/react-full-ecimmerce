@@ -139,7 +139,7 @@
                 success: function(response) {
                     // Handle success (e.g., update cart count)
                     // No need to show the popup, directly refresh the page
-                    location.reload();
+                    // location.reload();
                 },
                 error: function() {
                     console.error("Error adding product to cart");

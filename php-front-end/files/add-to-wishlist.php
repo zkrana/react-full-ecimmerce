@@ -11,12 +11,12 @@ $productId = $data->productId;
 $customerId = isset($_SESSION['userId']) ? $_SESSION['userId'] : null;
 
 // Get the user's unique identifier (using a cookie)
-$userIdentifier = isset($_COOKIE['user_identifier']) ? $_COOKIE['user_identifier'] : null;
+$userIdentifier = isset($_COOKIE['userIdentifier']) ? $_COOKIE['userIdentifier'] : null;
 
 if (!$userIdentifier) {
     // If the user doesn't have a cookie, generate a unique identifier and set the cookie
     $userIdentifier = uniqid();
-    setcookie('user_identifier', $userIdentifier, time() + (365 * 24 * 60 * 60)); // Set the cookie to last for a year
+    setcookie('userIdentifier', $userIdentifier, time() + (365 * 24 * 60 * 60));
 }
 
 try {

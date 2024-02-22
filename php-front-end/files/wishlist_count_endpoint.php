@@ -5,7 +5,7 @@ session_start();
 
 try {
     // Get the user's unique identifier (using a cookie)
-    $userIdentifier = isset($_COOKIE['user_identifier']) ? $_COOKIE['user_identifier'] : null;
+    $userIdentifier = isset($_COOKIE['userIdentifier']) ? $_COOKIE['userIdentifier'] : null;
 
     // Fetch wishlist count from the database based on userIdentifier
     $sql = "SELECT COUNT(DISTINCT wishlistItemId) AS wishlistCount FROM wishlist_items WHERE userIdentifier = ?";
