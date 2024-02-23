@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
 
-<div class="test">
+<div class="test sm:w-full w-[90%]">
     <h2 class="text-2xl font-semibold mb-6">Login</h2>
 
     <?php

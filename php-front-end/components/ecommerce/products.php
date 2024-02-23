@@ -11,8 +11,7 @@
     echo '    <div class="w-full mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">';
     
     foreach ($productsData as $product) {
-       echo '<div class="product-item bg-white p-4 group rounded-md shadow hover:shadow-lg transition duration-300 ease-in-out relative group" data-product-id="' . $product['id'] . '">';
-        
+       echo '<a href="products/singleProduct.php?id=' . $product['id'] . '" class="product-item bg-white p-4 group rounded-md shadow hover:shadow-lg transition duration-300 ease-in-out relative group" data-product-id="' . $product['id'] . '">';
         // Wishlist icon initially hidden
         echo '        <div class="wishlist-icon hidden absolute right-3 top-3 w-6 h-6 flex justify-center items-center text-lg hover:text-base cursor-pointer hover:bg-slate-400 hover:text-white hover:rounded-full">';
         echo '            <i class="fa-regular fa-heart"></i>';
@@ -35,7 +34,7 @@
         }
         
         echo '      </div>';
-        echo '    </div>';
+        echo '    </a>';
     }
 
     // JavaScript or jQuery code to show the wishlist icon on hover

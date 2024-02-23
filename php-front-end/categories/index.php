@@ -13,7 +13,7 @@
 <body>
     <?php include '../components/header/header.php'; ?>
     <div class="container">
-        <div class="w-full sm:max-w-7xl mx-auto my-10">
+        <div class="sm:max-w-7xl w-[90%] mx-auto my-10">
             <div class="pb-3 border-b border-slate-200">
                 <h2 class="text-lg font-semibold"> All Categories</h2>
             </div>
@@ -21,14 +21,14 @@
             // Fetch categories from the server (you need to implement this endpoint)
             $categoriesData = json_decode(file_get_contents("http://localhost/reactcrud/backend/auth/api/categories/categories.php"), true);
 
-            echo '<div class="flex flex-wrap gap-8 mt-10">';
+            echo '<div class="flex flex-wrap sm:gap-8 gap-5 sm:mt-10 mt-6">';
             renderCategories($categoriesData);
             echo '</div>';
 
             function renderCategories($categories)
             {
                 foreach ($categories as $category) {
-                    echo '<div class="ecom-cat-item xl:w-[calc(25%-24px)] lg:w-[calc(33.3333%-24px)] sm:w-[calc(50%-24px)] w-full mb-8 flex space-x-4 justify-between rounded p-3 border border-slate-200">';
+                    echo '<div class="ecom-cat-item xl:w-[calc(25%-24px)] lg:w-[calc(33.3333%-24px)] sm:w-[calc(50%-24px)] w-full flex space-x-4 justify-between rounded p-3 border border-slate-200">';
                     echo '  <div class="ecom-cat-photo w-32 h-32 lg:w-40 lg:h-40 rounded-sm border border-slate-200 bg-gray-300 flex justify-center items-center">';
                     echo '    <img src="http://localhost/reactcrud/backend/auth/assets/categories/' . $category['id'] . '/' . $category['photo_name'] . '" alt="Category Image: ' . $category['name'] . '" class="w-full h-full object-fill" />';
                     echo '  </div>';

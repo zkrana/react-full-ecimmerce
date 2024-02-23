@@ -73,6 +73,8 @@ if ($wishlistItemId) {
     $stmtCheckWishlist = $connection->prepare("SELECT COUNT(*) FROM wishlist_items WHERE wishlistId = ?");
     $stmtCheckWishlist->execute([$wishlistId]);
     $wishlistItemCount = $stmtCheckWishlist->fetchColumn();
+    // Debug prints
+    echo "wishlistId: $wishlistId, wishlistItemCount: $wishlistItemCount";
 
     if ($wishlistItemCount === 0) {
         $stmtDeleteWishlist = $connection->prepare("DELETE FROM wishlists WHERE wishlistId = ?");

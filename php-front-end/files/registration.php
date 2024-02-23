@@ -8,7 +8,7 @@
   <title>Register</title>
 </head>
 <body class="flex justify-center items-center h-screen bg-gray-100">
-  <div class="max-w-md w-full">
+  <div class="max-w-md sm:w-full w-[90%]">
     <?php
         if (isset($_GET['error'])) {
             echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">' .$_GET['error'] . '</div>';

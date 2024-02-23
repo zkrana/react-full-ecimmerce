@@ -21,7 +21,7 @@
     }
     ?>
     <div class="container">
-        <div class="min-h-screen w-full sm:max-w-7xl mx-auto pt-20 pb-14 mt-7">
+        <div class="min-h-screen w-full sm:max-w-7xl mx-auto sm:pt-20 pb-14 mt-7">
         <div class="px-5">
             <div class="mb-2">
                 <h1 class="text-3xl md:text-5xl font-bold text-gray-600">User Profile.</h1>
@@ -31,49 +31,49 @@
             </div>
         </div>
 
-<?php
+        <?php
 
-// Check if the user is logged in
-if (isset($_SESSION['userId'])) {
-    // Fetch user data based on the user's ID
-    $userId = $_SESSION['userId'];
+        // Check if the user is logged in
+        if (isset($_SESSION['userId'])) {
+            // Fetch user data based on the user's ID
+            $userId = $_SESSION['userId'];
 
-    // Fetch user data
-    $userSql = "SELECT * FROM `customers` WHERE `id` = :userId";
-    $stmtUser = $connection->prepare($userSql);
-    $stmtUser->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $stmtUser->execute();
+            // Fetch user data
+            $userSql = "SELECT * FROM `customers` WHERE `id` = :userId";
+            $stmtUser = $connection->prepare($userSql);
+            $stmtUser->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmtUser->execute();
 
-    // Fetch user data as an associative array
-    $userData = $stmtUser->fetch(PDO::FETCH_ASSOC);
+            // Fetch user data as an associative array
+            $userData = $stmtUser->fetch(PDO::FETCH_ASSOC);
 
-    // Use basename to get just the filename
-    $photoFilename = basename($userData['photo']);
+            // Use basename to get just the filename
+            $photoFilename = basename($userData['photo']);
 
-    // Fetch summarized order history
-    $orderSummaryQuery = "
-       SELECT o.id AS order_id, COUNT(oi.id) AS item_count, 
-       SUM(oi.quantity) AS total_quantity, SUM(oi.total_price) AS total_price,
-       os.status_name
-        FROM orders AS o
-        JOIN order_items AS oi ON o.id = oi.order_id
-        LEFT JOIN order_status AS os ON o.order_status_id = os.id
-        WHERE o.user_id = :userId
-        GROUP BY o.id
-        ORDER BY o.order_date DESC
-    ";
+            // Fetch summarized order history
+            $orderSummaryQuery = "
+            SELECT o.id AS order_id, COUNT(oi.id) AS item_count, 
+            SUM(oi.quantity) AS total_quantity, SUM(oi.total_price) AS total_price,
+            os.status_name
+                FROM orders AS o
+                JOIN order_items AS oi ON o.id = oi.order_id
+                LEFT JOIN order_status AS os ON o.order_status_id = os.id
+                WHERE o.user_id = :userId
+                GROUP BY o.id
+                ORDER BY o.order_date DESC
+            ";
 
-    $stmtOrderSummary = $connection->prepare($orderSummaryQuery);
-    $stmtOrderSummary->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $stmtOrderSummary->execute();
+            $stmtOrderSummary = $connection->prepare($orderSummaryQuery);
+            $stmtOrderSummary->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmtOrderSummary->execute();
 
-    $orderSummary = $stmtOrderSummary->fetchAll(PDO::FETCH_ASSOC);
-} else {
-    // User is not logged in, redirect to login page
-    header("Location: login.php");
-    exit;
-}
-?>
+            $orderSummary = $stmtOrderSummary->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            // User is not logged in, redirect to login page
+            header("Location: login.php");
+            exit;
+        }
+        ?>
 
         <div class="flex gap-8">
             <div class="md:w-1/3 bg-white p-6 border-r border-slate-200">
@@ -103,7 +103,7 @@ if (isset($_SESSION['userId'])) {
                         // Check if the user has a photo
                         if (!empty($userData['photo'])) {
                     ?>
-                    <div class="w-20 h-20 rounded-sm">
+                    <div class="w-20 h-20 rounded-sm overflow-hidden">
                         <img src="http://localhost/reactcrud/php-front-end/assets/user-profile/<?php echo $userData['id']; ?>/<?php echo $photoFilename; ?>" alt="User Photo" class="w-full h-auto rounded">
                     </div>
                     <?php
@@ -113,7 +113,7 @@ if (isset($_SESSION['userId'])) {
                             <p class="text-gray-500">Upload Photo</p>
                             <form action="files/userPhotoUpload.php" method="post" enctype="multipart/form-data">
                                 <input type="file" name="userPhoto">
-                                <input type="submit" class="bg-slate-900 p-2 rounded-sm" value="Upload">
+                                <input type="submit" class="bg-slate-900 p-2 rounded-sm text-white" value="Upload">
                             </form>
                         </div>
                     <?php

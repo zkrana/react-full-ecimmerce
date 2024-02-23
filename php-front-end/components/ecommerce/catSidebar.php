@@ -1,4 +1,4 @@
-<div id="categoryList" class="p-4 border border-slate-200 rounded">
+<div id="categoryList">
   <?php
     function fetchDataFromAPI($apiUrl) {
       $json = file_get_contents($apiUrl);

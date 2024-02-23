@@ -33,7 +33,7 @@ if (empty($cartItems)) {
 }
 ?>
     <div class="container">
-        <div class="min-h-screen w-full sm:max-w-7xl mx-auto pt-20 pb-14 mt-7">
+        <div class="min-h-screen w-full sm:max-w-7xl mx-auto sm:pt-20 pb-14 mt-7">
         <div class="px-5">
             <div class="mb-2">
                 <h1 class="text-3xl md:text-5xl font-bold text-gray-600">Checkout.</h1>
