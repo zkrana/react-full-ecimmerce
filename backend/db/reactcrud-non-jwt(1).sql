@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 20, 2024 at 11:52 AM
+-- Generation Time: Feb 23, 2024 at 11:52 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -404,6 +404,25 @@ CREATE TABLE `product_reviews` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `subscribers`
+--
+
+CREATE TABLE `subscribers` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `subscribers`
+--
+
+INSERT INTO `subscribers` (`id`, `email`, `created_at`) VALUES
+(1, 'zkranao@gmail.com', '2024-02-23 06:11:49');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `variations`
 --
 
@@ -422,12 +441,12 @@ CREATE TABLE `variations` (
 --
 
 INSERT INTO `variations` (`id`, `product_id`, `color`, `sim`, `storage`, `type`, `image_path`) VALUES
-(32, 57, '#800000', NULL, NULL, NULL, '../../assets/products/57/variation_1/maroon-abaya.webp'),
+(32, 57, '#eaeee1', NULL, NULL, NULL, '../../assets/products/57/variation_1/maroon-abaya.webp'),
 (33, 57, '#006a4e', NULL, NULL, NULL, '../../assets/products/57/variation_2/79bbc951655b6ff3761ea4500e0ce5a5.jpg_750x750.jpg_.webp'),
 (34, 58, 'gray', NULL, NULL, NULL, '../../assets/products/58/variation_1/d365b63792f616e4d7761cfd8909aada.jpg_750x750.jpg_.webp'),
 (50, 73, '#000000', 'eSim', '', NULL, '../../assets/products/73/variation_1/afe074ea34769dcbe8ba3bf1d510900a.jpg_750x750.jpg_.webp'),
 (51, 73, '#fddcd7', 'eSim', '', NULL, '../../assets/products/73/variation_2/843fde75724772e6c9f1e0031a6fe0ba.jpg_750x750.jpg_.webp'),
-(52, 73, '#800000', 'eSim', '', NULL, '../../assets/products/73/variation_3/4fec6769e276cb5f30824afdb101f1b7.jpg_750x750.jpg_.webp');
+(52, 73, '#eaeee1', 'eSim', '', NULL, '../../assets/products/73/variation_3/4fec6769e276cb5f30824afdb101f1b7.jpg_750x750.jpg_.webp');
 
 -- --------------------------------------------------------
 
@@ -561,6 +580,13 @@ ALTER TABLE `product_reviews`
   ADD KEY `customer_id` (`customer_id`);
 
 --
+-- Indexes for table `subscribers`
+--
+ALTER TABLE `subscribers`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
 -- Indexes for table `variations`
 --
 ALTER TABLE `variations`
@@ -607,13 +633,13 @@ ALTER TABLE `blocked_ips`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=297;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=298;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -664,6 +690,12 @@ ALTER TABLE `product_reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `subscribers`
+--
+ALTER TABLE `subscribers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `variations`
 --
 ALTER TABLE `variations`
@@ -673,13 +705,13 @@ ALTER TABLE `variations`
 -- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `wishlistId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `wishlistId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `wishlist_items`
 --
 ALTER TABLE `wishlist_items`
-  MODIFY `wishlistItemId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `wishlistItemId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- Constraints for dumped tables
