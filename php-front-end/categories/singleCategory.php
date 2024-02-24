@@ -81,7 +81,7 @@
                         echo '<div class="flex flex-wrap gap-8 mt-10">';
                         foreach ($products as $product) {
                             if ($product['category_id'] == $category['id']) {
-                                echo '    <div class="xl:w-[calc(25%-24px)] lg:w-[calc(33.3333%-24px)] sm:w-[calc(50%-24px)] w-full">';
+                                echo '    <a href="http://localhost/reactcrud/php-front-end/products/singleProduct.php?id=' . $product['id'] . '" class="xl:w-[calc(25%-24px)] lg:w-[calc(33.3333%-24px)] sm:w-[calc(50%-24px)] w-full">';
                                 echo '      <div class="bg-white p-4 rounded-md shadow hover:shadow-lg transition duration-300 ease-in-out relative group">';
                                 echo '        <!-- Render product card -->';
                                 echo '        <img src="http://localhost/reactcrud/backend/auth/assets/products/' . $product['product_photo'] . '" alt="' . $product['name'] . '" class="w-full h-40 object-cover rounded-md mb-4" />';
@@ -93,7 +93,7 @@
                                 echo '            </button>';
                                 echo '        </div>';
                                 echo '      </div>';
-                                echo '    </div>';
+                                echo '    </a>';
                             }
                         }
                         echo '</div>';
