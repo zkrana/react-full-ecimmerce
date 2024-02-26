@@ -52,8 +52,8 @@
         <div class="sm:max-w-7xl w-[90%] mx-auto my-10">
             <div class="product-component flex flex-wrap gap-8">
                 <div class="product sm:w-[calc(50%-16px)] w-full">
-                    <div class="image-container">
-                        <div id="mainProductImageContainer" class="rounded-lg bg-gray-300 dark:bg-gray-700 mb-4">
+                    <div class="image-container ">
+                        <div id="mainProductImageContainer" class="max-h-[500px] overflow-hidden rounded-lg bg-gray-300 dark:bg-gray-700 mb-4">
                             <img id="mainProductImage" class="w-full h-full object-cover image-preview image-preview-js" src="http://localhost/reactcrud/backend/auth/assets/products/<?php echo $product['product_photo']; ?>" alt="Product Image">
                         </div>
                         <div class="magnifier">
