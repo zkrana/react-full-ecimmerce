@@ -212,9 +212,28 @@ if ($stmt = $connection->prepare($sql)) {
                                         <i class="fa-solid fa-dollar-sign"></i>
                                     </div>
                                 </div>
+                                <?php
+                                // Assuming you have a PDO connection named $connection
+                                $query = "
+                                    SELECT SUM(total_price) as total_sales
+                                    FROM orders
+                                    WHERE order_status_id = 4
+                                ";
+                                $stmt = $connection->prepare($query);
+                                $stmt->execute();
+
+                                // Check if the query was successful
+                                if ($stmt && $stmt->rowCount() > 0) {
+                                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                    $totalSales = $result['total_sales'];
+                                } else {
+                                    $totalSales = 0;
+                                }
+                                ?>
+
                                 <div class="stats-d">
                                     <span class="block sub-title">Total Sales</span>
-                                    <span class="block satts-number">$124545.200</span>
+                                    <span class="block satts-number">BDT<?php echo number_format($totalSales, 2); ?></span>
                                 </div>
                             </div>   
                             
@@ -224,23 +243,85 @@ if ($stmt = $connection->prepare($sql)) {
                                         <i class="fa-solid fa-cart-shopping"></i>
                                     </div>
                                 </div>
+                                <?php
+                                // Assuming you have a PDO connection named $connection
+                                $query = "
+                                    SELECT COUNT(*) as total_orders
+                                    FROM orders
+                                    WHERE order_status_id = 4
+                                ";
+                                $stmt = $connection->prepare($query);
+                                $stmt->execute();
+
+                                // Check if the query was successful
+                                if ($stmt && $stmt->rowCount() > 0) {
+                                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                    $totalOrders = $result['total_orders'];
+                                } else {
+                                    $totalOrders = 0;
+                                }
+                                ?>
                                 <div class="stats-d">
                                     <span class="block sub-title">Total Orders</span>
-                                    <span class="block satts-number">720</span>
+                                    <span class="block satts-number"><?php echo $totalOrders; ?></span>
                                 </div>
                             </div>   
-
-
                              <div class="sales-small-stats-inner">
                                 <div class="icon color-g-2">
                                     <div class="doller">
                                         <i class="fa-solid fa-cart-flatbed-suitcase"></i>
                                     </div>
                                 </div>
+                                <?php
+                                // Assuming you have a PDO connection named $connection
+                                $query = "
+                                    SELECT COUNT(*) as total_products
+                                    FROM products
+                                ";
+                                $stmt = $connection->prepare($query);
+                                $stmt->execute();
+
+                                // Check if the query was successful
+                                if ($stmt && $stmt->rowCount() > 0) {
+                                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                    $totalProducts = $result['total_products'];
+                                } else {
+                                    $totalProducts = 0;
+                                }
+                                ?>
+
                                 <div class="stats-d">
                                     <span class="block sub-title">Total Products</span>
-                                    <span class="block satts-number"> 120 </span>
+                                    <span class="block satts-number"><?php echo $totalProducts; ?></span>
                                 </div>
+                            </div>   
+
+                            <div class="sales-small-stats-inner">
+                                <div class="icon color-g-2">
+                                    <div class="doller">
+                                        <i class="fa-solid fa-user-check"></i>
+                                    </div>
+                                </div>
+                                <?php
+                                // Assuming you have a PDO connection named $connection
+                                $query = "SELECT COUNT(*) as total_subscribers FROM subscribers";
+                                $stmt = $connection->prepare($query);
+                                $stmt->execute();
+
+                                // Check if the query was successful
+                                if ($stmt && $stmt->rowCount() > 0) {
+                                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                    $totalSubscribers = $result['total_subscribers'];
+                                } else {
+                                    $totalSubscribers = 0;
+                                }
+                                ?>
+
+                                <div class="stats-d">
+                                    <span class="block sub-title">Total Subscriber</span>
+                                    <span class="block satts-number"><?php echo $totalSubscribers; ?></span>
+                                </div>
+
                             </div>   
                         </div>
                     </div>

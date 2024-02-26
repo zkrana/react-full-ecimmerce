@@ -200,84 +200,143 @@ if ($stmt = $connection->prepare($sql)) {
                     <div class="main">
                         <h1 class="page-heading">Order Details</h1>
                         <p>All order data</p>
-                        <?php
-                        // Check if order_id is provided in the query string
-                        if (isset($_GET['order_id'])) {
-                            $orderId = $_GET['order_id'];
+                    <?php
+                    // Function to fetch user details based on user_id
+                    function getUserDetails($connection, $userId)
+                    {
+                        $query = "SELECT * FROM customers WHERE id = ?";
+                        $stmt = $connection->prepare($query);
+                        $stmt->execute([$userId]);
+
+                        // Check if the query was successful and if there is a result
+                        if ($stmt && $stmt->rowCount() > 0) {
+                            return $stmt->fetch(PDO::FETCH_ASSOC);
                         }
 
-                        // Fetch details for the specified order
-                        $sql = "SELECT orders.id, orders.order_date, orders.total_price, products.currency_code, orders.order_status_id
-                                FROM orders
-                                JOIN order_items ON orders.id = order_items.order_id
-                                JOIN products ON order_items.product_id = products.id
-                                WHERE orders.id = ?";
+                        return false; // Return false if no result is found
+                    }
 
-                        $stmt = $connection->prepare($sql);
-                        $stmt->execute([$orderId]);
-                        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+                    // Check if order_id is provided in the query string
+                    if (isset($_GET['order_id'])) {
+                        $orderId = $_GET['order_id'];
+                    }
 
-                        function getOrderStatusName($statusId)
+                    // Fetch details for the specified order
+                    $sql = "SELECT orders.id, orders.order_date, orders.total_price, products.currency_code, orders.order_status_id, orders.user_id
+                            FROM orders
+                            JOIN order_items ON orders.id = order_items.order_id
+                            JOIN products ON order_items.product_id = products.id
+                            WHERE orders.id = ?";
+
+                    $stmt = $connection->prepare($sql);
+                    $stmt->execute([$orderId]);
+                    $order = $stmt->fetch(PDO::FETCH_ASSOC);
+                    function xorDecrypt($input, $key)
                         {
-                            switch ($statusId) {
-                                case 1:
-                                    return 'Pending';
-                                case 2:
-                                    return 'Payment Received';
-                                case 3:
-                                    return 'Processing';
-                                case 4:
-                                    return 'Shipped';
-                                case 5:
-                                    return 'Cancel';
-                                default:
-                                    return 'Unknown';
+                            $decodedInput = base64_decode($input);
+                            $decrypted = '';
+                            $keyLength = strlen($key);
+
+                            for ($i = 0; $i < strlen($decodedInput); $i++) {
+                                $decrypted .= $decodedInput[$i] ^ $key[$i % $keyLength];
                             }
+
+                            return $decrypted;
+                        }
+                    if ($stmt->rowCount() > 0) {
+                        // Fetch user details based on user_id
+                        $userDetails = getUserDetails($connection, $order['user_id']);
+                        $decryptedEmail = xorDecrypt($userDetails["email"], 'shTYTS,os(**0te455432%3sgks$#SG');
+                        echo '<div class="card-box mb-4">
+                                <div class="card-header">
+                                    <h1 class="h3 mb-0">Order ID: ' . $order['id'] . '</h1>
+                                    <p class="text-muted">Order Date: ' . $order['order_date'] . '</p>
+                                </div>
+                                <div class="card-body">
+                                <!-- Display user details -->
+                                <h3>User Details</h3>
+                                <p>Name: ' . $userDetails['first_name'] . ' ' . $userDetails['last_name'] . '</p>
+                                <p>Email: ' . $decryptedEmail . '</p>
+                                <p>Phone: ' . $userDetails['phone_number'] . '</p>
+                                
+                                <!-- Display billing information -->
+                                <h3>Billing Information</h3>
+                                <p>Address: ' . $userDetails['billing_address'] . ', ' . $userDetails['city'] . ', ' . $userDetails['state'] . ', ' . $userDetails['postal_code'] . ', ' . $userDetails['country'] . '</p>
+                                
+                                <!-- Display payment details -->
+                                <h3>Payment Details</h3>';
+                        
+                        // Fetch payment details for the current order
+                        $paymentStmt = $connection->prepare("SELECT * FROM payments WHERE order_id = ?");
+                        $paymentStmt->execute([$order['id']]);
+                        $paymentDetails = $paymentStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        if ($paymentStmt->rowCount() > 0) {
+                            echo '<table class="table payment_details mt-4">
+                                    <thead>
+                                        <tr>
+                                            <th>Payment ID</th>
+                                            <th>Payment Amount</th>
+                                            <th>Payment Date</th>
+                                            <th>Payment Method</th>
+                                            <th>Transaction Code</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>';
+
+                            foreach ($paymentDetails as $payment) {
+                                echo '<tr>
+                                        <td>' . $payment['payment_id'] . '</td>
+                                        <td>' . $payment['payment_amount'] . '</td>
+                                        <td>' . $payment['payment_date'] . '</td>
+                                        <td>' . $payment['payment_method'] . '</td>
+                                        <td>' . $payment['transanction_code'] . '</td>
+                                        <td>' . $payment['status'] . '</td>
+                                    </tr>';
+                            }
+
+                            echo '</tbody></table>';
+                        } else {
+                            echo '<p>No payment details found for the selected order.</p>';
                         }
 
-                        if ($stmt->rowCount() > 0) {
-                            echo '<div class="card-box mb-4">
-                                    <div class="card-header">
-                                        <h1 class="h3 mb-0">Order ID: ' . $order['id'] . '</h1>
-                                        <p class="text-muted">Order Date: ' . $order['order_date'] . '</p>
-                                    </div>
-                                    <div class="card-body">
-                                        <p class="card-text">Total Price: ' . (isset($order['currency_code']) ? $order['currency_code'] : 'N/A') . ' ' . number_format($order['total_price'], 2) . '</p>
-                                        <p class="card-text">Order Status: <span class="badge bg-primary">' . getOrderStatusName($order['order_status_id']) . '</span></p>';
+                        // Fetch items for the current order with product details
+                        $orderItemsStmt = $connection->prepare("SELECT order_items.*, products.name AS product_name, products.product_photo 
+                                    FROM order_items 
+                                    JOIN products ON order_items.product_id = products.id 
+                                    WHERE order_id = ?");
+                        $orderItemsStmt->execute([$order['id']]);
+                        $orderItems = $orderItemsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-                            // Fetch items for the current order with product details
-                            $orderItemsStmt = $connection->prepare("SELECT order_items.*, products.name AS product_name, products.product_photo 
-                                        FROM order_items 
-                                        JOIN products ON order_items.product_id = products.id 
-                                        WHERE order_id = ?");
-                            $orderItemsStmt->execute([$order['id']]);
-                            $orderItems = $orderItemsStmt->fetchAll(PDO::FETCH_ASSOC);
+                        if ($orderItemsStmt->rowCount() > 0) {
+                            echo '<table class="table view_order mt-4">
+                                        <thead>
+                                            <tr>
+                                                <th>Product ID</th>
+                                                <th>Product Name</th>
+                                                <th>Product Photo</th>
+                                                <th>Quantity</th>
+                                                <th>Total Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>';
 
-                            if ($orderItemsStmt->rowCount() > 0) {
-                                echo '<table class="table view_order mt-4">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product ID</th>
-                                                    <th>Product Name</th>
-                                                    <th>Product Photo</th>
-                                                    <th>Quantity</th>
-                                                    <th>Total Price</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>';
-
-                                foreach ($orderItems as $item) {
-                                    echo '<tr>
-                                            <td>' . $item['product_id'] . '</td>
-                                            <td>' . $item['product_name'] . '</td>
-                                            <td class="order-product-img"><img src="../../auth/assets/products/' . $item['product_photo'] . '" alt="' . $item['product_name'] . '" class="img-fluid"></td>
-                                            <td>' . $item['quantity'] . '</td>
-                                            <td>' . (isset($order['currency_code']) ? $order['currency_code'] : 'N/A') . ' ' . number_format($item['total_price'], 2) . '</td>
-                                        </tr>';
-                                }
-
-                                echo '</tbody></table>';
+                            foreach ($orderItems as $item) {
+                                echo '<tr>
+                                        <td>' . $item['product_id'] . '</td>
+                                        <td>' . $item['product_name'] . '</td>
+                                        <td class="order-product-img"><img src="../../auth/assets/products/' . $item['product_photo'] . '" alt="' . $item['product_name'] . '" class="img-fluid"></td>
+                                        <td>' . $item['quantity'] . '</td>
+                                        <td>' . (isset($order['currency_code']) ? $order['currency_code'] : 'N/A') . ' ' . number_format($item['total_price'], 2) . '</td>
+                                    </tr>';
                             }
+
+                            echo '</tbody></table>';
+                        } else {
+                            echo '<p>No order items found for the selected order.</p>';
+                        }
+
 
                             echo '</div>
                                 </div>';
@@ -287,6 +346,7 @@ if ($stmt = $connection->prepare($sql)) {
                                 </div>';
                         }
                         ?>
+
                     </div>
                 </div>
             </div>

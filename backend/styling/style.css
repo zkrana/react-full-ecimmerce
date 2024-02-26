@@ -321,7 +321,7 @@ Reusable Block
   flex-wrap: wrap;
 }
 .sales-small-stats-inner {
-  width: calc(33.3333% - 21.3333px);
+  width: calc(25% - 24px);
   padding: 16px;
   background: white;
   border-radius: 8px;
@@ -419,6 +419,15 @@ Reusable Block
   }
   .existing-cat {
     overflow-x: auto;
+  }
+  .sales-small-stats-inner {
+    width: calc(33.3333% - 24px);
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 }
 
