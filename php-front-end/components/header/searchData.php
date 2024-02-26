@@ -32,7 +32,7 @@ while ($row = $productResult->fetch(PDO::FETCH_ASSOC)) {
     $results['products'][] = [
         'id' => $row['id'],
         'name' => $row['name'],
-        'link' => 'product_link_placeholder?id=' . $row['id']
+        'link' => 'products/singleProduct.php?id=' . $row['id']
     ];
 }
 

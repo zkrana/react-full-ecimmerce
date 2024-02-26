@@ -16,7 +16,7 @@ function displayProducts($products, $fadeIn = false)
         echo '<a href="products/singleProduct.php?id=' . $product['id'] . '">';
 
         echo '  <img src="http://localhost/reactcrud/backend/auth/assets/products/' . $product['product_photo'] . '" alt="' . $product['name'] . '" class="w-full h-40 object-contain rounded-md mb-4" />';
-        echo '  <h2 class="text-xl font-semibold mb-2 h-28">' . $product['name'] . '</h2>';
+        echo '  <h2 class="text-xl font-semibold mb-2 h-16">' . $product['name'] . '</h2>';
         echo '  <div class="flex flex-col gap-3">';
         echo '    <div class="text-lg font-bold text-blue-600">' . $product['currency_code'] . ' ' . $product['price'] . '</div>';
         echo '</a>';
@@ -32,7 +32,7 @@ function displayProducts($products, $fadeIn = false)
 // Display product information
 echo '<div class="mt-7">';
 echo '  <div class="pb-3 border-b border-slate-200">';
-echo '    <h2 class="text-lg font-semibold">New Collections</h2>';
+echo '    <h2 class="text-lg font-semibold">Running Products</h2>';
 echo '  </div>';
 echo '  <div class="product-wrapper flex flex-col justify-between gap-6">';
 echo '    <div class="w-full mt-10 flex flex-wrap lg:gap-8 gap-5" id="productContainer">';

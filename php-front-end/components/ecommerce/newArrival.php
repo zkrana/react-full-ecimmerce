@@ -1,5 +1,110 @@
+<!-- Add this code to the desired section in your HTML file -->
 <div class="mt-14 w-full sm:w-[calc(50%-10px)] lg:w-[calc(33.3333%-21.3333px)]">
     <h4 class="text-lg font-semibold pb-3 border-b border-slate-200 capitalize">
         New arrival
     </h4>
+
+    <?php
+    // Function to fetch the last added products
+    function getLastAddedProducts($connection, $limit = 3) {
+        $query = "SELECT * FROM `products` ORDER BY `created_at` DESC LIMIT :limit";
+        $stmt = $connection->prepare($query);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Check if the query was successful and if there is a result
+        if ($stmt && $stmt->rowCount() > 0) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return array(); // Return an empty array if no result is found
+    }
+
+    // Fetch the last added products
+    $lastAddedProducts = getLastAddedProducts($connection);
+
+    // Display the last added products
+    if (!empty($lastAddedProducts)) {
+        echo '<div id="bestSellingProductsContainer" class="flex flex-col gap-5 mt-4">';
+        foreach ($lastAddedProducts as $product) {
+            echo '<div class="product-item w-full group flex justify-between pt-2 bg-white p-4 group rounded-md shadow hover:shadow-lg transition duration-300 ease-in-out relative group" data-product-id="' . $product['id'] . '">';
+            echo '<a href="products/singleProduct.php?id=' . $product['id'] . '">';
+            echo '<div class="w-[90%]">';
+            echo '<div class=" w-16 h-16 overflow-hidden flex justify-center items-center">';
+            echo '  <img src="http://localhost/reactcrud/backend/auth/assets/products/' . $product['product_photo'] . '" alt="' . $product['name'] . '" class="w-full h-40 object-contain rounded-md mb-4" />';
+            echo '</div>';
+            echo '  <h2 class="text-sm font-semibold mb-2">' . $product['name'] . '</h2>';
+            echo '</div>';
+            echo '  <div class="flex flex-col gap-3">';
+            echo '    <div class="lg:text-lg text-sm font-bold text-blue-600">' . $product['currency_code'] . ' ' . $product['price'] . '</div>';
+            echo '</a>';
+            echo '    <div class="text-sm text-gray-500 absolute bottom-3 right-3 p-1 rounded-sm">Stock: ' . $product['stock_quantity'] . ' left</div>';
+            echo (isset($product['stock_quantity']) && $product['stock_quantity'] > 0)
+                ? '    <button type="button" class="add-to-cart-btn text-sm bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" data-product-id="' . $product['id'] . '">Add to Cart</button>'
+                : '    <div class="text-red-500">Out of stock</div>';
+            echo '  </div>';
+            echo '</div>';
+        }
+        echo '</div>';
+    } else {
+        echo '<p class="text-slate-400">No new arrivals at the moment.</p>';
+    }
+    ?>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Event delegation for wishlist icon on hover
+        $("#productContainer").on("mouseenter", ".product-item", function() {
+            var wishlistIcon = $(this).find(".wishlist-icon");
+            if (wishlistIcon) {
+                wishlistIcon.removeClass("hidden");
+            }
+        });
+
+        $("#productContainer").on("mouseleave", ".product-item", function() {
+            var wishlistIcon = $(this).find(".wishlist-icon");
+            if (wishlistIcon) {
+                wishlistIcon.addClass("hidden");
+            }
+        });
+
+        // Event delegation for add-to-cart button click
+        $("#productContainer").on("click", ".add-to-cart-btn", function() {
+            var productId = $(this).data("product-id");
+
+            $.ajax({
+                type: "POST",
+                url: "./files/checkLogin.php",
+                data: {productId: productId},
+                success: function(response) {
+                    if (response === "loggedIn") {
+                        addToCart(productId);
+                    } else {
+                        window.location.href = "./files/userlogin.php";
+                    }
+                },
+                error: function() {
+                    console.error("Error checking login status");
+                }
+            });
+        });
+
+        // Function to add product to cart and refresh the page
+        function addToCart(productId) {
+            $.ajax({
+                type: "POST",
+                url: "./files/addToCart.php",
+                data: {productId: productId},
+                success: function(response) {
+                    location.reload();
+                },
+                error: function() {
+                    console.error("Error adding product to cart");
+                }
+            });
+        }
+    });
+</script>
