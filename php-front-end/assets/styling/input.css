@@ -207,4 +207,19 @@
       left: 0;
     }
   }
+  .tab-item {
+    @apply text-gray-800 font-bold text-sm py-3 px-8 pl-0 cursor-pointer transition-all border-b-2 border-transparent;
+  }
+
+  .tab-item.active {
+    border-bottom-color: #1a202c; /* Use your desired color for the active tab indicator */
+  }
+
+  .tab-content.hidden {
+    display: none;
+  }
+
+  .text-yellow-500 {
+    @apply fill-yellow-500;
+  }
 }

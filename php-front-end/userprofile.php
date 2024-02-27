@@ -170,6 +170,12 @@
                                     }
                                     ?>
                                 </div>
+                                <?php 
+                                    if ($order['status_name'] === "Shipped") {?>
+                                    <div class="mt-2">
+                                    <a href="product_review.php?orderId=<?php echo $order['order_id']; ?>" class="text-slate-100 hover:underline mt-3 inline-block p-2 rounded-sm bg-[tomato]">Leave a review</a>
+                                </div>
+                                <?php }?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
