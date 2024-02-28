@@ -225,7 +225,7 @@
                             <!-- Review Form -->
                             <div class="mt-8">
                                 <h3 class="text-xl font-bold mb-4">Write a Review</h3>
-                                <form action="../files/reviews.php">
+                                <form action="../files/reviews.php?id=<?php echo htmlspecialchars($product_id, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
                                     <div class="mb-4">
                                         <!-- Star Rating Input -->
                                         <div class="flex items-center">
@@ -251,9 +251,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mb-4">
-                                        <label for="review" class="block text-sm font-medium text-gray-700">Your Review:</label>
-                                        <textarea id="review" name="review" rows="3" class="mt-1 p-2 border rounded-md w-full"></textarea>
+                                     <div class="mb-4">
+                                        <label for="review_text" class="block text-sm font-medium text-gray-700">Your Review:</label>
+                                        <textarea id="review_text" name="review_text" rows="3" class="mt-1 p-2 border rounded-md w-full"></textarea>
                                     </div>
                                     <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Submit Review</button>
                                 </form>

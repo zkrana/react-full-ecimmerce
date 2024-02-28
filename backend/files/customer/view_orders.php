@@ -189,8 +189,8 @@ if ($stmt = $connection->prepare($sql)) {
 
                                 <ul class="pro-menu">
                                     <li><a href="">Profile</a></li>
-                                    <li><a href="../admin-settings.php">Admin Settings</a></li>
-                                    <li><a href="../auth/backend-assets/logout.php" class="">Log out</a></li>
+                                    <li><a href="../../admin-settings.php">Admin Settings</a></li>
+                                    <li><a href="../../auth/backend-assets/logout.php" class="">Log out</a></li>
                                 </ul>
                             </div>
                         </div>
