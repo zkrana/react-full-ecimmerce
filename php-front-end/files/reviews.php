@@ -21,18 +21,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $customerId = $_SESSION['userId'];
     } else {
         echo "User is not logged in";
-        header("Location: ../index.php");
+        header("Location: ./userlogin.php");
         exit;
     }
 
-    echo "Product ID from URL: " . $_GET['id'] . "<br>";
-    echo "Rating: " . $_POST['rating'] . "<br>";
-    echo "Review Text: " . $_POST['review_text'] . "<br>";
+    // Initialize variables
+    $rating = 0;
+    $reviewText = '';
 
+    // Check if the request contains JSON data
+    $jsonInput = file_get_contents('php://input');
+    $jsonData = json_decode($jsonInput, true);
 
-    // Sanitize and validate user inputs
-    $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
-    $reviewText = isset($_POST['review_text']) ? trim($_POST['review_text']) : '';
+    if ($jsonData !== null) {
+        // If JSON data is present, use it
+        $rating = isset($jsonData['rating']) ? intval($jsonData['rating']) : 0;
+        $reviewText = isset($jsonData['review_text']) ? trim($jsonData['review_text']) : '';
+    } else {
+        // If no JSON data, assume form data
+        $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
+        $reviewText = isset($_POST['review_text']) ? trim($_POST['review_text']) : '';
+    }
 
     // Validate the rating (you might want to add more validation)
     if ($rating < 1 || $rating > 5) {
@@ -45,32 +54,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Review text cannot be empty";
         exit;
     }
+    // Set the timezone to Asia/Dhaka
+    date_default_timezone_set('Asia/Dhaka');
 
-    $createdAt = date('Y-m-d H:i:s'); // Current date and time
+    // Get the current date and time in Asia/Dhaka timezone
+    $createdAt = date('Y-m-d H:i:s');
 
-    // Insert the review into the database using prepared statement
+    // Insert the review into the database using prepared statement (PDO)
     $query = "INSERT INTO `product_reviews` (product_id, customer_id, rating, review_text, created_at)
               VALUES (?, ?, ?, ?, ?)";
 
     // Prepare the statement
-    $stmt = mysqli_prepare($connection, $query);
+    $stmt = $connection->prepare($query);
 
     // Bind parameters to the statement
-    mysqli_stmt_bind_param($stmt, "iiiss", $productId, $customerId, $rating, $reviewText, $createdAt);
+    $stmt->bindParam(1, $productId, PDO::PARAM_INT);
+    $stmt->bindParam(2, $customerId, PDO::PARAM_INT);
+    $stmt->bindParam(3, $rating, PDO::PARAM_INT);
+    $stmt->bindParam(4, $reviewText, PDO::PARAM_STR);
+    $stmt->bindParam(5, $createdAt, PDO::PARAM_STR);
 
     // Execute the statement
-    $result = mysqli_stmt_execute($stmt);
+    $result = $stmt->execute();
 
-    if ($result) {
-        echo "Review inserted successfully!";
-        header("Location: ../products/singleProduct.php");
-        exit;
-    } else {
-        echo "Error inserting review: " . mysqli_error($connection);
-    }
+if ($result) {
+    echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                alert("Thanks! for your review.");
+                // Redirect to the product page after displaying the alert
+                window.location.href = "../products/singleProduct.php?id=' . $productId . '";
+            });
+          </script>';
+    exit;
+} else {
+    echo "Error inserting review: " . $stmt->errorInfo()[2];
+    exit;
+}
 
-    // Close the statement and connection
-    mysqli_stmt_close($stmt);
-    mysqli_close($connection);
 }
 ?>

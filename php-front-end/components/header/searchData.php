@@ -1,6 +1,10 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
+$baseUrl = 'http://localhost/reactcrud/php-front-end';
+
+
 // Include the database connection
 include '../../auth/connection/config.php';
 
@@ -24,7 +28,7 @@ while ($row = $categoryResult->fetch(PDO::FETCH_ASSOC)) {
     $results['categories'][] = [
         'id' => $row['id'],
         'name' => $row['name'],
-        'link' => 'categories/singleCategory.php?category_id=' . $row['id']
+        'link' => $baseUrl . '/categories/singleCategory.php?category_id=' . $row['id']
     ];
 }
 
@@ -32,7 +36,7 @@ while ($row = $productResult->fetch(PDO::FETCH_ASSOC)) {
     $results['products'][] = [
         'id' => $row['id'],
         'name' => $row['name'],
-        'link' => 'products/singleProduct.php?id=' . $row['id']
+        'link' => $baseUrl . '/products/singleProduct.php?id=' . $row['id']
     ];
 }
 

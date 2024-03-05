@@ -38,8 +38,8 @@ $userID = getUserID();
                     <?php include 'search.php'; ?>
                 </div>
 
-                <div class="header-actions flex justify-end lg:gap-2 gap-6 items-center sm:w-[20%] w-[60%]">
-                    <div class="head-ecom-wall w-50 h-10 flex items-center justify-end lg:gap-2 gap-4">
+                <div class="header-actions flex justify-end lg:gap-2 sm:gap-6 gap-2 items-center sm:w-[20%] w-[60%]">
+                    <div class="head-ecom-wall w-50 h-10 flex items-center justify-end lg:gap-2 sm:gap-4 gap-2">
                         <a href="<?php echo $baseUrl; ?>/wishlist.php" class="sm:w-9 w-5 sm:h-9 h-5 flex justify-center items-center text-lg relative cursor-pointer" id="wishlistIcon">
                             <i class="fa-regular fa-heart text-xl"></i>
                             <span id="wishlistCount" class="absolute sm:-top-1 -top-3 w-4 text-xs h-4 right-0 flex justify-center items-center text-white bg-[tomato] rounded-full p-1">0</span>

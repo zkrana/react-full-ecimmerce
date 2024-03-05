@@ -68,7 +68,7 @@ $categories = fetchCategories();
 <?php if (isset($categories) && is_array($categories)): ?>
   <nav class="main-menu-container lg:block flex items-center">
     <!-- Main Menu -->
-    <ul id="mainMenu" class="main-menu lg:static fixed bottom-0 left-0 p-5 lg:p-0 h-[calc(100vh-90px)] lg:h-auto bg-white lg:bg-transparent w-full lg:flex flex-col items-center lg:flex-row lg:space-x-6 hidden">
+    <ul id="mainMenu" class="main-menu transition-all lg:static fixed bottom-0 left-0 p-5 lg:p-0 h-[calc(100vh-90px)] lg:h-auto bg-white lg:bg-transparent w-full lg:flex flex-col items-center lg:flex-row lg:space-x-6 hidden">
       <?php foreach ($categories as $category): ?>
         <li class="relative group">
           <a href="<?php echo $baseUrl; ?>/categories/singleCategory.php?category_id=<?php echo $category['id']; ?>" class="flex items-center text-gray-800 hover:text-gray-600 transition duration-300 cursor-pointer">
@@ -78,7 +78,7 @@ $categories = fetchCategories();
         </li>
       <?php endforeach; ?>
     </ul>
-    <div id="closeNavMb" class="w-10 h-10 cursor-pointer hidden justify-center items-center text-lg text-white absolute z-[999999] right-4 top-4 bg-slate-600">
+    <div id="closeNavMb" class="w-10 h-10 cursor-pointer hidden justify-center items-center text-lg text-white fixed z-[999999] right-4 top-4 bg-slate-600">
       <i class="fa-solid fa-xmark "></i>
     </div>
   </nav>

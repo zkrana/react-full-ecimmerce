@@ -81,7 +81,11 @@
                         echo '</a>';
                         echo '    <div class="text-sm text-gray-500 absolute top-3 left-3 p-1 rounded-sm bg-green-300">Stock: ' . $product['stock_quantity'] . ' left</div>';
                         echo (isset($product['stock_quantity']) && $product['stock_quantity'] > 0)
-                            ? '    <button type="button" class="add-to-cart-btn bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" data-product-id="' . $product['id'] . '">Add to Cart</button>'
+                            ? '    <button type="button" class="add-to-cart-btn inline-flex justify-center items-center text-sm bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" data-product-id="' . $product['id'] . '">
+                <svg class=" w-3.5 h-3.5 me-2 mt-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 21">
+                <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z"/>
+                </svg>
+                Add to Cart</button>'
                             : '    <div class="text-red-500">Out of stock</div>';
                         echo '  </div>';
                         echo '</div>';

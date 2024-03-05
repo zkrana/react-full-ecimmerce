@@ -173,9 +173,29 @@
       display: block;
       position: static;
       box-shadow: none;
+      padding: 0;
+      margin: 0;
+    }
+    #mainMenu li a {
+      height: 40px;
+    }
+    #mainMenu li ul > li a {
+      margin: 0;
+      padding: 0;
+      height: 40px;
+      display: flex;
+      align-items: center;
+    }
+    #mainMenu li ul > li a:hover,
+    #mainMenu li a:hover {
+      background-color: unset;
+      color: tomato;
     }
     .MbNavMenuShow {
       @apply !flex;
+    }
+    #mainMenu li ul > li ul {
+      display: block !important;
     }
   }
   /* Initially hide the magnifier */

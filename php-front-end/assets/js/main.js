@@ -18,6 +18,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // Attach the event listener to the button
   const button = document.getElementById("mobileMenuButton");
   button.addEventListener("click", mobileMenuButton);
+
+  const mainMenu = document.getElementById("mainMenu");
+  const menuClose = document.getElementById("closeNavMb");
+  menuClose.addEventListener("click", () => {
+    menuClose.classList.remove("MbNavMenuShow");
+    mainMenu.classList.add("hidden");
+  });
 });
 
 // Function to toggle user dropdown// Hide the dropdown initially
