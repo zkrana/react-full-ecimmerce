@@ -176,7 +176,7 @@ function formatPriceWithIcon($price, $currencyCode) {
                         </li>
 
                         <li>
-                            <a href="">
+                            <a href="reviews.php">
                                 <i class="fa-solid fa-comments"></i>
                                 <span class="block">Reviews</span>
                             </a>

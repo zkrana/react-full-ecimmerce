@@ -128,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['up_id'])) {
                         </li>
 
                         <li>
-                            <a href="">
+                            <a href="reviews.php">
                                 <i class="fa-solid fa-comments"></i>
                                 <span class="block">Reviews</span>
                             </a>

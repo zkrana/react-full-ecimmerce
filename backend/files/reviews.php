@@ -32,6 +32,7 @@ if ($stmt = $connection->prepare($sql)) {
 
     unset($stmt); // Close statement
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -39,12 +40,12 @@ if ($stmt = $connection->prepare($sql)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
+    <title>Reviews</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="../styling/style.css">
 </head>
 <body style="background:#f7f7f7;">
@@ -70,9 +71,9 @@ if ($stmt = $connection->prepare($sql)) {
                         </li>
                         
                         <li class="">
-                            <a href="api.php">
-                                <i class="fa-solid fa-link"></i>
-                                <span class="block">API</span>
+                            <a href="categories.php">
+                                <i class="fa-solid fa-list"></i>
+                                <span class="block">Categories</span>
                             </a>
                         </li>
 
@@ -101,7 +102,7 @@ if ($stmt = $connection->prepare($sql)) {
                             </a>
                         </li>
 
-                        <li>
+                        <li class="active">
                             <a href="reviews.php">
                                 <i class="fa-solid fa-comments"></i>
                                 <span class="block">Reviews</span>
@@ -122,14 +123,14 @@ if ($stmt = $connection->prepare($sql)) {
                             </a>
                         </li>
 
-                         <li class="devided-nav">
+                         <li class="devided-nav ">
                             <a href="appearance.php">
                                 <i class="fa-solid fa-tag"></i>
                                 <span class="block">Appearances</span>
                             </a>
                         </li>
 
-                         <li class="active">
+                         <li>
                             <a href="settings.php">
                                 <i class="fa-solid fa-gear"></i>
                                 <span class="block">Settings</span>
@@ -196,10 +197,73 @@ if ($stmt = $connection->prepare($sql)) {
                         </div>
                     </div>
                 </div>
+
                 <div class="h-container">
                     <div class="main">
-                        <h1 class="page-heading"> Settings </h1>
+                        <div class="flex">
+                            <h1 class="page-heading"> Reviews </h1>
+                           <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
+                        </div>
+                        <div class="mt-4">
 
+                            <table class="reviewTable min-w-full bg-white border border-gray-300">
+                                <thead>
+                                    <tr>
+                                        <th class="py-2 px-4 border-b">ID</th>
+                                        <th class="py-2 px-4 border-b">Product ID</th>
+                                        <th class="py-2 px-4 border-b">Customer ID</th>
+                                        <th class="py-2 px-4 border-b">Rating</th>
+                                        <th class="py-2 px-4 border-b">Review Text</th>
+                                        <th class="py-2 px-4 border-b">Created At</th>
+                                        <th class="py-2 px-4 border-b">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   <?php 
+                                    // SQL query to select all reviews
+                                    $sql = "SELECT * FROM product_reviews";
+                                    $result = $connection->query($sql);
+
+                                    // Fetch and display reviews
+                                    if ($result !== false) {
+                                        // Check the number of rows returned by the query
+                                        $rowCount = $result->rowCount();
+                                        
+                                        if ($rowCount > 0) {
+                                            // Loop through the results and display each row
+                                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                                echo "<tr>";
+                                                echo "<td class='py-2 px-4 border-b'>" . $row["id"] . "</td>";
+                                                echo "<td class='py-2 px-4 border-b'>" . $row["product_id"] . "</td>";
+                                                echo "<td class='py-2 px-4 border-b'>" . $row["customer_id"] . "</td>";
+                                                echo "<td class='py-2 px-4 border-b'>" . $row["rating"] . "</td>";
+                                                echo "<td class='py-2 px-4 border-b'>" . $row["review_text"] . "</td>";
+                                                echo "<td class='py-2 px-4 border-b'>" . $row["created_at"] . "</td>";
+                                                echo "<td class='py-2 px-4 border-b'>";
+                                                echo "<select class='reviewTableoptions' data-review-id='" . $row["id"] . "'>";
+                                                echo "<option value='pending' " . ($row["reviewStatus"] == "pending" ? "selected" : "") . ">pending</option>";
+                                                echo "<option value='approved' " . ($row["reviewStatus"] == "approved" ? "selected" : "") . ">approved</option>";
+                                                echo "<option value='spam' " . ($row["reviewStatus"] == "spam" ? "selected" : "") . ">spam</option>";
+                                                echo "</select>";
+                                                echo "</td>";
+
+                                                echo "</tr>";
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='6' class='py-2 px-4 text-center'>No reviews found</td></tr>";
+                                        }
+                                    } else {
+                                        // Handle the case where the query fails
+                                        echo "Error: " . $connection->errorInfo()[2];
+                                    }
+
+                                    // Close the connection by setting it to null
+                                    $connection = null;
+                                    ?>
+
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -207,13 +271,15 @@ if ($stmt = $connection->prepare($sql)) {
 
     </main>
 
+    <!-- Bootstrap JS (you can use the CDN or download the file and host it locally) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         function toggleUserOptions() {
             var options = document.getElementById("userOptions");
             options.style.display = (options.style.display === 'flex') ? 'none' : 'flex';
         }
-            // script.js
-        document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function () {
             const wrapperIcon = document.querySelector('.app-sidebar-mb');
             const appWrapperS = document.querySelector('.app-wrapper');
             const deskNav =  document.getElementById("des-nav");
@@ -227,5 +293,31 @@ if ($stmt = $connection->prepare($sql)) {
         });
     </script>
     <script src="js/main.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Attach event listener to all reviewTableoptions elements
+        var reviewOptions = document.querySelectorAll(".reviewTableoptions");
+        reviewOptions.forEach(function (option) {
+            option.addEventListener("change", function () {
+                // Get the review id and selected value
+                var reviewId = this.getAttribute("data-review-id");
+                var newStatus = this.value;
+
+                // Send asynchronous request to update the review status
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        // Handle response if needed
+                        console.log(xhr.responseText);
+                    }
+                };
+
+                xhr.open("POST", "../auth/backend-assets/update_review_status.php", true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.send("id=" + reviewId + "&status=" + newStatus);
+            });
+        });
+    });
+</script>
 </body>
 </html>

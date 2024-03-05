@@ -102,7 +102,7 @@ if ($stmt = $connection->prepare($sql)) {
                         </li>
 
                         <li>
-                            <a href="">
+                            <a href="reviews.php">
                                 <i class="fa-solid fa-comments"></i>
                                 <span class="block">Reviews</span>
                             </a>
