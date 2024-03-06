@@ -197,73 +197,116 @@ if ($stmt = $connection->prepare($sql)) {
                         </div>
                     </div>
                 </div>
-
                 <div class="h-container">
                     <div class="main">
                         <div class="flex">
                             <h1 class="page-heading"> Reviews </h1>
                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
                         </div>
-                        <div class="mt-4">
+                        <?php
+                        // Define the number of reviews per page
+                        $reviewsPerPage = 20;
+                        // SQL query to get the total number of rows
+                        $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM product_reviews";
+                        $totalRowsResult = $connection->query($totalRowsQuery);
 
-                            <table class="reviewTable min-w-full bg-white border border-gray-300">
-                                <thead>
-                                    <tr>
-                                        <th class="py-2 px-4 border-b">ID</th>
-                                        <th class="py-2 px-4 border-b">Product ID</th>
-                                        <th class="py-2 px-4 border-b">Customer ID</th>
-                                        <th class="py-2 px-4 border-b">Rating</th>
-                                        <th class="py-2 px-4 border-b">Review Text</th>
-                                        <th class="py-2 px-4 border-b">Created At</th>
-                                        <th class="py-2 px-4 border-b">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                   <?php 
-                                    // SQL query to select all reviews
-                                    $sql = "SELECT * FROM product_reviews";
-                                    $result = $connection->query($sql);
+                        if ($totalRowsResult !== false) {
+                            $totalRows = $totalRowsResult->fetch(PDO::FETCH_ASSOC)['total_rows'];
 
-                                    // Fetch and display reviews
-                                    if ($result !== false) {
-                                        // Check the number of rows returned by the query
-                                        $rowCount = $result->rowCount();
-                                        
-                                        if ($rowCount > 0) {
-                                            // Loop through the results and display each row
-                                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                                echo "<tr>";
-                                                echo "<td class='py-2 px-4 border-b'>" . $row["id"] . "</td>";
-                                                echo "<td class='py-2 px-4 border-b'>" . $row["product_id"] . "</td>";
-                                                echo "<td class='py-2 px-4 border-b'>" . $row["customer_id"] . "</td>";
-                                                echo "<td class='py-2 px-4 border-b'>" . $row["rating"] . "</td>";
-                                                echo "<td class='py-2 px-4 border-b'>" . $row["review_text"] . "</td>";
-                                                echo "<td class='py-2 px-4 border-b'>" . $row["created_at"] . "</td>";
-                                                echo "<td class='py-2 px-4 border-b'>";
-                                                echo "<select class='reviewTableoptions' data-review-id='" . $row["id"] . "'>";
-                                                echo "<option value='pending' " . ($row["reviewStatus"] == "pending" ? "selected" : "") . ">pending</option>";
-                                                echo "<option value='approved' " . ($row["reviewStatus"] == "approved" ? "selected" : "") . ">approved</option>";
-                                                echo "<option value='spam' " . ($row["reviewStatus"] == "spam" ? "selected" : "") . ">spam</option>";
-                                                echo "</select>";
-                                                echo "</td>";
+                            // Get the current page number from the URL, default to page 1
+                            $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
-                                                echo "</tr>";
-                                            }
-                                        } else {
-                                            echo "<tr><td colspan='6' class='py-2 px-4 text-center'>No reviews found</td></tr>";
-                                        }
-                                    } else {
-                                        // Handle the case where the query fails
-                                        echo "Error: " . $connection->errorInfo()[2];
+                            // Calculate the offset based on the current page
+                            $offset = ($page - 1) * $reviewsPerPage;
+
+                            // SQL query to select reviews with pagination and join with products table
+                            $sql = "SELECT pr.*, p.name AS product_name, p.product_photo
+                                    FROM product_reviews pr
+                                    JOIN products p ON pr.product_id = p.id
+                                    LIMIT $offset, $reviewsPerPage";
+                            $result = $connection->query($sql);
+
+                            // Fetch and display reviews
+                            if ($result !== false) {
+                                // Check the number of rows returned by the query
+                                $rowCount = $result->rowCount();
+
+                                if ($rowCount > 0) {
+                                    echo '<div class="mt-4">';
+                                    echo '<table class="reviewTable min-w-full bg-white border border-gray-300">';
+                                    echo '<thead>';
+                                    echo '<tr>';
+                                    echo '<th class="py-2 px-4 border-b">ID</th>';
+                                    echo '<th class="py-2 px-4 border-b">Product ID</th>';
+                                    echo '<th class="py-2 px-4 border-b">Product Name</th>';
+                                    echo '<th class="py-2 px-4 border-b">Product Photo</th>';
+                                    echo '<th class="py-2 px-4 border-b">Customer ID</th>';
+                                    echo '<th class="py-2 px-4 border-b">Rating</th>';
+                                    echo '<th class="py-2 px-4 border-b">Review Text</th>';
+                                    echo '<th class="py-2 px-4 border-b">Created At</th>';
+                                    echo '<th class="py-2 px-4 border-b">Action</th>';
+                                    echo '</tr>';
+                                    echo '</thead>';
+                                    echo '<tbody>';
+
+                                    // Loop through the results and display each row
+                                    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                        echo "<tr>";
+                                        echo "<td class='py-2 px-4 border-b'>" . $row["id"] . "</td>";
+                                        echo "<td class='py-2 px-4 border-b'>" . $row["product_id"] . "</td>";
+                                        echo "<td class='py-2 px-4 border-b'>" . $row["product_name"] . "</td>";
+                                        echo "<td class='py-2 px-4 border-b ' style='width: 120px; height:90px;'><img src='../auth/assets/products/" . $row["product_photo"] . "' alt='Product Photo' class='w-12 h-12' style=' object-fit: contain; width: 100%; height: 100%'></td>";
+                                        echo "<td class='py-2 px-4 border-b'>" . $row["customer_id"] . "</td>";
+                                        echo "<td class='py-2 px-4 border-b'>" . $row["rating"] . "</td>";
+                                        echo "<td class='py-2 px-4 border-b'>" . $row["review_text"] . "</td>";
+                                        echo "<td class='py-2 px-4 border-b'>" . $row["created_at"] . "</td>";
+                                        echo "<td class='py-2 px-4 border-b flex gap-2'>";
+                                        echo "<select class='reviewTableoptions' data-review-id='" . $row["id"] . "'>";
+                                        echo "<option value='pending' " . ($row["reviewStatus"] == "pending" ? "selected" : "") . ">pending</option>";
+                                        echo "<option value='approved' " . ($row["reviewStatus"] == "approved" ? "selected" : "") . ">approved</option>";
+                                        echo "<option value='spam' " . ($row["reviewStatus"] == "spam" ? "selected" : "") . ">spam</option>";
+                                        echo "</select>";
+                                        echo "|";
+                                        echo "<button class='btn btn-danger' onclick='return confirm(\"Are you sure?\")'>";
+                                        echo "Delete";
+                                        echo "</button>";
+                                        echo "</td>";
+                                        echo "</tr>";
                                     }
 
-                                    // Close the connection by setting it to null
-                                    $connection = null;
-                                    ?>
+                                    echo '</tbody>';
+                                    echo '</table>';
+                                    echo '</div>';
 
-                                </tbody>
-                            </table>
-                        </div>
+                                    // Pagination links
+                                    $totalPages = ceil($totalRows / $reviewsPerPage);
+
+                                    echo "<div class='mt-4 flex-center justify-center'>";
+                                    echo "<ul class='pagination'>";
+                                    
+                                    for ($i = 1; $i <= $totalPages; $i++) {
+                                        $activeClass = $i === $page ? 'bg-blue-500 text-black' : 'bg-white text-blue-500';
+                                        echo "<li class='page-item mx-1'><a class='page-link py-2 px-4 rounded-full $activeClass' href='?page=$i'>$i</a></li>";
+                                    }
+
+                                    echo "</ul>";
+                                    echo "</div>";
+                                } else {
+                                    echo "<div class='py-2 px-4 text-center'>No reviews found</div>";
+                                }
+                            } else {
+                                // Handle the case where the query fails
+                                echo "Error: " . $connection->errorInfo()[2];
+                            }
+                        } else {
+                            // Handle the case where the total rows query fails
+                            echo "Error: " . $connection->errorInfo()[2];
+                        }
+
+                        // Close the connection by setting it to null
+                        $connection = null;
+                        ?>
+
                     </div>
                 </div>
             </div>
@@ -311,7 +354,6 @@ if ($stmt = $connection->prepare($sql)) {
                         console.log(xhr.responseText);
                     }
                 };
-
                 xhr.open("POST", "../auth/backend-assets/update_review_status.php", true);
                 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 xhr.send("id=" + reviewId + "&status=" + newStatus);
