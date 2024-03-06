@@ -272,11 +272,10 @@
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
-                                
-                                <?php if (count($reviews) > $reviewsPerPage) : ?>
+                            </div>
+                            <?php if (count($reviews) > $reviewsPerPage) : ?>
                                     <button class="load-more-btn bg-[tomato] text-white py-2 px-4 rounded" onclick="loadMoreReviews()">Load More</button>
                                 <?php endif; ?>
-                            </div>
                             <div class="mt-8">
                                 <h3 class="text-xl font-bold mb-4">Write a Review</h3>
                                 <?php
