@@ -21,7 +21,7 @@
     }
     ?>
     <div class="container">
-        <div class="min-h-screen w-full sm:max-w-7xl mx-auto sm:pt-20 pb-14 mt-7">
+        <div class="min-h-screen w-full sm:max-w-7xl mx-auto sm:pt-20 pb-4 mt-7">
         <div class="px-5">
             <div class="mb-2">
                 <h1 class="text-3xl md:text-5xl font-bold text-gray-600">User Profile.</h1>
@@ -52,15 +52,30 @@
 
             // Fetch summarized order history
             $orderSummaryQuery = "
-            SELECT o.id AS order_id, COUNT(oi.id) AS item_count, 
-            SUM(oi.quantity) AS total_quantity, SUM(oi.total_price) AS total_price,
-            os.status_name
-                FROM orders AS o
-                JOIN order_items AS oi ON o.id = oi.order_id
-                LEFT JOIN order_status AS os ON o.order_status_id = os.id
-                WHERE o.user_id = :userId
-                GROUP BY o.id
-                ORDER BY o.order_date DESC
+            SELECT
+                o.id AS order_id,
+                p.id AS product_id,
+                p.price AS product_price,
+                p.name AS product_name,
+                p.product_photo AS product_photo,
+                COUNT(oi.id) AS item_count,
+                SUM(oi.quantity) AS total_quantity,
+                SUM(oi.total_price) AS total_price,
+                os.status_name
+            FROM
+                orders AS o
+            JOIN
+                order_items AS oi ON o.id = oi.order_id
+            JOIN
+                products AS p ON oi.product_id = p.id
+            LEFT JOIN
+                order_status AS os ON o.order_status_id = os.id
+            WHERE
+                o.user_id = :userId
+            GROUP BY
+                o.id, p.id
+            ORDER BY
+                o.order_date DESC;
             ";
 
             $stmtOrderSummary = $connection->prepare($orderSummaryQuery);
@@ -68,6 +83,21 @@
             $stmtOrderSummary->execute();
 
             $orderSummary = $stmtOrderSummary->fetchAll(PDO::FETCH_ASSOC);
+
+            // Define the number of orders per page
+            $ordersPerPage = 5;
+
+            // Calculate the total number of pages
+            $totalPages = ceil(count($orderSummary) / $ordersPerPage);
+
+            // Get the current page from the query parameter
+            $currentpage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+
+            // Calculate the starting index for the current page
+            $startIndex = ($currentpage - 1) * $ordersPerPage;
+
+            // Slice the orderSummary array to get orders for the current page
+            $ordersForPage = array_slice($orderSummary, $startIndex, $ordersPerPage);
         } else {
             // User is not logged in, redirect to login page
             header("Location: login.php");
@@ -75,8 +105,8 @@
         }
         ?>
 
-        <div class="flex gap-8">
-            <div class="md:w-1/3 bg-white p-6 border-r border-slate-200">
+        <div class="flex flex-wrap gap-8">
+            <div class="md:w-[calc(35%-16px)] w-full bg-white p-6 border-r border-slate-200">
                 <?php
                     // Assuming $userData is an associative array containing user data fetched from the database
                     function xorDecrypt($input, $key) {
@@ -138,47 +168,70 @@
                 ?>
             </div>
 
-            <div class="md:w-2/3 bg-white p-6 rounded shadow-md">
-                <h2 class="text-2xl font-semibold mb-4">Order History</h2>
-                <?php if (!empty($orderSummary)) : ?>
+            <div class="md:w-[calc(65%-16px)] w-full bg-white p-6 rounded shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 pb-3 border-b border-slate-200">Order History</h2>
+                <?php if (!empty($ordersForPage)) : ?>
                     <ul class="divide-y divide-gray-300">
-                        <?php foreach ($orderSummary as $order) : ?>
+                         <?php foreach ($ordersForPage as $order) : ?>
                             <li class="py-4">
                                 <div class="flex justify-between items-center">
                                     <div>
-                                        <p class="text-lg font-semibold"><span class="bg-slate-500 rounded-sm p-1">Order #</span> <?php echo $order['order_id']; ?></p>
+                                        <p class="text-lg font-semibold"><span>Order Id: </span>#<?php echo $order['order_id']; ?></p>
                                         <p class="mt-2">
                                             <span class="text-slate-400 rounded-sm p-1">Items:</span>     
                                             <?php echo $order['item_count']; ?>
                                         </p>
                                         <p class="mt-2">
+                                            <span class="text-slate-400 rounded-sm p-1">Product name:</span>     
+                                            <?php echo $order['product_name']; ?>
+                                        </p>
+                                         <div class=" w-12 h-12">
+                                            <?php if (isset($order['product_photo']) && !empty($order['product_photo'])) : ?>
+                                                <img class=" w-full h-full object-contain" src="http://localhost/reactcrud/backend/auth/assets/products/<?php echo $order['product_photo']; ?>" alt="<?php echo $order['product_name']; ?>">
+                                            <?php else : ?>
+                                                <p class="text-red-500">Image not available</p>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <p class="mt-2">
                                             <span class="text-slate-400 rounded-sm p-1">quantity</span>     
                                             <?php echo $order['total_quantity']; ?>
                                         </p>
                                     </div>
-                                    <div>
-                                    <p class="text-gray-500">Status: <span class="text-white py-1 px-2 rounded-sm bg-[tomato]">
+                                <div>
+                                </div>
+                                </div>
+                                <div class="flex justify-between items-center mt-3">
+                                    <div class="flex gap-3 items-center">
+                                    <?php 
+                                        if ($order['status_name'] === "Pending") {
+                                            echo '<a href="cancelOrder.php?orderId=' . $order['order_id'] . '" class="text-slate-100 inline-block p-2 rounded-sm bg-[tomato]">Cancel Order</a>';
+                                        }
+                                        ?>
+                                        <?php 
+                                        if ($order['status_name'] === "Shipped") {?>
+                                        <div>
+                                        <a href="products/singleProduct.php?id=<?php echo $order['product_id']; ?>" class="text-slate-100 inline-block p-2 rounded-sm bg-[tomato]">Leave a review</a>
+                                    </div>
+                                    <?php }?>
+                                    </div>
+                                     <p class="text-gray-500">Status: <span class="text-white py-1 px-2 rounded-sm bg-[tomato]">
                                         <?php echo isset($order['status_name']) ? $order['status_name'] : 'N/A'; ?>
                                     </span></p>
-
-                                    </div>
                                 </div>
-                                <div class="mt-2">
-                                    <?php 
-                                    if ($order['status_name'] === "Pending") {
-                                        echo '<a href="cancelOrder.php?orderId=' . $order['order_id'] . '" class="text-slate-100 hover:underline mt-3 inline-block p-2 rounded-sm bg-[tomato]">Cancel Order</a>';
-                                    }
-                                    ?>
-                                </div>
-                                <?php 
-                                    if ($order['status_name'] === "Shipped") {?>
-                                    <div class="mt-2">
-                                    <a href="product_review.php?orderId=<?php echo $order['order_id']; ?>" class="text-slate-100 hover:underline mt-3 inline-block p-2 rounded-sm bg-[tomato]">Leave a review</a>
-                                </div>
-                                <?php }?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
+
+
+                    <!-- Pagination Links -->
+                    <div class="mt-3">
+                        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                            <a href="?page=<?php echo $i; ?>" class="mr-2 px-2 py-1 rounded <?php echo ($currentpage === $i) ? 'bg-[tomato] text-white' : 'bg-gray-200 text-gray-800'; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+                    </div>
                 <?php else : ?>
                     <p class="text-gray-500">No order history available.</p>
                 <?php endif; ?>

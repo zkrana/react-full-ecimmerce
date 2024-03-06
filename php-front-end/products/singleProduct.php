@@ -50,7 +50,7 @@
     ?>
     <?php include '../components/header/header.php'; ?>
 
-<?php
+    <?php
     // Set the timezone to Dhaka
     date_default_timezone_set('Asia/Dhaka');
 
@@ -67,7 +67,7 @@
     $query = "SELECT pr.*, CONCAT(c.first_name, ' ', c.last_name) AS customer_name
             FROM `product_reviews` pr
             JOIN `customers` c ON pr.customer_id = c.id
-            WHERE pr.product_id = ? 
+            WHERE pr.product_id = ? AND pr.reviewStatus = 'approved'
             ORDER BY pr.created_at DESC";
 
     $stmt = $connection->prepare($query);
@@ -76,9 +76,19 @@
     $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Calculate average rating
-$totalReviews = count($reviews);
-$averageRating = $totalReviews > 0 ? array_sum(array_column($reviews, 'rating')) / $totalReviews : 0;
-?>
+    $totalReviews = count($reviews);
+    $averageRating = $totalReviews > 0 ? array_sum(array_column($reviews, 'rating')) / $totalReviews : 0;
+
+    // Number of reviews to show per page
+    $reviewsPerPage = 2;
+
+    // Get the current offset
+    $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+
+    // Slice the array to get reviews for the current page
+    $reviewsForPage = array_slice($reviews, $offset, $reviewsPerPage);
+
+    ?>
     <div class="container">
         <div class="sm:max-w-7xl w-[90%] mx-auto my-10">
             <div class="product-component flex flex-wrap gap-8">
@@ -237,9 +247,9 @@ $averageRating = $totalReviews > 0 ? array_sum(array_column($reviews, 'rating'))
                        <div class="max-w-4xl mx-auto mt-8">
                             <h2 class="text-2xl font-bold mb-4">Product Reviews</h2>
 
-                            <!-- Single Review -->
-                            <div class="flex flex-col mb-4">
-                                <?php foreach ($reviews as $review): ?>
+                           <!-- Single Review -->
+                            <div class="flex reviews-p flex-col mb-4">
+                                <?php foreach ($reviewsForPage as $review): ?>
                                     <div class="flex items-center mb-4 pb-4 border-b border-slate-300">
                                         <div class="mr-4">
                                             <div class="flex items-center">
@@ -262,9 +272,24 @@ $averageRating = $totalReviews > 0 ? array_sum(array_column($reviews, 'rating'))
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
+                                
+                                <?php if (count($reviews) > $reviewsPerPage) : ?>
+                                    <button class="load-more-btn bg-[tomato] text-white py-2 px-4 rounded" onclick="loadMoreReviews()">Load More</button>
+                                <?php endif; ?>
                             </div>
                             <div class="mt-8">
                                 <h3 class="text-xl font-bold mb-4">Write a Review</h3>
+                                <?php
+                                // Check for the error parameter in the URL
+                                $errorMsg = isset($_GET['error']) ? $_GET['error'] : '';
+
+                                // Display the error message if it exists
+                                if (!empty($errorMsg)) {
+                                    echo '<div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                                        <span class="font-medium"> Alert!</span> ' . htmlspecialchars($errorMsg) . '
+                                    </div>';
+                                }
+                                ?>
                                 <form action="../files/reviews.php?id=<?php echo htmlspecialchars($product_id, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
                                     <div class="mb-4">
                                         <!-- Star Rating Input -->
@@ -410,8 +435,6 @@ $averageRating = $totalReviews > 0 ? array_sum(array_column($reviews, 'rating'))
         var selectedColor = document.getElementById('selectedColor');
         selectedColor.style.backgroundColor = color;
     }
-
-
     document.addEventListener("DOMContentLoaded", function() {
         const tabItems = document.querySelectorAll(".tab-item");
         const tabContents = document.querySelectorAll(".tab-content");
@@ -434,7 +457,6 @@ $averageRating = $totalReviews > 0 ? array_sum(array_column($reviews, 'rating'))
             });
         });
     });
-
     document.addEventListener("DOMContentLoaded", function () {
         const starLabels = document.querySelectorAll('.star');
         const ratingInput = document.querySelector('input[name="rating"]');
@@ -504,6 +526,79 @@ $averageRating = $totalReviews > 0 ? array_sum(array_column($reviews, 'rating'))
         });
     });
     });
+    </script>
+    <script>
+        function htmlspecialchars(str) {
+            var map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+
+            return str.replace(/[&<>"']/g, function (m) {
+                return map[m];
+            });
+        }
+
+        function loadMoreReviews() {
+            var offset = document.querySelectorAll('.reviews-p .flex.items-center.mb-4').length;
+
+            // Make an AJAX request to fetch additional reviews
+            var productId = 5; // Replace with your actual product ID
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Parse the JSON response
+                    var reviewsForPage = JSON.parse(xhr.responseText);
+
+                    // Get the container for reviews
+                    var reviewsContainer = document.querySelector('.reviews-p');
+
+                    // Append the new reviews to the existing ones
+                    reviewsForPage.forEach(function (review) {
+                        var newReview = document.createElement('div');
+                        newReview.className = 'flex items-center mb-4 pb-4 border-b border-slate-300';
+
+                        // Your existing HTML code for each review
+                        newReview.innerHTML = `
+                            <div class="mr-4">
+                                <div class="flex items-center">
+                                    <i class="fa-regular fa-star text-yellow-500"></i>
+                                    <span class="text-lg font-bold">${review['rating']}</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <div>
+                                    <p class="text-gray-700 sm:text-lg text-base">
+                                        ${htmlspecialchars(review['review_text'])}
+                                    </p>
+                                    <p class="text-gray-500 text-sm">
+                                        - ${htmlspecialchars(review['customer_name'])}
+                                    </p>
+                                </div>
+                                <div class=" text-slate-700 text-sm">
+                                    Posted date: ${new Date(review['created_at']).toLocaleString()}
+                                </div>
+                            </div>
+                        `;
+
+                        reviewsContainer.appendChild(newReview);
+                    });
+
+                    // Hide the "Load More" button if there are no more reviews
+                    if (offset + <?php echo $reviewsPerPage; ?> >= <?php echo count($reviews); ?>) {
+                        document.querySelector('.load-more-btn').style.display = 'none';
+                    }
+                }
+            };
+
+            // Send the AJAX request with productId
+            xhr.open('GET', `../files/loadmorereview.php?offset=${offset}&productId=${productId}`, true);
+            xhr.send();
+        }
+
     </script>
 
 </body>

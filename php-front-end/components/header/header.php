@@ -158,8 +158,6 @@ $userID = getUserID();
                                             <li> 
                                                 <a href="<?php echo $baseUrl; ?>/userprofile.php">Profile</a>
                                             </li>
-                                            <li>Security</li>
-                                            <li>Book</li>
                                             <li class="pt-3 border-t border-slate-200">
                                                 <a variant="contained" href="<?php echo $baseUrl; ?>/components/logout.php">
                                                 Logout

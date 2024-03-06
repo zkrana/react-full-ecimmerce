@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 
 session_start();
 include "../auth/connection/config.php";
-
+$errormsg = '';
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve product ID from the URL
@@ -45,13 +45,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Validate the rating (you might want to add more validation)
     if ($rating < 1 || $rating > 5) {
-        echo "Invalid rating";
+        $errormsg = "Invalid rating";
+        header("Location: ../products/singleProduct.php?id=$productId&error=$errormsg");
         exit;
     }
 
+
     // Validate the review text (you might want to add more validation)
     if (empty($reviewText)) {
-        echo "Review text cannot be empty";
+        $errormsg = "Review Text Can not be empty!";
+        header("Location: ../products/singleProduct.php?id=$productId&error=$errormsg");
         exit;
     }
     // Set the timezone to Asia/Dhaka

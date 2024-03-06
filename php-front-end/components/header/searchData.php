@@ -7,6 +7,7 @@ $baseUrl = 'http://localhost/reactcrud/php-front-end';
 
 // Include the database connection
 include '../../auth/connection/config.php';
+include '../../auth/connection/cors.php';
 
 // Get the search query from the user
 $searchQuery = isset($_GET['q']) ? strtolower(trim($_GET['q'])) : '';

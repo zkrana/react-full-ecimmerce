@@ -193,6 +193,27 @@
             });
         }
     });
+
+    // Mobile Menu
+document.addEventListener("DOMContentLoaded", function () {
+  function mobileMenuButton() {
+    const mainMenu = document.getElementById("mainMenu");
+    mainMenu.classList.toggle("hidden");
+    const menuClose = document.getElementById("closeNavMb");
+    menuClose.classList.toggle("MbNavMenuShow");
+  }
+
+  // Attach the event listener to the button
+  const button = document.getElementById("mobileMenuButton");
+  button.addEventListener("click", mobileMenuButton);
+
+  const mainMenu = document.getElementById("mainMenu");
+  const menuClose = document.getElementById("closeNavMb");
+  menuClose.addEventListener("click", () => {
+    menuClose.classList.remove("MbNavMenuShow");
+    mainMenu.classList.add("hidden");
+  });
+});
 </script>
 
 </body>
