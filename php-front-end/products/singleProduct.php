@@ -218,12 +218,16 @@
                             </div>
                         <?php endif; ?>
                     </div>
-                    <div class="flex -mx-2 mb-4 mt-10">
+                    <div id="productContainer" class="flex -mx-2 mb-4 mt-10">
                         <div class="sm:w-1/2 w-full px-2">
-                            <button class="w-full bg-gray-900 lg:text-base text-sm dark:bg-gray-600 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">Add to Cart</button>
+                            <button class="add-to-cart-btn inline-flex items-center justify-center w-full bg-gray-900 lg:text-base text-sm dark:bg-gray-600 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700" data-product-id="<?php echo $productId; ?>">
+                            <svg class=" w-3.5 h-3.5 me-2 mt-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 21">
+                            <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z"/>
+                            </svg>       
+                            Add to Cart</button>
                         </div>
                         <div class="sm:w-1/2 w-full px-2">
-                            <button class="w-full lg:text-base text-sm bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600">Add to Wishlist</button>
+                            <button class="w-full lg:text-base text-sm bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600" data-product-id="<?php echo $productId; ?>">Add to Wishlist</button>
                         </div>
                     </div>
                 </div>
@@ -599,6 +603,45 @@
         }
 
     </script>
+<script>
+    $(document).ready(function() {
+        // Event delegation for add-to-cart button click
+        $("#productContainer").on("click", ".add-to-cart-btn", function() {
+            var productId = $(this).data("product-id");
+
+            $.ajax({
+                type: "POST",
+                url: "../files/checkLogin.php",
+                data: {productId: productId},
+                success: function(response) {
+                    if (response === "loggedIn") {
+                        addToCart(productId);
+                    } else {
+                        window.location.href = "../files/userlogin.php";
+                    }
+                },
+                error: function() {
+                    console.error("Error checking login status");
+                }
+            });
+        });
+
+        // Function to add product to cart and refresh the page
+        function addToCart(productId) {
+            $.ajax({
+                type: "POST",
+                url: "../files/addToCart.php",
+                data: {productId: productId},
+                success: function(response) {
+                    location.reload();
+                },
+                error: function() {
+                    console.error("Error adding product to cart");
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 

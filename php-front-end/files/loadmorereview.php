@@ -7,7 +7,7 @@ session_start();
 $productId = isset($_GET['productId']) ? intval($_GET['productId']) : 0;
 
 // Fetch reviews with customer names for the specific product using a JOIN
-$reviewsPerPage = 3; // Number of reviews to show per page
+$reviewsPerPage = 2; // Number of reviews to show per page
 $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
 
 // Your database query to fetch reviews with an offset

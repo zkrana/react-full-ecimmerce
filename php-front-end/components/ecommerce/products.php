@@ -158,23 +158,8 @@ echo '<script>
 ?>
 
 
-<script>
+<!-- <script>
     $(document).ready(function() {
-        // Event delegation for wishlist icon on hover
-        $("#productContainer").on("mouseenter", ".product-item", function() {
-            var wishlistIcon = $(this).find(".wishlist-icon");
-            if (wishlistIcon) {
-                wishlistIcon.removeClass("hidden");
-            }
-        });
-
-        $("#productContainer").on("mouseleave", ".product-item", function() {
-            var wishlistIcon = $(this).find(".wishlist-icon");
-            if (wishlistIcon) {
-                wishlistIcon.addClass("hidden");
-            }
-        });
-
         // Event delegation for add-to-cart button click
         $("#productContainer").on("click", ".add-to-cart-btn", function() {
             var productId = $(this).data("product-id");
@@ -211,7 +196,7 @@ echo '<script>
             });
         }
     });
-</script>
+</script> -->
 
 
 
