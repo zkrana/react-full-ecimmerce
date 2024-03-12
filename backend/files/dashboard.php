@@ -324,12 +324,81 @@ if ($stmt = $connection->prepare($sql)) {
 
                             </div>   
                         </div>
+
+
+                       <!-- Sales Graph -->
+                        <div class="salesgraph">
+                            <canvas id="salesChart" width="400" height="200"></canvas>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
 
     </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<?php
+
+include "../auth/db-connection/config.php";
+
+// Fetch data with the specified order status (e.g., order_status_id = 1 for complete orders)
+$sql = "SELECT * FROM orders WHERE order_status_id = 1";
+$stmt = $connection->prepare($sql);
+$stmt->execute();
+
+// Process the data to extract necessary information
+$data = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $data[] = [
+        'order_date' => $row['order_date'],
+        'total_price' => $row['total_price'],
+    ];
+}
+
+// No need to close PDO connection explicitly, it will be closed automatically
+
+?>
+
+
+<!-- Your JavaScript code to render the chart -->
+<script>
+    // Extracted PHP data
+    var ordersData = <?php echo json_encode($data); ?>;
+
+    // Convert dates to a format suitable for Chart.js (you may need to adjust this based on your date format)
+    ordersData.forEach(function(order) {
+        order.order_date = new Date(order.order_date).toLocaleDateString();
+    });
+
+    // Chart.js setup
+    var ctx = document.getElementById('salesChart').getContext('2d');
+    var salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ordersData.map(function(order) {
+                return order.order_date;
+            }),
+            datasets: [{
+                label: 'Total Sales',
+                data: ordersData.map(function(order) {
+                    return order.total_price;
+                }),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
     <script>
         function toggleUserOptions() {
