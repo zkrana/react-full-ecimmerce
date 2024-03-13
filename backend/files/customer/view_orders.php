@@ -199,7 +199,7 @@ if ($stmt = $connection->prepare($sql)) {
                 <div class="h-container">
                     <div class="main">
                         <h1 class="page-heading">Order Details</h1>
-                        <p>All order data</p>
+                        <p>Single order data</p>
                     <?php
                     // Function to fetch user details based on user_id
                     function getUserDetails($connection, $userId)

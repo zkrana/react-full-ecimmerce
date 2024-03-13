@@ -269,6 +269,17 @@ Global Styling
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+#notificationsMenu {
+  min-width: 200px;
+  position: absolute;
+  top: 39px;
+  background: white;
+  padding: 15px;
+  right: 69px;
+  box-shadow: 0px 2px 9px 1px #a6a5a53d;
+  border-radius: 4px;
 }
 .pro-menu {
   margin: 20px 0;
@@ -310,6 +321,91 @@ Global Styling
   .h-container {
     padding: 20px;
   }
+}
+
+/* Chart */
+.chart-stats-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.chart-stats-wrapper > div {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+}
+.chart-stats-wrapper > div:first-child {
+  width: calc(70% - 10px);
+}
+.chart-stats-wrapper > div:last-child {
+  width: calc(30% - 10px);
+}
+.new-order {
+  display: flex;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+.new-order:not(:first-child) {
+  margin-top: 16px;
+}
+
+#salesChart {
+  width: 100% !important;
+}
+
+.chart-tabs.btn-group {
+  margin-top: 10px;
+}
+
+@media screen and (max-width: 767px) {
+  .stars-chart,
+  .new-order-stats {
+    width: 100% !important;
+  }
+}
+
+.new-order-ticker {
+  overflow: hidden;
+  width: 100%;
+  height: 90%;
+}
+
+.new-order-ticker ul {
+  height: 100%;
+  overflow: hidden;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.new-order-ticker ul li {
+  margin-bottom: 10px; /* Adjust spacing between orders */
+}
+
+.new-order-ticker ul li a {
+  display: flex;
+  color: #000;
+  text-decoration: none;
+  gap: 10px;
+  width: 100%;
+  justify-content: space-around;
+  background: aliceblue;
+  align-items: center;
+  padding: 10px 0;
+}
+.new-order-ticker ul li a p {
+  margin-bottom: 0;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
 }
 
 /* 

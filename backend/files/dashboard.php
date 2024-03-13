@@ -152,10 +152,81 @@ if ($stmt = $connection->prepare($sql)) {
                         </form>
                     </div>
                     <div class="account">
-                        <!-- Notifications -->
-                        <div class="notifications">
-                            <i class="fa-regular fa-bell"></i>
+                    <?php
+                    // Assuming you have already executed a query to fetch the count of new users
+                    $new_users_count = 0; // Initialize the variable
+                    // Fetch data for new customers using 'request_time' column
+                    $sql_new_customers = "SELECT * FROM customers WHERE request_time >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
+                    $stmt_new_customers = $connection->prepare($sql_new_customers);
+                    $stmt_new_customers->execute();
+                    $new_customers = $stmt_new_customers->fetchAll(PDO::FETCH_ASSOC);
+
+                    // Example: New orders
+                    $sql_new_orders = "SELECT COUNT(*) AS count FROM orders WHERE order_status_id = 1"; // Assuming 1 is the status for new orders
+                    $stmt_new_orders = $connection->prepare($sql_new_orders);
+                    $stmt_new_orders->execute();
+                    $new_orders_count = $stmt_new_orders->fetch(PDO::FETCH_ASSOC)['count'];
+
+                    // Example: New payments
+                    // Example: New payments
+                    $sql_new_payments = "SELECT COUNT(*) AS count FROM payments";
+
+                    $stmt_new_payments = $connection->prepare($sql_new_payments);
+                    $stmt_new_payments->execute();
+                    $new_payments_count = $stmt_new_payments->fetch(PDO::FETCH_ASSOC)['count'];
+
+                    // Example: New reviews
+                    $sql_new_reviews = "SELECT COUNT(*) AS count FROM product_reviews WHERE reviewStatus IS NULL";
+                    $stmt_new_reviews = $connection->prepare($sql_new_reviews);
+                    $stmt_new_reviews->execute();
+                    $new_reviews_count = $stmt_new_reviews->fetch(PDO::FETCH_ASSOC)['count'];
+
+                    // Example: New subscriptions
+                    $sql_new_subscriptions = "SELECT COUNT(*) AS count FROM subscribers";
+                    $stmt_new_subscriptions = $connection->prepare($sql_new_subscriptions);
+                    $stmt_new_subscriptions->execute();
+                    $new_subscriptions_count = $stmt_new_subscriptions->fetch(PDO::FETCH_ASSOC)['count'];
+
+
+
+                    // Calculate total notifications count
+                    $total_notifications = $new_users_count + $new_orders_count + $new_payments_count + $new_reviews_count + $new_subscriptions_count;
+
+                    // Determine if there are any new notifications to display red dot
+                    $has_new_notifications = $total_notifications > 0;
+                    ?>
+
+
+                    <!-- Notifications -->
+                    <div class="notifications" id="notificationsDropdown">
+                        <i class="far fa-bell"></i>
+                        <?php if ($has_new_notifications): ?>
+                            <span class="notification-dot"></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Notifications Menu -->
+                    <div class="notifications-menu" id="notificationsMenu" style="display: none;">
+                        <div class="notification-item">
+                            <a href="#">New Users Sign Up <span class="badge badge-primary"><?php echo $new_users_count; ?></span></a>
                         </div>
+                        <div class="notification-item">
+                            <a href="#">New Orders <span class="badge badge-primary"><?php echo $new_orders_count; ?></span></a>
+                        </div>
+                        <div class="notification-item">
+                            <a href="#">New Customers</a>
+                            <!-- Display new customer details -->
+                            <ul>
+                                <?php foreach ($new_customers as $customer): ?>
+                                    <li><?php echo $customer['id']; ?>: <?php echo $customer['customer_name']; ?></li>
+                                    <!-- Add more customer details as needed -->
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <!-- Add more notification items here -->
+                    </div>
+
+
                         <!-- User  -->
                         <div class="wrap-u" onclick="toggleUserOptions()">
                             <div class="user-pro flex">
@@ -201,7 +272,6 @@ if ($stmt = $connection->prepare($sql)) {
                         <h1 class="page-heading"> Dashboard </h1>
                         <p>
                             <a href="../auth/backend-assets/password-reset.php" class="btn btn-warning">Reset Your Password</a>
-                            
                         </p>
 
                         <!-- Statistics -->
@@ -325,81 +395,163 @@ if ($stmt = $connection->prepare($sql)) {
                             </div>   
                         </div>
 
+                        <!-- Display total sales, complete orders, canceled orders, and canceled sales in a table using Bootstrap -->
+                        <div class=" mt-5">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Total Sales</th>
+                                        <th>Total Complete Orders</th>
+                                        <th>Total Canceled Orders</th>
+                                        <th>Total Canceled Sales</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    <?php
+                                    include "../auth/db-connection/config.php";
 
-                       <!-- Sales Graph -->
-                        <div class="salesgraph">
-                            <canvas id="salesChart" width="400" height="200"></canvas>
+                                    // Fetch data for complete orders
+                                    $sql_complete = "SELECT COUNT(*) AS total_complete_orders, SUM(total_price) AS total_sales FROM orders WHERE order_status_id = 4";
+                                    $stmt_complete = $connection->prepare($sql_complete);
+                                    $stmt_complete->execute();
+                                    $complete_data = $stmt_complete->fetch(PDO::FETCH_ASSOC);
+
+                                    // Fetch data for canceled orders
+                                    $sql_canceled = "SELECT COUNT(*) AS total_canceled_orders, SUM(total_price) AS total_canceled_sales FROM orders WHERE order_status_id = 5";
+                                    $stmt_canceled = $connection->prepare($sql_canceled);
+                                    $stmt_canceled->execute();
+                                    $canceled_data = $stmt_canceled->fetch(PDO::FETCH_ASSOC);
+
+                                    // Get currency symbol from products table
+                                    $currency_code_sql = "SELECT currency_code FROM products LIMIT 1"; // Assuming there's only one currency used in the products table
+                                    $stmt_currency = $connection->prepare($currency_code_sql);
+                                    $stmt_currency->execute();
+                                    $currency_data = $stmt_currency->fetch(PDO::FETCH_ASSOC);
+                                    $currency_symbol = ''; // Initialize currency symbol variable
+                                    if ($currency_data) {
+                                        // Fetch currency symbol based on currency code
+                                        $currency_symbol = getCurrencySymbol($currency_data['currency_code']);
+                                    }
+
+                                    // Display total sales, complete orders, canceled orders, and canceled sales in a table row
+                                    echo "<td>" . $currency_symbol . $complete_data['total_sales'] . "</td>";
+                                    echo "<td>" . $complete_data['total_complete_orders'] . "</td>";
+                                    echo "<td>" . $canceled_data['total_canceled_orders'] . "</td>";
+                                    echo "<td>" . $currency_symbol . $canceled_data['total_canceled_sales'] . "</td>";
+
+                                    // Function to get currency symbol based on currency code
+                                    function getCurrencySymbol($currencyCode)
+                                    {
+                                        // Define currency symbols mapping
+                                        $currencySymbols = [
+                                            'USD' => '$', // Example: US Dollar
+                                            'EUR' => '€', // Example: Euro
+                                            // Add more currency symbols as needed
+                                        ];
+
+                                        // Return currency symbol if found, otherwise return the currency code
+                                        return isset($currencySymbols[$currencyCode]) ? $currencySymbols[$currencyCode] : $currencyCode;
+                                    }
+                                    ?>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
 
+                        <!-- Create a canvas element to render the chart -->
+                        <div class="chart-stats-wrapper">
+                            <div class="stars-chart">
+                                <h3>Sales Report</h3>
+                                <div class="chart-tabs btn-group" role="group" aria-label="Chart Tabs">
+                                    <button type="button" class="btn btn-primary" onclick="showDailyChart()">Daily</button>
+                                    <button type="button" class="btn btn-primary" onclick="showWeeklyChart()">Weekly</button>
+                                    <button type="button" class="btn btn-primary" onclick="showMonthlyChart()">Monthly</button>
+                                    <button type="button" class="btn btn-primary" onclick="showYearlyChart()">Yearly</button>
+                                </div>
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                            <div class="new-order-stats">
+                                <h3>New Orders</h3>
+                                <div class="new-order-ticker">
+                                    <ul>
+                                        <?php
+                                        include "../auth/db-connection/config.php";
+
+                                        // Assuming '1' is the order status ID for new orders (you should replace this with the actual ID)
+                                        $new_order_status_id = 1;
+
+                                        $sql_new_orders = "SELECT * FROM orders WHERE order_status_id = :status_id ORDER BY order_date DESC";
+                                        $stmt_new_orders = $connection->prepare($sql_new_orders);
+                                        $stmt_new_orders->bindParam(':status_id', $new_order_status_id);
+                                        $stmt_new_orders->execute();
+
+                                        // Fetch new orders and display them
+                                        while ($row = $stmt_new_orders->fetch(PDO::FETCH_ASSOC)) {
+                                            echo "<li>";
+                                            echo "<a href='./customer/view_orders.php?order_id=" . $row['id'] . "' class='new-order'>";
+                                            echo "<p>ID: " . $row['id'] . "</p>";
+                                            echo "<p>Qty.: " . $row['quantity'] . "</p>";
+                                            echo "<p>Date: " . $row['order_date'] . "</p>";
+                                            echo "</a>";
+                                            echo "</li>";
+                                        }
+                                        ?>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                        <?php
+                        // Fetch data with the specified order status (e.g., order_status_id = 4 for complete orders)
+                        $sql_orders = "SELECT * FROM orders WHERE order_status_id = 4";
+                        $stmt_orders = $connection->prepare($sql_orders);
+                        $stmt_orders->execute();
+
+                        // Process the data to extract necessary information
+                        $data = [];
+                        while ($row = $stmt_orders->fetch(PDO::FETCH_ASSOC)) {
+                            $data[] = [
+                                'order_date' => $row['order_date'],
+                                'total_price' => $row['total_price'],
+                            ];
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
         </div>
-
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<?php
+    <script>
+        // Get references to the notifications icon and menu
+        const notificationsIcon = document.getElementById('notificationsDropdown');
+        const notificationsMenu = document.getElementById('notificationsMenu');
 
-include "../auth/db-connection/config.php";
-
-// Fetch data with the specified order status (e.g., order_status_id = 1 for complete orders)
-$sql = "SELECT * FROM orders WHERE order_status_id = 1";
-$stmt = $connection->prepare($sql);
-$stmt->execute();
-
-// Process the data to extract necessary information
-$data = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $data[] = [
-        'order_date' => $row['order_date'],
-        'total_price' => $row['total_price'],
-    ];
-}
-
-// No need to close PDO connection explicitly, it will be closed automatically
-
-?>
-
-
-<!-- Your JavaScript code to render the chart -->
-<script>
-    // Extracted PHP data
-    var ordersData = <?php echo json_encode($data); ?>;
-
-    // Convert dates to a format suitable for Chart.js (you may need to adjust this based on your date format)
-    ordersData.forEach(function(order) {
-        order.order_date = new Date(order.order_date).toLocaleDateString();
-    });
-
-    // Chart.js setup
-    var ctx = document.getElementById('salesChart').getContext('2d');
-    var salesChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ordersData.map(function(order) {
-                return order.order_date;
-            }),
-            datasets: [{
-                label: 'Total Sales',
-                data: ordersData.map(function(order) {
-                    return order.total_price;
-                }),
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 2,
-                fill: false
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+        // Add a click event listener to the notifications icon
+        notificationsIcon.addEventListener('click', function() {
+            // Toggle the display of the notifications menu
+            if (notificationsMenu.style.display === 'none') {
+                notificationsMenu.style.display = 'block';
+            } else {
+                notificationsMenu.style.display = 'none';
             }
-        }
-    });
-</script>
+        });
+    </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    // Your PHP data
+    var ordersData = <?php echo json_encode($data); ?>;
+    // Extracting date and sales data from PHP data
+    var labels = ordersData.map(function(order) {
+        return order.order_date;
+    });
+    var salesData = ordersData.map(function(order) {
+        return order.total_price;
+    });
+    </script>
+    <script src="../files/js/chart.js"></script>
     <script>
         function toggleUserOptions() {
             var options = document.getElementById("userOptions");
