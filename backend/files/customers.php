@@ -279,6 +279,11 @@ if ($stmt = $connection->prepare($sql)) {
                         }
                         ?>
                     </div>
+                                            <footer class="footer mt-5">
+                            <p class="mb-0">
+                                Copyright © <span>2024</span> Ecommerce . All Rights Reserved.
+                            </p>
+                        </footer>
                 </div>
             </div>
         </div>

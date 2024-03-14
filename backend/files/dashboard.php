@@ -223,10 +223,7 @@ if ($stmt = $connection->prepare($sql)) {
                                 <?php endforeach; ?>
                             </ul>
                         </div>
-                        <!-- Add more notification items here -->
                     </div>
-
-
                         <!-- User  -->
                         <div class="wrap-u" onclick="toggleUserOptions()">
                             <div class="user-pro flex">
@@ -395,27 +392,49 @@ if ($stmt = $connection->prepare($sql)) {
                             </div>   
                         </div>
 
-                        <!-- Display total sales, complete orders, canceled orders, and canceled sales in a table using Bootstrap -->
-                        <div class=" mt-5">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Total Sales</th>
-                                        <th>Total Complete Orders</th>
-                                        <th>Total Canceled Orders</th>
-                                        <th>Total Canceled Sales</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                    <?php
-                                    include "../auth/db-connection/config.php";
+                        <!-- Create a canvas element to render the chart -->
+                        <div class="chart-stats-wrapper mt-4">
+                            <div class="stars-chart">
+                                <h3>Sales Report</h3>
+                                <div class="chart-tabs btn-group" role="group" aria-label="Chart Tabs">
+                                    <button type="button" class="btn btn-primary" onclick="showDailyChart()">Daily</button>
+                                    <button type="button" class="btn btn-primary" onclick="showWeeklyChart()">Weekly</button>
+                                    <button type="button" class="btn btn-primary" onclick="showMonthlyChart()">Monthly</button>
+                                    <button type="button" class="btn btn-primary" onclick="showYearlyChart()">Yearly</button>
+                                </div>
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                            <div class="new-order-stats">
+                                <div class="recapdata-stats">
+                                    <div class="flex oflex">
+                                        <h3>Orders Overview</h3>
+                                        <a href="./chart-data/orders_overview.php" class="text-center text-muted">
+                                            <div class="down-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path id="download" d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+                                            </div>    
+                                            Download Report
+                                        </a>
 
+                                    </div>
+                                   
+                                    <?php
                                     // Fetch data for complete orders
                                     $sql_complete = "SELECT COUNT(*) AS total_complete_orders, SUM(total_price) AS total_sales FROM orders WHERE order_status_id = 4";
                                     $stmt_complete = $connection->prepare($sql_complete);
                                     $stmt_complete->execute();
                                     $complete_data = $stmt_complete->fetch(PDO::FETCH_ASSOC);
+
+                                    // Fetch data for pending orders
+                                    $sql_pending = "SELECT COUNT(*) AS total_pending_orders FROM orders WHERE order_status_id = 1";
+                                    $stmt_pending = $connection->prepare($sql_pending);
+                                    $stmt_pending->execute();
+                                    $pending_data = $stmt_pending->fetch(PDO::FETCH_ASSOC);
+
+                                    // Fetch data for payment received orders
+                                    $sql_payment_received = "SELECT COUNT(*) AS total_payment_received_orders FROM orders WHERE order_status_id = 2";
+                                    $stmt_payment_received = $connection->prepare($sql_payment_received);
+                                    $stmt_payment_received->execute();
+                                    $payment_received_data = $stmt_payment_received->fetch(PDO::FETCH_ASSOC);
 
                                     // Fetch data for canceled orders
                                     $sql_canceled = "SELECT COUNT(*) AS total_canceled_orders, SUM(total_price) AS total_canceled_sales FROM orders WHERE order_status_id = 5";
@@ -434,12 +453,6 @@ if ($stmt = $connection->prepare($sql)) {
                                         $currency_symbol = getCurrencySymbol($currency_data['currency_code']);
                                     }
 
-                                    // Display total sales, complete orders, canceled orders, and canceled sales in a table row
-                                    echo "<td>" . $currency_symbol . $complete_data['total_sales'] . "</td>";
-                                    echo "<td>" . $complete_data['total_complete_orders'] . "</td>";
-                                    echo "<td>" . $canceled_data['total_canceled_orders'] . "</td>";
-                                    echo "<td>" . $currency_symbol . $canceled_data['total_canceled_sales'] . "</td>";
-
                                     // Function to get currency symbol based on currency code
                                     function getCurrencySymbol($currencyCode)
                                     {
@@ -454,55 +467,60 @@ if ($stmt = $connection->prepare($sql)) {
                                         return isset($currencySymbols[$currencyCode]) ? $currencySymbols[$currencyCode] : $currencyCode;
                                     }
                                     ?>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
 
-                        <!-- Create a canvas element to render the chart -->
-                        <div class="chart-stats-wrapper">
-                            <div class="stars-chart">
-                                <h3>Sales Report</h3>
-                                <div class="chart-tabs btn-group" role="group" aria-label="Chart Tabs">
-                                    <button type="button" class="btn btn-primary" onclick="showDailyChart()">Daily</button>
-                                    <button type="button" class="btn btn-primary" onclick="showWeeklyChart()">Weekly</button>
-                                    <button type="button" class="btn btn-primary" onclick="showMonthlyChart()">Monthly</button>
-                                    <button type="button" class="btn btn-primary" onclick="showYearlyChart()">Yearly</button>
-                                </div>
-                                <canvas id="salesChart"></canvas>
-                            </div>
-                            <div class="new-order-stats">
-                                <h3>New Orders</h3>
-                                <div class="new-order-ticker">
-                                    <ul>
-                                        <?php
-                                        include "../auth/db-connection/config.php";
-
-                                        // Assuming '1' is the order status ID for new orders (you should replace this with the actual ID)
-                                        $new_order_status_id = 1;
-
-                                        $sql_new_orders = "SELECT * FROM orders WHERE order_status_id = :status_id ORDER BY order_date DESC";
-                                        $stmt_new_orders = $connection->prepare($sql_new_orders);
-                                        $stmt_new_orders->bindParam(':status_id', $new_order_status_id);
-                                        $stmt_new_orders->execute();
-
-                                        // Fetch new orders and display them
-                                        while ($row = $stmt_new_orders->fetch(PDO::FETCH_ASSOC)) {
-                                            echo "<li>";
-                                            echo "<a href='./customer/view_orders.php?order_id=" . $row['id'] . "' class='new-order'>";
-                                            echo "<p>ID: " . $row['id'] . "</p>";
-                                            echo "<p>Qty.: " . $row['quantity'] . "</p>";
-                                            echo "<p>Date: " . $row['order_date'] . "</p>";
-                                            echo "</a>";
-                                            echo "</li>";
-                                        }
-                                        ?>
-                                    </ul>
+                                    <div class="mt-4">
+                                        <canvas id="salesPieChart" width="400" height="400"></canvas>
+                                        <div class="pie-summary">
+                                            <!-- Displaying the total sales and orders -->
+                                            <span>Total Sales:</span> <?php echo isset($currency_symbol) ? $currency_symbol . $complete_data['total_sales'] : ''; ?> <span class="separatorLine">|</span>
+                                            <span>Total Complete Orders:</span> <?php echo isset($complete_data['total_complete_orders']) ? $complete_data['total_complete_orders'] : ''; ?> <span class="separatorLine">|</span>
+                                            <span>Total Pending Orders:</span> <?php echo isset($pending_data['total_pending_orders']) ? $pending_data['total_pending_orders'] : ''; ?> <span class="separatorLine">|</span>
+                                            <span>Total Payment Received Orders:</span> <?php echo isset($payment_received_data['total_payment_received_orders']) ? $payment_received_data['total_payment_received_orders'] : ''; ?> <span class="separatorLine">|</span>
+                                            <span>Total Canceled Orders:</span> <?php echo isset($canceled_data['total_canceled_orders']) ? $canceled_data['total_canceled_orders'] : ''; ?> <span class="separatorLine">|</span>
+                                            <span>Total Canceled Sales:</span> <?php echo isset($currency_symbol) ? $currency_symbol . $canceled_data['total_canceled_sales'] : ''; ?>
+                                        </div>
+                                    </div>
                                 </div>
 
+
+                                <!-- <div class="new-order-wrapper">
+                                    <h3>New Orders</h3>
+                                    <div class="new-order-ticker">
+                                        <ul>
+                                            <?php
+                                            include "../auth/db-connection/config.php";
+
+                                            // Assuming '1' is the order status ID for new orders (you should replace this with the actual ID)
+                                            $new_order_status_id = 1;
+
+                                            $sql_new_orders = "SELECT * FROM orders WHERE order_status_id = :status_id ORDER BY order_date DESC";
+                                            $stmt_new_orders = $connection->prepare($sql_new_orders);
+                                            $stmt_new_orders->bindParam(':status_id', $new_order_status_id);
+                                            $stmt_new_orders->execute();
+
+                                            // Fetch new orders and display them
+                                            while ($row = $stmt_new_orders->fetch(PDO::FETCH_ASSOC)) {
+                                                echo "<li>";
+                                                echo "<a href='./customer/view_orders.php?order_id=" . $row['id'] . "' class='new-order'>";
+                                                echo "<p>ID: " . $row['id'] . "</p>";
+                                                echo "<p>Qty.: " . $row['quantity'] . "</p>";
+                                                echo "<p>Date: " . $row['order_date'] . "</p>";
+                                                echo "</a>";
+                                                echo "</li>";
+                                            }
+                                            ?>
+                                        </ul>
+                                    </div>
+
+                                </div> -->
                             </div>
+                            
                         </div>
+
                         <?php
+                        // Set the timezone to Astana/Dhaka time
+                        date_default_timezone_set('Asia/Dhaka'); // Adjust this according to the desired timezone
+
                         // Fetch data with the specified order status (e.g., order_status_id = 4 for complete orders)
                         $sql_orders = "SELECT * FROM orders WHERE order_status_id = 4";
                         $stmt_orders = $connection->prepare($sql_orders);
@@ -511,18 +529,146 @@ if ($stmt = $connection->prepare($sql)) {
                         // Process the data to extract necessary information
                         $data = [];
                         while ($row = $stmt_orders->fetch(PDO::FETCH_ASSOC)) {
+                            // Convert order_date to Astana/Dhaka time
+                            $order_date_local = date('Y-m-d H:i:s', strtotime($row['order_date']));
+
                             $data[] = [
-                                'order_date' => $row['order_date'],
+                                'order_date' => $order_date_local,
                                 'total_price' => $row['total_price'],
                             ];
                         }
                         ?>
+                        <!-- User Activity -->
+                        <div class="user-activity mt-4">
+                            <div class="user-a-d">
+                                <div class="u-header-a">
+                                    <h3>User Activity</h3>
+                                    <div class="ranges">
+                                        <select id="timeRangeSelect"  class="form-select">
+                                            <option value="Today">Today</option>
+                                            <option value="Yesterday">Yesterday</option>
+                                            <option value="Last 7 Days">Last 7 Days</option>
+                                            <option value="Last 30 Days" selected>Last 30 Days</option>
+                                            <option value="This Month">This Month</option>
+                                            <option value="Last Month">Last Month</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="user-a-graph">
+                                    <canvas id="userActivityChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="user-a-d">
+                                <h3>Sold by Items</h3>
+                                <?php
+                                // Fetch data for total sales of each product, limiting to top 5
+                                $sql = "SELECT 
+                                    p.name AS product_name,
+                                    COALESCE(SUM(oi.quantity), 0) AS total_sale,
+                                    ROUND(
+                                        (
+                                            COALESCE(SUM(oi.quantity), 0) / 
+                                            (
+                                                SELECT SUM(oi.quantity) 
+                                                FROM order_items oi 
+                                                JOIN orders o ON oi.order_id = o.id 
+                                                WHERE o.order_status_id = 4
+                                            ) 
+                                            * 100
+                                        ), 
+                                        2
+                                    ) AS total_sale_by_percent
+                                FROM 
+                                    products p
+                                LEFT JOIN 
+                                    order_items oi ON p.id = oi.product_id
+                                GROUP BY 
+                                    p.name
+                                HAVING 
+                                    total_sale >= 5
+                                ORDER BY 
+                                    total_sale DESC
+                                LIMIT 5";
+                                $stmt = $connection->prepare($sql);
+                                $stmt->execute();
+                                $product_sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                ?>
+
+                                <ul class="mt-4">
+                                    <?php foreach ($product_sales as $product_sale): ?>
+                                        <li><span><?php echo $product_sale['product_name']; ?></span> <span><?php echo $product_sale['total_sale']; ?></span> <span><?php echo $product_sale['total_sale_by_percent']; ?>% <div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path id="arrowUp" d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"/></svg></div></span></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Recent Orders -->
+                        <div class="user-activity mt-4">
+                            <div class="card-table-border-none" id="recent-orders">
+								<div class="flex">
+									<h2>Recent Orders</h2>
+									<div class="date-range-report">
+										<select id="" class="form-select">
+                                            <option>Feb 14, 2024 - Mar 14, 2024</option>
+                                        </select>
+									</div>
+								</div>
+								<div class="card-body mt-4 pb-5">
+									<table class="table card-table table-responsive table-responsive-large" style="width:100%">
+										<thead>
+											<tr>
+												<th>Order ID</th>
+												<th>Product Name</th>
+												<th class="d-none d-lg-table-cell">Units</th>
+												<th class="d-none d-lg-table-cell">Order Date</th>
+												<th class="d-none d-lg-table-cell">Order Cost</th>
+												<th>Status</th>
+												<th></th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>24541</td>
+												<td>
+													<a class="text-dark" href=""> Toddler Shoes, Gucci Watch</a>
+												</td>
+												<td class="d-none d-lg-table-cell">2 Units</td>
+												<td class="d-none d-lg-table-cell">Nov 15, 2018</td>
+												<td class="d-none d-lg-table-cell">$550</td>
+												<td>
+													<span class="badge badge-primary">Delayed</span>
+												</td>
+												<td class="text-right">
+                                                    <select id="recent-orders" class="form-select">
+                                                        <option value="view">View</option>
+                                                        <option value="remove">Remove</option>
+                                                    </select>
+												</td>
+											</tr>
+											
+										</tbody>
+									</table>
+								</div>
+							</div>
+                            <div class="top-orders"></div>
+                        </div>
+
+                        <footer class="footer mt-5">
+                            <p class="mb-0">
+                                Copyright © <span>2024</span> Ecommerce . All Rights Reserved.
+                            </p>
+                        </footer>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+    <script src="../files/js/userchart.js"></script>
+
+    <!-- Notifications -->
     <script>
         // Get references to the notifications icon and menu
         const notificationsIcon = document.getElementById('notificationsDropdown');
@@ -539,7 +685,38 @@ if ($stmt = $connection->prepare($sql)) {
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data for the pie chart
+        var data = {
+            labels: ['Total Complete Orders', 'Total Pending Orders', 'Total Payment Received Orders', 'Total Canceled Orders'],
+            datasets: [{
+                data: [
+                    <?php echo isset($complete_data['total_complete_orders']) ? $complete_data['total_complete_orders'] : '0'; ?>,
+                    <?php echo isset($pending_data['total_pending_orders']) ? $pending_data['total_pending_orders'] : '0'; ?>,
+                    <?php echo isset($payment_received_data['total_payment_received_orders']) ? $payment_received_data['total_payment_received_orders'] : '0'; ?>,
+                    <?php echo isset($canceled_data['total_canceled_orders']) ? $canceled_data['total_canceled_orders'] : '0'; ?>
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)', // Total Complete Orders color
+                    'rgba(255, 206, 86, 0.7)', // Total Pending Orders color
+                    'rgba(75, 192, 192, 0.7)', // Total Payment Received Orders color
+                    'rgba(255, 99, 132, 0.7)', // Total Canceled Orders color
+                ]
+            }]
+        };
+
+        // Render the pie chart
+        var ctx = document.getElementById('salesPieChart').getContext('2d');
+        var salesPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: data,
+            options: {
+                legend: {
+                    display: false
+                }
+            }
+        });
+    </script>
     <script>
     // Your PHP data
     var ordersData = <?php echo json_encode($data); ?>;
