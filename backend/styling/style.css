@@ -494,11 +494,16 @@ Global Styling
   justify-content: space-between;
   list-style: none;
   margin-bottom: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid #8080803b;
 }
 .user-a-d ul span {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+.user-a-d ul span:last-child {
+  color: green;
 }
 .user-a-d ul span div {
   width: 10px;
@@ -517,6 +522,30 @@ Global Styling
   .user-activity > div {
     width: 100% !important;
   }
+}
+
+.products-d-d {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.top-products-d.flex {
+  margin-bottom: 10px;
+}
+.p-d-combined span {
+  display: block;
+  font-size: 14px;
+}
+.products-img-d img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.products-img-d {
+  height: 120px;
+  background: #f7f7f7;
+  padding: 4px;
+  border-radius: 4px;
 }
 
 /* 

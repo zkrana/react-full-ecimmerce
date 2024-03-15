@@ -160,43 +160,32 @@ if ($stmt = $connection->prepare($sql)) {
                     $stmt_new_customers = $connection->prepare($sql_new_customers);
                     $stmt_new_customers->execute();
                     $new_customers = $stmt_new_customers->fetchAll(PDO::FETCH_ASSOC);
-
                     // Example: New orders
                     $sql_new_orders = "SELECT COUNT(*) AS count FROM orders WHERE order_status_id = 1"; // Assuming 1 is the status for new orders
                     $stmt_new_orders = $connection->prepare($sql_new_orders);
                     $stmt_new_orders->execute();
                     $new_orders_count = $stmt_new_orders->fetch(PDO::FETCH_ASSOC)['count'];
-
-                    // Example: New payments
                     // Example: New payments
                     $sql_new_payments = "SELECT COUNT(*) AS count FROM payments";
-
                     $stmt_new_payments = $connection->prepare($sql_new_payments);
                     $stmt_new_payments->execute();
                     $new_payments_count = $stmt_new_payments->fetch(PDO::FETCH_ASSOC)['count'];
-
                     // Example: New reviews
                     $sql_new_reviews = "SELECT COUNT(*) AS count FROM product_reviews WHERE reviewStatus IS NULL";
                     $stmt_new_reviews = $connection->prepare($sql_new_reviews);
                     $stmt_new_reviews->execute();
                     $new_reviews_count = $stmt_new_reviews->fetch(PDO::FETCH_ASSOC)['count'];
-
                     // Example: New subscriptions
                     $sql_new_subscriptions = "SELECT COUNT(*) AS count FROM subscribers";
                     $stmt_new_subscriptions = $connection->prepare($sql_new_subscriptions);
                     $stmt_new_subscriptions->execute();
                     $new_subscriptions_count = $stmt_new_subscriptions->fetch(PDO::FETCH_ASSOC)['count'];
-
-
-
                     // Calculate total notifications count
                     $total_notifications = $new_users_count + $new_orders_count + $new_payments_count + $new_reviews_count + $new_subscriptions_count;
 
                     // Determine if there are any new notifications to display red dot
                     $has_new_notifications = $total_notifications > 0;
                     ?>
-
-
                     <!-- Notifications -->
                     <div class="notifications" id="notificationsDropdown">
                         <i class="far fa-bell"></i>
@@ -267,10 +256,6 @@ if ($stmt = $connection->prepare($sql)) {
                 <div class="h-container">
                     <div class="main">
                         <h1 class="page-heading"> Dashboard </h1>
-                        <p>
-                            <a href="../auth/backend-assets/password-reset.php" class="btn btn-warning">Reset Your Password</a>
-                        </p>
-
                         <!-- Statistics -->
                         <div class="sales-small-stats flex">
                             <div class="sales-small-stats-inner">
@@ -395,8 +380,16 @@ if ($stmt = $connection->prepare($sql)) {
                         <!-- Create a canvas element to render the chart -->
                         <div class="chart-stats-wrapper mt-4">
                             <div class="stars-chart">
-                                <h3>Sales Report</h3>
-                                <div class="chart-tabs btn-group" role="group" aria-label="Chart Tabs">
+                                <div class="flex oflex">
+                                    <h3>Sales Report</h3>
+                                    <a href="./chart-data/orders_overview.php" class="text-center text-muted">
+                                        <div class="down-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path id="download" d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"></path></svg>
+                                        </div>    
+                                        Download Sales Report
+                                    </a>
+                                </div>
+                                <div class="chart-tabs btn-group mt-4" role="group" aria-label="Chart Tabs">
                                     <button type="button" class="btn btn-primary" onclick="showDailyChart()">Daily</button>
                                     <button type="button" class="btn btn-primary" onclick="showWeeklyChart()">Weekly</button>
                                     <button type="button" class="btn btn-primary" onclick="showMonthlyChart()">Monthly</button>
@@ -614,45 +607,135 @@ if ($stmt = $connection->prepare($sql)) {
 									</div>
 								</div>
 								<div class="card-body mt-4 pb-5">
-									<table class="table card-table table-responsive table-responsive-large" style="width:100%">
-										<thead>
-											<tr>
-												<th>Order ID</th>
-												<th>Product Name</th>
-												<th class="d-none d-lg-table-cell">Units</th>
-												<th class="d-none d-lg-table-cell">Order Date</th>
-												<th class="d-none d-lg-table-cell">Order Cost</th>
-												<th>Status</th>
-												<th></th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>24541</td>
-												<td>
-													<a class="text-dark" href=""> Toddler Shoes, Gucci Watch</a>
-												</td>
-												<td class="d-none d-lg-table-cell">2 Units</td>
-												<td class="d-none d-lg-table-cell">Nov 15, 2018</td>
-												<td class="d-none d-lg-table-cell">$550</td>
-												<td>
-													<span class="badge badge-primary">Delayed</span>
-												</td>
-												<td class="text-right">
-                                                    <select id="recent-orders" class="form-select">
-                                                        <option value="view">View</option>
-                                                        <option value="remove">Remove</option>
+                                    <?php
+                                    // Pagination variables
+                                    $limit = 5; // Number of records per page
+                                    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+                                    $start = ($page - 1) * $limit;
+
+                                    $sql = "SELECT o.id AS order_id, p.name AS product_name, oi.quantity, p.currency_code AS currency, o.order_date, oi.total_price AS total_price, os.status_name AS order_status
+                                            FROM orders o
+                                            INNER JOIN order_items oi ON o.id = oi.order_id
+                                            INNER JOIN products p ON oi.product_id = p.id
+                                            INNER JOIN order_status os ON o.order_status_id = os.id
+                                            ORDER BY o.order_date DESC
+                                            LIMIT :start, :limit";
+                                    $stmt = $connection->prepare($sql);
+                                    $stmt->bindParam(':start', $start, PDO::PARAM_INT);
+                                    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+                                    $stmt->execute();
+                                    // Display recent orders in HTML table format
+                                    if ($stmt->rowCount() > 0) {
+                                        echo '<table class="table card-table table-responsive table-responsive-large" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Order ID</th>
+                                                        <th>Product Name</th>
+                                                        <th class="d-none d-lg-table-cell">Units</th>
+                                                        <th class="d-none d-lg-table-cell">Order Date</th>
+                                                        <th class="d-none d-lg-table-cell">Order Cost</th>
+                                                        <th>Status</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>';
+                                        // Output data of each row
+                                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                        $badge_class = '';
+                                        switch ($row["order_status"]) {
+                                            case 'Pending':
+                                                $badge_class = 'text-bg-primary';
+                                                break;
+                                            case 'Payment Received':
+                                                $badge_class = 'text-bg-info';
+                                                break;
+                                            case 'Processing':
+                                                $badge_class = 'text-bg-warning';
+                                                break;
+                                            case 'Shipped':
+                                                $badge_class = 'text-bg-success';
+                                                break;
+                                            case 'Cancel':
+                                                $badge_class = 'text-bg-danger';
+                                                break;
+                                            default:
+                                                $badge_class = 'text-bg-secondary';
+                                                break;
+                                        }
+                                        echo "<tr>
+                                                <td>" . $row["order_id"] . "</td>
+                                                <td><a class='text-dark' href=''>" . $row["product_name"] . "</a></td>
+                                                <td class='d-none d-lg-table-cell'>" . $row["quantity"] . " Units</td>
+                                                <td class='d-none d-lg-table-cell'>" . $row["order_date"] . "</td>
+                                                <td class='d-none d-lg-table-cell'>" . $row["currency"] . $row["total_price"] . "</td>
+                                                <td><span class='badge $badge_class'>" . $row["order_status"] . "</span></td>
+                                                <td class='text-right'>
+                                                    <select class='form-select'>
+                                                        <option value='view'>View</option>
+                                                        <option value='remove'>Remove</option>
                                                     </select>
-												</td>
-											</tr>
-											
-										</tbody>
-									</table>
+                                                </td>
+                                            </tr>";
+                                    }
+                                        echo '</tbody></table>';
+
+                                        // Pagination links
+                                        $sql_count = "SELECT COUNT(id) AS total FROM orders";
+                                        $stmt_count = $connection->prepare($sql_count);
+                                        $stmt_count->execute();
+                                        $total_pages = ceil($stmt_count->fetch(PDO::FETCH_ASSOC)["total"] / $limit);
+                                        echo '<ul class="pagination">';
+                                        for ($i = 1; $i <= $total_pages; $i++) {
+                                            echo '<li class="page-item"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+                                        }
+                                        echo '</ul>';
+                                    } else {
+                                        echo "0 results";
+                                    }
+                                    ?>
 								</div>
 							</div>
-                            <div class="top-orders"></div>
-                        </div>
+                            <?php
+                            // Query to fetch top 5 products based on sales
+                            $sql = "SELECT p.name AS product_name, p.price AS product_price, p.product_photo AS product_image, COUNT(oi.id) AS sales
+                                    FROM products p
+                                    JOIN order_items oi ON p.id = oi.product_id
+                                    GROUP BY p.id
+                                    ORDER BY sales DESC
+                                    LIMIT 3";
 
+                            $stmt = $connection->query($sql);
+
+                            // Check if there are results
+                            if ($stmt->rowCount() > 0) {
+                                echo '<div class="top-orders">';
+                                echo '<div class="flex"><h2>Top Products</h2></div>';
+
+                                // Iterate over the top products
+                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                    echo '<div class="top-products-d flex">';
+                                    echo '<div class="products-d-d">';
+                                    echo '<div class="products-img-d">';
+                                    echo '<img src="../auth/assets/products/' . $row["product_image"] . '" alt="' . $row["product_name"] . '">';
+                                    echo '</div>';
+                                    echo '<div class="p-d-combined">';
+                                    echo '<span class="text-muted">' . $row["product_name"] . '</span>';
+                                    echo '<span>' . $row["product_price"] . '</span>';
+                                    echo '</div>';
+                                    echo '</div>';
+                                    echo '<div class="products-sales-c text-muted">';
+                                    echo 'Sales ' . $row["sales"];
+                                    echo '</div>';
+                                    echo '</div>';
+                                }
+
+                                echo '</div>'; // Close top-orders div
+                            } else {
+                                // No top products found
+                                echo 'No top products found.';
+                            }
+                            ?>
+                        </div>
                         <footer class="footer mt-5">
                             <p class="mb-0">
                                 Copyright © <span>2024</span> Ecommerce . All Rights Reserved.
