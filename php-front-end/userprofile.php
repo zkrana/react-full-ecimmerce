@@ -205,7 +205,7 @@
                                     <div class="flex gap-3 items-center">
                                     <?php 
                                         if ($order['status_name'] === "Pending") {
-                                            echo '<a href="cancelOrder.php?orderId=' . $order['order_id'] . '" class="text-slate-100 inline-block p-2 rounded-sm bg-[tomato]">Cancel Order</a>';
+                                            echo '<a href="cancelOrder.php?customerId=' . $userId . '" class="text-slate-100 inline-block p-2 rounded-sm bg-[tomato]">Cancel Order</a>';
                                         }
                                         ?>
                                         <?php 
