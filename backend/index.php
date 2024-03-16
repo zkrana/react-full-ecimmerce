@@ -35,7 +35,6 @@
                         $errorMessage = "An error occurred. Please try again.";
                         break;
                 }
-
                 echo "<div id='error' class='alert alert-danger'>$errorMessage</div>";
             }
             ?>

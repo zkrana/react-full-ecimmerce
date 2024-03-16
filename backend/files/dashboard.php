@@ -87,6 +87,13 @@ if ($stmt = $connection->prepare($sql)) {
                                   <i class="fa-solid fa-cart-shopping"></i>
                                 <span class="block">Order</span>
                             </a>
+                            <ul style="margin-left: 5px; background: unset;">
+                                <li style="padding-top: 0; padding-bottom:0;">
+                                     <a href="cancelOrdersReq.php">
+                                        <span class="block">Order Cancel Request</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li>
                             <a href="customers.php">
