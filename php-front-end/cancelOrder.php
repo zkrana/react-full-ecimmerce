@@ -68,34 +68,34 @@
             }
             ?>
            <div class="max-w-md mx-auto mb-4">
-<div class="action-response">
-    <?php
-    // Check for error or success messages in URL parameters
-    if (isset($_GET['error'])) {
-        // Display error message
-        $error = $_GET['error'];
-        echo '<div id="error-message" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <strong>Error:</strong> ' . $error . '
-            </div>';
-        echo '<script>
-            setTimeout(function() {
-                window.location.href = window.location.pathname + "?customerId=' . $customerId . '";
-            }, 5000);
-        </script>';
-    } elseif (isset($_GET['success'])) {
-        // Display success message
-        $success = $_GET['success'];
-        echo '<div id="success-message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <strong>Success:</strong> ' . $success . '
-            </div>';
-        echo '<script>
-                setTimeout(function() {
-                    window.location.href = window.location.pathname + "?customerId=' . $customerId . '";
-                }, 5000);
-            </script>';
-    }
-    ?>
-</div>
+                <div class="action-response">
+                    <?php
+                    // Check for error or success messages in URL parameters
+                    if (isset($_GET['error'])) {
+                        // Display error message
+                        $error = $_GET['error'];
+                        echo '<div id="error-message" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                <strong>Error:</strong> ' . $error . '
+                            </div>';
+                        echo '<script>
+                            setTimeout(function() {
+                                window.location.href = window.location.pathname + "?customerId=' . $customerId . '";
+                            }, 5000);
+                        </script>';
+                    } elseif (isset($_GET['success'])) {
+                        // Display success message
+                        $success = $_GET['success'];
+                        echo '<div id="success-message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                                <strong>Success:</strong> ' . $success . '
+                            </div>';
+                        echo '<script>
+                                setTimeout(function() {
+                                    window.location.href = window.location.pathname + "?customerId=' . $customerId . '";
+                                }, 5000);
+                            </script>';
+                    }
+                    ?>
+                </div>
 
             </div>
             <form action="./files/cancelOrderSubmit.php" method="post">
