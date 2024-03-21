@@ -18,11 +18,16 @@ if (isset($_POST['trackOrder'])) {
         // Retrieve order details and customer information from the database based on order ID
         $orderQuery = $connection->prepare("SELECT orders.id AS order_id, orders.order_date, orders.order_status_id, 
                                                  order_status.status_name, COUNT(order_items.product_id) AS total_products, 
-                                                 customers.first_name, customers.last_name
+                                                 customers.first_name, customers.last_name,
+                                                 CASE 
+                                                     WHEN ordercancellation.statusUpdate IN ('Processing', 'Accept') THEN 'Cancelled'
+                                                     ELSE order_status.status_name 
+                                                 END AS display_status
                                           FROM `orders`
                                           JOIN `order_status` ON orders.order_status_id = order_status.id
                                           LEFT JOIN `order_items` ON orders.id = order_items.order_id
                                           LEFT JOIN `customers` ON orders.user_id = customers.id
+                                          LEFT JOIN `ordercancellation` ON orders.id = ordercancellation.order_id
                                           WHERE orders.id = ?
                                           GROUP BY orders.id");
         $result = $orderQuery->execute([$inputOrderId]);
@@ -72,36 +77,35 @@ if (isset($_POST['trackOrder'])) {
         </form>
 
 
- <?php
-        // Display order details or error message
-        if ($orderDetails) {
-            foreach ($orderDetails as $order) {
-                ?>
-                <h1 class="text-3xl font-bold mb-4 text-green-700">Order Details</h1>
-                <p><strong>Order ID:</strong> <?php echo htmlspecialchars($order['order_id']); ?></p>
-                <p><strong>Customer Name:</strong> <?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?></p>
-                <p><strong>Total Products:</strong> <?php echo htmlspecialchars($order['total_products']); ?></p>
-                <p><strong>Order Status:</strong> <button class="text-[tomato]"><?php echo htmlspecialchars($order['status_name']); ?></button></p>
-                <p><strong>Order Date:</strong> <?php echo htmlspecialchars($order['order_date']); ?></p>
+<?php
+// Display order details or error message
+if ($orderDetails) {
+    foreach ($orderDetails as $order) {
+?>
+        <h1 class="text-3xl font-bold mb-4 text-green-700">Order Details</h1>
+        <p><strong>Order ID:</strong> <?php echo htmlspecialchars($order['order_id']); ?></p>
+        <p><strong>Customer Name:</strong> <?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?></p>
+        <p><strong>Total Products:</strong> <?php echo htmlspecialchars($order['total_products']); ?></p>
+        <p><strong>Order Status:</strong> <button class="text-[tomato]"><?php echo htmlspecialchars($order['display_status']); ?></button></p>
+        <p><strong>Order Date:</strong> <?php echo htmlspecialchars($order['order_date']); ?></p>
 
-                <div class="mt-6">
-                    <a href="index.php" type="button"
-                        class="w-full text-center block rounded-md  px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
-                            Continue Shopping
-                    </a>
-                </div>
-            <?php
-            }
-        } elseif ($error) {
-            echo "<p class='text-red-500'>$error</p>";
-        }
-        ?>
+        <div class="mt-6">
+            <a href="index.php" type="button" class="w-full text-center block rounded-md  px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
+                Continue Shopping
+            </a>
+        </div>
+<?php
+    }
+} elseif ($error) {
+    echo "<p class='text-red-500'>$error</p>";
+}
+?>
         </div>
     </div>
 
     <?php
     // Include footer (you can create a footer.php file)
     include './components/footer/footer.php';
-    ?>
+?>
 </body>
 </html>
