@@ -242,4 +242,41 @@
   .text-yellow-500 {
     @apply fill-yellow-500;
   }
+
+  .deal-card:hover {
+    transform: translateY(-4px);
+    transition: transform 0.3s ease;
+  }
+
+  .timer {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-top: 8px;
+  }
+  .deal-card {
+    transition: transform 0.3s ease;
+  }
+
+  .deal-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .timer {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff5722; /* Orange color for the timer */
+  }
+  .timer:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #2d2d2d;
+    transform: translateY(-50%);
+  }
 }

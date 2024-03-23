@@ -34,9 +34,9 @@ function displayProducts($products, $fadeIn = false)
 }
 
 // Display product information
-echo '<div class="mt-7">';
+echo '<div class="mt-20">';
 echo '  <div class="pb-3 border-b border-slate-200">';
-echo '    <h2 class="text-lg font-semibold">Running Products</h2>';
+echo '    <h2 class="sm:text-2xl text-lg font-semibold">Running Products</h2>';
 echo '  </div>';
 echo '  <div class="product-wrapper flex flex-col justify-between gap-6">';
 echo '    <div class="w-full mt-10 flex flex-wrap lg:gap-8 gap-5" id="productContainer">';
